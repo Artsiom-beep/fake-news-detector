@@ -303,8 +303,12 @@ class FactCheckResult {
         return StatusView(
             'Possible AI signals', StatusTone.warn, score, 'AI risk score');
       }
+      if (score >= 0.35) {
+        return StatusView(
+            'Weak file clues', StatusTone.neutral, score, 'AI risk score');
+      }
       return StatusView(
-          'Not enough certainty', StatusTone.neutral, score, 'AI risk score');
+          'No strong AI markers', StatusTone.neutral, score, 'AI risk score');
     }
 
     if (credibility.isNotEmpty) {

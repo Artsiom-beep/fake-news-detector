@@ -9,7 +9,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('metadata-only image signals stay neutral in the mobile status', () {
+  test('metadata-only image signals use a weak-clues mobile status', () {
     const result = FactCheckResult({
       'verdict': 'uncertain',
       'confidence': 0.34,
@@ -24,7 +24,7 @@ void main() {
       },
     });
 
-    expect(result.statusView.label, 'Not enough certainty');
+    expect(result.statusView.label, 'Weak file clues');
     expect(result.statusView.tone, StatusTone.neutral);
   });
 

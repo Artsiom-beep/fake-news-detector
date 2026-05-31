@@ -549,6 +549,11 @@ def run_ai_image_check(
                 "The image has some AI or non-original-file signals, but not enough evidence "
                 "for a likely AI verdict."
             )
+        elif analysis.ai_generated_score >= 0.35:
+            summary = (
+                "The image has weak file or format clues, but the lightweight cloud check "
+                "cannot confirm AI generation."
+            )
         else:
             summary = (
                 "The lightweight cloud check found no strong AI markers. This does not prove "

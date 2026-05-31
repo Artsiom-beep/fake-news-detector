@@ -35,13 +35,17 @@ def _pct(value: Any) -> str:
     return f"{max(0.0, min(1.0, _as_float(value))) * 100:.1f}%"
 
 
-def _ai_label_display(ai_label: str) -> tuple[str, str, str]:
+def _ai_label_display(ai_label: str, ai_score: float = 0.0) -> tuple[str, str, str]:
     label = (ai_label or "uncertain").lower()
     if label == "likely_ai":
         return "Likely AI", "low", "We found strong AI-generation signals."
     if label == "likely_not_ai":
         return "Likely real", "high", "We found low AI-generation risk."
-    return "Not enough certainty", "unknown", "We cannot tell from this image alone."
+    if ai_score >= 0.65:
+        return "Possible AI signals", "medium", "Some AI-like signals were found, but not enough for a likely AI verdict."
+    if ai_score >= 0.35:
+        return "Weak file clues", "unknown", "The file has weak non-original or generator-like clues, but no strong AI proof."
+    return "No strong AI markers", "unknown", "The lightweight check found no strong AI markers."
 
 
 def _primary_status(result: dict[str, Any]) -> tuple[str, str, float, str]:
@@ -49,7 +53,7 @@ def _primary_status(result: dict[str, Any]) -> tuple[str, str, float, str]:
     if image_analysis.get("mode") == "ai_image_detection":
         ai_label = (image_analysis.get("ai_label") or "uncertain").lower()
         ai_score = _as_float(image_analysis.get("ai_generated_score", 0.0))
-        display, tone, _explanation = _ai_label_display(ai_label)
+        display, tone, _explanation = _ai_label_display(ai_label, ai_score)
         return display, tone, ai_score, "AI risk score"
 
     credibility = result.get("credibility") or {}
@@ -159,7 +163,8 @@ def _render_image_analysis(image_analysis: dict[str, Any]) -> str:
         </section>
         """
 
-    display_label, tone, explanation = _ai_label_display(str(image_analysis.get("ai_label", "uncertain")))
+    ai_score = _as_float(image_analysis.get("ai_generated_score", 0.0))
+    display_label, tone, explanation = _ai_label_display(str(image_analysis.get("ai_label", "uncertain")), ai_score)
     return f"""
     <section class="image-card">
       <div class="section-heading">
