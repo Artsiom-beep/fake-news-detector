@@ -106,20 +106,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun launchOriginalImagePicker() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-            putExtra(
-                Intent.EXTRA_MIME_TYPES,
-                arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
-            )
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        try {
-            startActivityForResult(galleryIntent, pickOriginalImageRequest)
-        } catch (_: ActivityNotFoundException) {
-            launchFileImagePicker()
-        }
+        launchFileImagePicker()
     }
 
     private fun launchFileImagePicker() {

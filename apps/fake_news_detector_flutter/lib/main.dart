@@ -840,7 +840,7 @@ class ImagePanel extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: isLoading ? null : onPick,
           icon: const Icon(Icons.upload_file),
-          label: Text(selectedImage?.name ?? 'Choose from gallery'),
+          label: Text(selectedImage?.name ?? 'Choose original file'),
         ),
         if (onPickLatestCamera != null)
           OutlinedButton.icon(
