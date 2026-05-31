@@ -30,6 +30,19 @@ AI_METADATA_MARKERS = {
     "firefly",
     "ideogram",
 }
+AI_FILENAME_MARKERS = {
+    "ai-generated",
+    "ai_generated",
+    "chatgpt",
+    "dall-e",
+    "dalle",
+    "generated_image",
+    "imagefx",
+    "midjourney",
+    "stable-diffusion",
+    "stable_diffusion",
+}
+ANDROID_EXPORTED_JPEG_PATTERN = re.compile(r"^jpeg_\d{8}_\d{6}[_-][a-z0-9-]+\.jpe?g$", re.I)
 CAMERA_METADATA_KEYS = {"make", "model", "lensmodel", "datetimeoriginal", "focallength", "exposuretime"}
 DISABLED_MODEL_VALUES = {"", "0", "false", "off", "disabled", "none", "metadata_only"}
 MODEL_ONLY_AI_VERDICT_MODELS = {"haywoodsloan/ai-image-detector-deploy"}
@@ -331,16 +344,21 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
     metadata = _metadata_dict(raw_image)
     metadata.update(_image_stat_features(image))
     metadata_text = " ".join(str(value).lower() for value in metadata.values())
+    filename_text = Path(filename or "").name.lower()
 
     reasons: list[str] = []
     warnings: list[str] = []
     score = 0.18
 
     matched_markers = [marker for marker in AI_METADATA_MARKERS if marker in metadata_text]
+    filename_markers = [marker for marker in AI_FILENAME_MARKERS if marker in filename_text]
     weak_ai_signals = 0
     if matched_markers:
         score = max(score, 0.9)
         reasons.append(f"ai_metadata_marker={','.join(sorted(matched_markers))}")
+    if filename_markers:
+        score = max(score, 0.84)
+        reasons.append(f"ai_filename_marker={','.join(sorted(filename_markers))}")
 
     metadata_keys = {str(key).lower() for key in metadata}
     camera_keys = metadata_keys & CAMERA_METADATA_KEYS
@@ -350,6 +368,11 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
     else:
         score += 0.08
         warnings.append("camera_metadata_missing_not_proof")
+        if ANDROID_EXPORTED_JPEG_PATTERN.match(filename_text):
+            score = max(score + 0.14, 0.46)
+            weak_ai_signals += 1
+            reasons.append("android_exported_jpeg_without_camera_metadata")
+            warnings.append("image_may_be_exported_or_shared_not_original_camera")
 
     width = int(metadata.get("width", 0) or 0)
     height = int(metadata.get("height", 0) or 0)
@@ -357,6 +380,17 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
         score += 0.08
         weak_ai_signals += 1
         reasons.append(f"common_square_ai_dimension={width}x{height}")
+    elif (
+        width >= 512
+        and height >= 512
+        and width <= 2048
+        and height <= 2048
+        and width % 64 == 0
+        and height % 64 == 0
+    ):
+        score += 0.05
+        weak_ai_signals += 1
+        reasons.append(f"generator_friendly_dimensions={width}x{height}")
 
     entropy = float(metadata.get("entropy", 0.0) or 0.0)
     edge_density = float(metadata.get("edge_density", 0.0) or 0.0)
@@ -399,11 +433,15 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
         elif model_ai > 0.0 and not matched_markers:
             score = min(score, 0.30)
 
-    if matched_markers:
+    if model_signal.predicted_label == "disabled" and weak_ai_signals >= 2 and not camera_keys:
+        score = max(score, 0.52)
+        warnings.append("limited_metadata_only_ai_check")
+
+    if matched_markers or filename_markers:
         score = max(score, 0.90)
 
     score = max(0.0, min(1.0, score))
-    if matched_markers or strong_ai_model:
+    if matched_markers or filename_markers or strong_ai_model:
         label = "likely_ai"
     elif strong_real_model:
         label = "likely_not_ai"
@@ -506,7 +544,16 @@ def run_ai_image_check(
         summary = "The image has low AI-generation risk based on available metadata, but this is not proof that it is authentic."
         confidence = 0.55
     else:
-        summary = "The app cannot determine whether this image is AI-generated with enough certainty."
+        if analysis.ai_generated_score >= 0.45:
+            summary = (
+                "The image has some AI or non-original-file signals, but not enough evidence "
+                "for a likely AI verdict."
+            )
+        else:
+            summary = (
+                "The lightweight cloud check found no strong AI markers. This does not prove "
+                "that the image is real."
+            )
         confidence = 0.34
 
     return FactCheckResult(

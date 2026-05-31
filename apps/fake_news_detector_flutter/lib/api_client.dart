@@ -294,6 +294,10 @@ class FactCheckResult {
         return StatusView(
             'Likely real', StatusTone.good, score, 'AI risk score');
       }
+      if (score >= 0.45) {
+        return StatusView(
+            'Possible AI signals', StatusTone.warn, score, 'AI risk score');
+      }
       return StatusView(
           'Not enough certainty', StatusTone.neutral, score, 'AI risk score');
     }

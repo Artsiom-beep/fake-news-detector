@@ -1888,6 +1888,22 @@ Write-Output 'apk name policy ok'
         self.assertEqual(payload["image_analysis"]["ai_label"], "likely_ai")
         self.assertGreaterEqual(payload["image_analysis"]["ai_generated_score"], 0.78)
 
+        filename_payload = run_ai_image_check(
+            _jpeg_bytes(),
+            filename="ChatGPT Image 2026-05-31.jpg",
+        ).to_public_dict()
+        self.assertEqual(filename_payload["image_analysis"]["ai_label"], "likely_ai")
+        self.assertIn("ai_filename_marker", " ".join(filename_payload["image_analysis"]["reasons"]))
+
+        exported_payload = run_ai_image_check(
+            _jpeg_bytes(width=1024, height=1024),
+            filename="JPEG_20260531_192703_7711461984257405998.jpg",
+        ).to_public_dict()
+        self.assertEqual(exported_payload["image_analysis"]["ai_label"], "uncertain")
+        self.assertGreaterEqual(exported_payload["image_analysis"]["ai_generated_score"], 0.45)
+        self.assertIn("android_exported_jpeg_without_camera_metadata", exported_payload["image_analysis"]["reasons"])
+        self.assertIn("limited_metadata_only_ai_check", exported_payload["image_analysis"]["warnings"])
+
     @patch("factcheck.image_analysis._optional_ai_model_signal")
     def test_ai_image_detection_does_not_accuse_on_model_only_ai_signal(self, mock_model):
         mock_model.return_value = ImageModelSignal(

@@ -1079,6 +1079,12 @@ class ImageAnalysisSection extends StatelessWidget {
             .toList(growable: false) ??
         const [];
     final mode = (analysis['mode'] as String?) ?? '';
+    final friendlyReasons =
+        mode == 'screenshot_ocr' ? reasons : _friendlyImageSignals(reasons);
+    final friendlyWarnings =
+        mode == 'screenshot_ocr' ? warnings : _friendlyImageSignals(warnings);
+    final reasonLabel = mode == 'screenshot_ocr' ? 'Reasons' : 'Signals';
+    final warningLabel = mode == 'screenshot_ocr' ? 'Warnings' : 'Limits';
     final title =
         mode == 'screenshot_ocr' ? 'Screenshot text' : 'Image risk signals';
     return Column(
@@ -1094,13 +1100,13 @@ class ImageAnalysisSection extends StatelessWidget {
           const SizedBox(height: 8),
           SelectableText(ocrText),
         ],
-        if (reasons.isNotEmpty) ...[
+        if (friendlyReasons.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text('Reasons: ${reasons.take(4).join(', ')}'),
+          Text('$reasonLabel: ${friendlyReasons.take(4).join(', ')}'),
         ],
-        if (warnings.isNotEmpty) ...[
+        if (friendlyWarnings.isNotEmpty) ...[
           const SizedBox(height: 6),
-          Text('Warnings: ${warnings.take(4).join(', ')}'),
+          Text('$warningLabel: ${friendlyWarnings.take(4).join(', ')}'),
         ],
       ],
     );
@@ -1127,6 +1133,58 @@ List<String> _stringList(dynamic value) {
     return const [];
   }
   return value.whereType<String>().toList(growable: false);
+}
+
+String _friendlyImageSignal(String value) {
+  if (value.startsWith('ai_metadata_marker=')) {
+    return 'Generator metadata was found.';
+  }
+  if (value.startsWith('ai_filename_marker=')) {
+    return 'The filename mentions an AI generator.';
+  }
+  if (value.startsWith('camera_metadata_present=')) {
+    return 'Original camera metadata is present.';
+  }
+  if (value.startsWith('common_square_ai_dimension=')) {
+    return 'The image uses a common square generation size.';
+  }
+  if (value.startsWith('generator_friendly_dimensions=')) {
+    return 'The dimensions are common for generated or exported images.';
+  }
+  if (value == 'android_exported_jpeg_without_camera_metadata') {
+    return 'The file looks exported or shared and has no original camera EXIF.';
+  }
+  if (value == 'optional_ai_image_model_disabled') {
+    return 'The free cloud backend is using lightweight metadata analysis.';
+  }
+  if (value == 'camera_metadata_missing_not_proof') {
+    return 'No original camera metadata was found.';
+  }
+  if (value == 'image_may_be_exported_or_shared_not_original_camera') {
+    return 'The file may be exported, shared, downloaded, or generated.';
+  }
+  if (value == 'limited_metadata_only_ai_check') {
+    return 'This is a limited cloud check, not a full visual AI model.';
+  }
+  if (value == 'ai_image_detection_not_definitive') {
+    return 'The result is a risk estimate, not proof.';
+  }
+  if (value.startsWith('model_')) {
+    return 'Optional visual model signal: $value';
+  }
+  return value.replaceAll('_', ' ');
+}
+
+List<String> _friendlyImageSignals(List<String> values) {
+  final seen = <String>{};
+  final friendly = <String>[];
+  for (final value in values) {
+    final mapped = _friendlyImageSignal(value);
+    if (seen.add(mapped)) {
+      friendly.add(mapped);
+    }
+  }
+  return friendly;
 }
 
 String _percent(dynamic value) {
