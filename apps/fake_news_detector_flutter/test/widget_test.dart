@@ -9,6 +9,25 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('metadata-only image signals stay neutral in the mobile status', () {
+    const result = FactCheckResult({
+      'verdict': 'uncertain',
+      'confidence': 0.34,
+      'claim': 'JPEG_20260531_192703_7711461984257405998.jpg',
+      'summary': 'The lightweight cloud check found no strong AI markers.',
+      'image_analysis': {
+        'mode': 'ai_image_detection',
+        'ai_label': 'uncertain',
+        'ai_generated_score': 0.40,
+        'reasons': ['android_exported_jpeg_without_camera_metadata'],
+        'warnings': ['limited_metadata_only_ai_check'],
+      },
+    });
+
+    expect(result.statusView.label, 'Not enough certainty');
+    expect(result.statusView.tone, StatusTone.neutral);
+  });
+
   testWidgets('Facts mode submits a claim and renders the verdict',
       (tester) async {
     final gateway = FakeGateway();

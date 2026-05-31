@@ -294,7 +294,12 @@ class FactCheckResult {
         return StatusView(
             'Likely real', StatusTone.good, score, 'AI risk score');
       }
-      if (score >= 0.45) {
+      final reasons = _asStringList(imageAnalysis['reasons']);
+      final hasStrongUncertainSignal = reasons.any((reason) =>
+          reason.startsWith('model_strong_ai_signal') ||
+          reason.startsWith('ai_metadata_marker=') ||
+          reason.startsWith('ai_filename_marker='));
+      if (score >= 0.65 || hasStrongUncertainSignal) {
         return StatusView(
             'Possible AI signals', StatusTone.warn, score, 'AI risk score');
       }
@@ -348,6 +353,13 @@ class FactCheckResult {
       return value.cast<String, dynamic>();
     }
     return const {};
+  }
+
+  static List<String> _asStringList(dynamic value) {
+    if (value is! List) {
+      return const [];
+    }
+    return value.map((item) => item.toString()).toList(growable: false);
   }
 }
 

@@ -1898,7 +1898,7 @@ Write-Output 'apk name policy ok'
             filename="JPEG_20260531_192703_7711461984257405998.jpg",
         ).to_public_dict()
         self.assertEqual(exported_payload["image_analysis"]["ai_label"], "uncertain")
-        self.assertGreaterEqual(exported_payload["image_analysis"]["ai_generated_score"], 0.45)
+        self.assertLess(exported_payload["image_analysis"]["ai_generated_score"], 0.45)
         self.assertIn("android_exported_jpeg_without_camera_metadata", exported_payload["image_analysis"]["reasons"])
         self.assertIn("limited_metadata_only_ai_check", exported_payload["image_analysis"]["warnings"])
 

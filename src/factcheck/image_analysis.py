@@ -369,7 +369,7 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
         score += 0.08
         warnings.append("camera_metadata_missing_not_proof")
         if ANDROID_EXPORTED_JPEG_PATTERN.match(filename_text):
-            score = max(score + 0.14, 0.46)
+            score = max(score + 0.04, 0.32)
             weak_ai_signals += 1
             reasons.append("android_exported_jpeg_without_camera_metadata")
             warnings.append("image_may_be_exported_or_shared_not_original_camera")
@@ -434,7 +434,7 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
             score = min(score, 0.30)
 
     if model_signal.predicted_label == "disabled" and weak_ai_signals >= 2 and not camera_keys:
-        score = max(score, 0.52)
+        score = max(score, 0.40)
         warnings.append("limited_metadata_only_ai_check")
 
     if matched_markers or filename_markers:
@@ -544,7 +544,7 @@ def run_ai_image_check(
         summary = "The image has low AI-generation risk based on available metadata, but this is not proof that it is authentic."
         confidence = 0.55
     else:
-        if analysis.ai_generated_score >= 0.45:
+        if analysis.ai_generated_score >= 0.65:
             summary = (
                 "The image has some AI or non-original-file signals, but not enough evidence "
                 "for a likely AI verdict."
