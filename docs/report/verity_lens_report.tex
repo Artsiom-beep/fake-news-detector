@@ -10,6 +10,7 @@
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{xcolor}
+\usepackage{graphicx}
 
 \geometry{margin=2.5cm}
 \emergencystretch=3em
@@ -21,174 +22,388 @@
   citecolor=black
 }
 
-\title{\textbf{Verity Lens}\\
-System do ostrożnej weryfikacji informacji, wiarygodności newsów, zrzutów ekranu i ryzyka obrazów AI}
-\author{Autor: \textit{do uzupełnienia}\\
+\title{\textbf{Sprawozdanie z projektu}\\[0.35cm]
+\textbf{Verity Lens}\\
+\large System do ostrożnej weryfikacji informacji, wiarygodności newsów i ryzyka obrazów AI}
+\author{
+Autor: Artsiom Markevich\\
 Kierunek / grupa: \textit{do uzupełnienia}\\
-Prowadzący: \textit{do uzupełnienia}}
-\date{29 maja 2026}
+Prowadzący: \textit{do uzupełnienia}
+}
+\date{31 maja 2026}
 
 \begin{document}
 
 \maketitle
 \thispagestyle{empty}
-\newpage
 
+\vfill
+\begin{center}
+\begin{tabularx}{\textwidth}{p{0.32\textwidth}Y}
+\toprule
+Repozytorium & \href{https://github.com/Artsiom-beep/fake-news-detector.git}{Artsiom-beep/fake-news-detector} \\
+Backend publiczny & \href{https://fake-news-detector-poi6.onrender.com}{fake-news-detector-poi6.onrender.com} \\
+Ostatni commit opisany w raporcie & \texttt{b99006d} \\
+Tryb produktu & PC desktop, Web UI, REST API, Android APK, Render cloud \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\vfill
+
+\newpage
 \tableofcontents
 \newpage
 
 \section*{Streszczenie}
 \addcontentsline{toc}{section}{Streszczenie}
-Niniejsze sprawozdanie opisuje projekt \textit{Verity Lens}, aplikację do lokalnej i chmurowej weryfikacji informacji.
-System analizuje cztery typy wejścia: tekstowe twierdzenia, adresy URL artykułów, zrzuty ekranu oraz obrazy badane pod kątem ryzyka wygenerowania przez AI.
-Najważniejszym założeniem projektowym jest ostrożność decyzyjna: aplikacja zwraca werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy ma silny sygnał źródłowy lub stabilną regułę wiedzy, a w pozostałych przypadkach zwraca \texttt{uncertain}.
+Celem projektu było zbudowanie praktycznego systemu do weryfikacji informacji, który można uruchomić na komputerze, w przeglądarce oraz na telefonie.
+Projekt rozpoczął się jako klasyczny \textit{fake news detector}, ale w trakcie prac okazało się, że prosta klasyfikacja \texttt{fake}/\texttt{real} jest niewystarczająca i często nieuczciwa wobec użytkownika.
+Ostateczny produkt, nazwany \textit{Verity Lens}, nie próbuje zgadywać za wszelką cenę.
+System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy posiada silną podstawę: prostą stabilną wiedzę, jawny werdykt fact-checkingu albo jednoznaczne reguły.
+Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka AI, nie absolutny dowód.
 
-Dokument przygotowano zgodnie z typową strukturą raportu inżynierskiego: cel, tło, metoda, implementacja, wyniki, dyskusja, wnioski i załączniki.
-Taką organizację zalecają między innymi materiały KU Leuven dotyczące raportów technicznych, wytyczne IEEE Professional Communication Society oraz akademickie wskazówki Cornell Engineering dla raportów badawczych \cite{kuleuven_report, ieee_reports, cornell_report}.
+Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie oraz końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots}.
+Układ raportu oparto na typowych zasadach sprawozdań projektowych: metadane, opis metody, wyniki i interpretacja, napotkane problemy oraz wnioski.
+Takie elementy pojawiają się m.in. w zaleceniach Politechniki Poznańskiej dla sprawozdań projektowych, materiałach Politechniki Warszawskiej o sprawozdaniach w LaTeX-u oraz w akademickich wymaganiach dotyczących raportów składanych w LaTeX-u \cite{put_sprawozdanie, pw_latex, ug_latex}.
 
-\section{Wprowadzenie}
-Fałszywe lub mylące informacje w internecie pojawiają się w różnych formach: jako krótkie twierdzenia, artykuły informacyjne, posty w mediach społecznościowych, zrzuty ekranu oraz obrazy.
-Klasyczny klasyfikator \textit{fake/real} jest niewystarczający, ponieważ często nie posiada dostępu do jednoznacznych dowodów.
-W projekcie przyjęto więc podejście produktowe: system ma pomagać użytkownikowi ocenić wiarygodność informacji, a nie udawać absolutną pewność.
+\section{Cel projektu}
+\subsection{Cel główny}
+Celem głównym było przygotowanie działającego produktu, który pomaga użytkownikowi ocenić, czy informacja jest prawdziwa, fałszywa, niepewna albo czy artykuł wygląda wiarygodnie.
+Produkt miał być możliwy do pokazania w praktyce: lokalnie na PC, jako paczka desktopowa Windows, jako API, jako aplikacja mobilna oraz jako rozwiązanie działające przez internet bez konieczności trzymania komputera włączonego.
 
-Główne cele systemu:
+\subsection{Cele szczegółowe}
 \begin{itemize}
-  \item sprawdzanie prostych faktów i twierdzeń tekstowych;
-  \item ocena wiarygodności artykułów informacyjnych na podstawie źródła, jakości artykułu oraz niezależnego potwierdzenia;
-  \item analiza zrzutów ekranu przez OCR i przekazanie odczytanego tekstu do tego samego silnika weryfikacji;
-  \item konserwatywna ocena ryzyka, że obraz został wygenerowany przez AI;
-  \item udostępnienie produktu na komputerze, w przeglądarce, jako aplikacja desktopowa Windows oraz jako klient mobilny Flutter.
+  \item uporządkować projekt po wcześniejszych eksperymentach ML i usunąć konflikt wielu wejść produktowych;
+  \item stworzyć jeden kanoniczny silnik decyzyjny dla CLI, API, UI, desktopu i telefonu;
+  \item rozdzielić zwykłe sprawdzanie faktów od oceny wiarygodności newsów;
+  \item uniknąć fałszywej pewności tam, gdzie brakuje źródeł;
+  \item uruchomić backend lokalnie i w chmurze Render;
+  \item zbudować aplikację mobilną Flutter z publicznym API;
+  \item zbudować wersję Windows portable;
+  \item przygotować testy automatyczne i paczkę oddania z dowodami działania.
 \end{itemize}
 
-\section{Zakres i wymagania}
-\subsection{Wymagania funkcjonalne}
-\begin{longtable}{p{0.24\textwidth}p{0.68\textwidth}}
-\toprule
-Moduł & Wymaganie \\
-\midrule
-Facts & Użytkownik wpisuje twierdzenie; system zwraca \texttt{true}, \texttt{fake} albo \texttt{uncertain} wraz z krótkim uzasadnieniem. \\
-News & Użytkownik podaje URL artykułu; system zwraca ocenę \texttt{credibility}, a nie wymuszony werdykt prawda/fałsz. \\
-Images & Użytkownik przesyła zdjęcie/obraz; system zwraca etykietę ryzyka AI: \texttt{likely\_ai}, \texttt{likely\_not\_ai} albo \texttt{uncertain}. \\
-Mobile & Aplikacja Flutter działa jako klient API i może pracować poza komputerem użytkownika po wdrożeniu backendu do chmury. \\
-Screenshot OCR API & Funkcja OCR pozostaje w backendzie i w regresjach API, ale nie jest już osobną zakładką w aplikacji użytkownika. \\
-\bottomrule
-\end{longtable}
-
-\subsection{Wymagania niefunkcjonalne}
+\subsection{Ostateczny zakres produktu}
+W aktualnej wersji użytkownik widzi trzy główne moduły:
 \begin{itemize}
-  \item stabilny publiczny kontrakt JSON dla API;
-  \item ostrożność: brak twardego werdyktu bez silnego sygnału;
-  \item możliwość uruchomienia lokalnego i chmurowego;
-  \item testowalność przez unit tests, testy Flutter i acceptance benchmark;
-  \item brak ciężkich zależności ML w minimalnym obrazie chmurowym.
+  \item \textbf{News} -- ocena wiarygodności artykułu lub adresu URL;
+  \item \textbf{Facts} -- sprawdzanie krótkiego twierdzenia;
+  \item \textbf{Images} -- ocena ryzyka, że obraz został wygenerowany lub przetworzony przez AI.
 \end{itemize}
 
-\section{Architektura systemu}
-System składa się z jednego kanonicznego silnika oraz kilku interfejsów użytkownika.
-Silnik znajduje się w katalogu \texttt{src/factcheck/}.
-Interfejsy wykorzystują ten sam pipeline, dzięki czemu CLI, API, Web UI, desktop i telefon nie implementują osobnych decyzji.
+Funkcja OCR dla zrzutów ekranu pozostała w backendzie oraz w testach regresyjnych jako \texttt{screenshot\_ocr}, ale nie jest już osobną zakładką w interfejsie użytkownika.
+Decyzja ta została podjęta po testach użyteczności: zakładka \textit{Screenshots} wyglądała jak pełnoprawna funkcja dla użytkownika, a w praktyce była mniej jasna niż podstawowe moduły i zwiększała zamieszanie w aplikacji mobilnej.
 
+\section{Punkt wyjścia}
+\subsection{Stan początkowy}
+Na początku projekt był mieszanką kilku podejść:
+\begin{itemize}
+  \item archiwalny model ML do klasyfikacji \textit{fake news};
+  \item prototypowe pliki predykcji i treningu;
+  \item kilka potencjalnych punktów wejścia API;
+  \item brak jednego jasnego kontraktu dla aplikacji mobilnej;
+  \item brak pewności, która część kodu jest produktem, a która eksperymentem.
+\end{itemize}
+
+Największym problemem nie był brak kodu, tylko brak jednej prawdy architektonicznej.
+Istniał stary model, który mógł wyglądać atrakcyjnie jako ``AI detector'', ale był zbyt ciężki, słabo kontrolowalny i nie nadawał się jako pewny produkt do demonstracji.
+Pojawiał się też ryzykowny problem semantyczny: system mógł zachowywać się jak klasyfikator, który na siłę wybiera \texttt{fake} albo \texttt{real}, nawet gdy dane nie dawały do tego podstaw.
+
+\subsection{Pierwsza diagnoza}
+Po analizie projektu przyjęto trzy założenia:
+\begin{enumerate}
+  \item produkt musi mieć jeden kanoniczny silnik, a nie kilka konkurencyjnych ścieżek;
+  \item wynik \texttt{uncertain} jest poprawnym wynikiem, jeżeli system nie posiada mocnych dowodów;
+  \item zwykły artykuł newsowy nie jest tym samym co twierdzenie sprawdzane przez fact-checking.
+\end{enumerate}
+
+To zmieniło kierunek prac.
+Zamiast ulepszać stary klasyfikator, projekt został przebudowany wokół ostrożnego pipeline'u, który potrafi powiedzieć: ``nie wiem wystarczająco dużo''.
+
+\section{Co się nie udało i dlaczego zmieniono podejście}
+\subsection{Stary klasyfikator fake/real}
+Pierwotny kierunek opierał się na myśleniu: użytkownik podaje tekst, a model zwraca \textit{fake} albo \textit{real}.
+To podejście nie spełniało wymagań produktu z kilku powodów:
+\begin{itemize}
+  \item model był ciężki i niewygodny do pakowania w desktop oraz chmurę;
+  \item wynik klasyfikatora nie wyjaśniał użytkownikowi, na czym opiera się decyzja;
+  \item system nie odróżniał artykułu newsowego od pojedynczego twierdzenia;
+  \item fałszywa pewność była większym ryzykiem niż ostrożna odpowiedź \texttt{uncertain}.
+\end{itemize}
+
+Dlatego stary kod ML został oddzielony od runtime'u produktu.
+Nie został bezmyślnie usunięty, lecz przeniesiony do archiwum, aby zachować historię i możliwość analizy:
+\begin{itemize}
+  \item \path{archive/legacy_multimodal/}
+  \item \path{archive/legacy_factcheck_v1/}
+  \item \path{docs/legacy_ml_inventory.md}
+\end{itemize}
+
+\subsection{Telefon przez LAN i tunele tymczasowe}
+Na etapie mobilnym początkowo wystarczało, że telefon łączył się z komputerem w tej samej sieci Wi-Fi albo przez tymczasowy tunel.
+To działało do demonstracji, ale nie rozwiązywało głównego celu: telefon miał działać bez komputera.
+Tryb LAN wymagał, aby PC był włączony, API działało lokalnie, firewall przepuszczał ruch, a telefon był w tej samej sieci.
+Tunel tymczasowy również był niewystarczający, bo adres mógł wygasnąć.
+
+Rozwiązaniem stało się wdrożenie backendu na Render i budowa APK z osadzonym publicznym adresem HTTPS:
+\begin{center}
+\texttt{https://fake-news-detector-poi6.onrender.com}
+\end{center}
+
+\subsection{Niejasny status wersji na telefonie}
+W trakcie testów pojawił się praktyczny problem: po zbudowaniu nowej aplikacji telefon nadal potrafił pokazywać stary interfejs.
+W szczególności po usunięciu zakładki \textit{Screenshots} na ekranie nadal była widoczna stara wersja.
+Problem rozwiązano przez:
+\begin{itemize}
+  \item czyszczenie buildu Flutter poleceniem \texttt{flutter clean};
+  \item ponowne pobranie zależności;
+  \item czystą kompilację APK release;
+  \item odinstalowanie starego pakietu z telefonu;
+  \item ponowną instalację aktualnego \texttt{VerityLens-cloud.apk};
+  \item sprawdzenie pakietu \texttt{app.veritylens.mobile} przez ADB.
+\end{itemize}
+
+\subsection{Błędy narzędzia Codex Desktop}
+Podczas prac pojawiały się okna błędu typu \textit{Unable to find Electron app}.
+Po analizie uznano, że nie był to błąd projektu Verity Lens, backendu, Pythona, Fluttera ani telefonu.
+Był to problem środowiska narzędziowego aplikacji Codex Desktop, prawdopodobnie związany z obsługą wewnętrznych akcji \texttt{click}/\texttt{action}.
+Nie wpłynęło to na produkt, ale wprowadzało zamieszanie podczas pracy.
+
+\subsection{Zbyt zachowawcze odpowiedzi na proste fakty}
+Jednym z praktycznych przykładów był fakt typu:
+\begin{center}
+\textit{Books are made out of paper.}
+\end{center}
+System początkowo odpowiadał zbyt ostrożnie, mimo że dla takiego stabilnego, codziennego faktu można zastosować lokalną wiedzę i prostsze reguły.
+Dodano obsługę typowych faktów materiałowych, dzięki czemu proste twierdzenia nie muszą przechodzić przez pełny ciężki pipeline źródłowy.
+
+\subsection{Ocena newsów z dużych źródeł}
+Dla zwykłych artykułów BBC lub podobnych źródeł system początkowo bywał zbyt nieśmiały.
+Problem polegał na tym, że brak wielu niezależnych potwierdzeń nie powinien automatycznie obniżać wiarygodnego artykułu do słabej oceny.
+Wprowadzono model \texttt{source\_quality\_corroboration\_v2}, który osobno traktuje:
+\begin{itemize}
+  \item jakość źródła;
+  \item jakość samego artykułu;
+  \item niezależne potwierdzenia;
+  \item flagi ryzyka.
+\end{itemize}
+
+Dzięki temu dobry artykuł z wiarygodnej redakcji może otrzymać ocenę wysoką albo średnią bez udawania, że system dowiódł prawdziwości każdej informacji zawartej w artykule.
+
+\section{Nowe podejście projektowe}
+\subsection{Jeden kanoniczny silnik}
+Najważniejszą zmianą architektoniczną było utworzenie jednej ścieżki produktu:
+\begin{center}
+\fbox{
+\begin{minipage}{0.9\textwidth}
+\centering
+\texttt{CLI / API / Web UI / Desktop / Flutter}\\
+$\Downarrow$\\
+\texttt{src.factcheck.service}\\
+$\Downarrow$\\
+\texttt{retrieval + common knowledge + explicit fact-check + news credibility + image analysis}\\
+$\Downarrow$\\
+\texttt{jeden publiczny kontrakt JSON}
+\end{minipage}
+}
+\end{center}
+
+W praktyce oznacza to, że aplikacja na telefonie nie ma własnej logiki decyzyjnej.
+Telefon wysyła żądanie do API, a wynik jest liczony przez ten sam backend, którego używa Web UI i desktop.
+Zmniejsza to ryzyko, że różne wersje produktu będą odpowiadały inaczej na to samo pytanie.
+
+\subsection{Zasada ostrożności}
+W projekcie przyjęto zasadę:
+\begin{quote}
+Jeżeli system nie ma wystarczających dowodów, powinien powiedzieć \texttt{uncertain}, a nie zgadywać.
+\end{quote}
+
+To jest decyzja produktowa, nie tylko techniczna.
+System do weryfikacji informacji może zaszkodzić użytkownikowi, jeżeli zbyt łatwo nada etykietę \textit{fake}.
+Dlatego \textit{Verity Lens} ma trzy poziomy odpowiedzi:
+\begin{itemize}
+  \item \texttt{true} -- mocne potwierdzenie lub stabilna wiedza;
+  \item \texttt{fake} -- mocne obalenie lub jawny werdykt fact-checkingu;
+  \item \texttt{uncertain} -- brak wystarczającego dowodu.
+\end{itemize}
+
+\subsection{Oddzielenie news credibility od fact-checkingu}
+Artykuł informacyjny nie jest tym samym co twierdzenie typu ``Słońce jest gwiazdą''.
+Dlatego dla modułu \textit{News} wynik opiera się głównie na polu \texttt{credibility}, a nie na twardym \texttt{true}/\texttt{fake}.
+System wylicza:
+\begin{itemize}
+  \item \texttt{source\_score} -- zaufanie do domeny;
+  \item \texttt{article\_quality\_score} -- jakość struktury artykułu;
+  \item \texttt{corroboration\_score} -- potwierdzenia z niezależnych źródeł;
+  \item \texttt{risk\_score} -- flagi ryzyka, np. brak daty albo słaba struktura.
+\end{itemize}
+
+Taki wynik jest uczciwszy: mówi, czy artykuł wygląda wiarygodnie, ale nie udaje pełnego dowodu logicznego.
+
+\section{Architektura końcowa}
+\subsection{Warstwy systemu}
 \begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{p{0.18\textwidth}p{0.31\textwidth}Y}
+\begin{tabularx}{\textwidth}{p{0.22\textwidth}p{0.32\textwidth}Y}
 \toprule
-Warstwa & Pliki & Rola \\
+Warstwa & Najważniejsze pliki & Rola \\
 \midrule
-Core engine & \path{src/factcheck/service.py} & orkiestracja pipeline'u \\
-Decision layer & \path{src/factcheck/decision.py} & werdykt i ostrożność decyzyjna \\
-Retrieval & \path{src/factcheck/retrieval.py} & wyszukiwanie i dobór dokumentów \\
-News credibility & \path{src/factcheck/news_credibility.py} & scoring artykułów newsowych \\
-Image/OCR & \path{src/factcheck/image_analysis.py} & OCR i analiza ryzyka AI \\
-REST API & \path{src/api_factcheck.py} & endpointy \texttt{/factcheck} i \texttt{/factcheck-image} \\
-Web/Desktop UI & \path{src/ui.py}, \path{src/desktop_app.py} & przeglądarka i wrapper PyWebView \\
-Mobile & \path{apps/fake_news_detector_flutter/} & klient Android/iOS/Web \\
+Core engine & \path{src/factcheck/service.py} & Orkiestracja głównego pipeline'u i wybór strategii. \\
+Decision layer & \path{src/factcheck/decision.py} & Decyzja \texttt{true}/\texttt{fake}/\texttt{uncertain}. \\
+Retrieval & \path{src/factcheck/retrieval.py} & Pobieranie i dobór materiału źródłowego. \\
+Common knowledge & \path{src/factcheck/common_knowledge.py} & Proste fakty, reguły i lokalna wiedza. \\
+News credibility & \path{src/factcheck/news_credibility.py} & Punktacja artykułów informacyjnych. \\
+Image/OCR & \path{src/factcheck/image_analysis.py} & OCR i ocena ryzyka obrazu AI. \\
+REST API & \path{src/api_factcheck.py} & Publiczne endpointy dla Web UI i Fluttera. \\
+Web UI & \path{src/ui.py} & Interfejs przeglądarkowy. \\
+Desktop & \path{src/desktop_app.py} & PyWebView i lokalny serwer w aplikacji Windows. \\
+Mobile & \path{apps/fake_news_detector_flutter/} & Aplikacja Flutter dla telefonu. \\
+Cloud & \path{Dockerfile}, \path{render.yaml} & Wdrożenie backendu na Render. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Przepływ danych}
+\subsection{Przepływ żądania}
 \begin{enumerate}
-  \item Wejście użytkownika trafia do CLI, REST API, Web UI albo aplikacji Flutter.
-  \item Backend normalizuje tekst lub pobiera treść URL.
-  \item Orkiestrator wybiera wewnętrzną strategię: fakt jawnie sprawdzony, news credibility, wiedza lokalna, OCR lub analiza obrazu.
-  \item Wynik jest zwracany w jednym kontrakcie JSON. Najważniejsze pola to \texttt{verdict}, \texttt{confidence}, \texttt{summary}, \texttt{evidence}, \texttt{trace}, \texttt{credibility} oraz \texttt{image\_analysis}.
+  \item Użytkownik wpisuje URL, twierdzenie albo wybiera obraz.
+  \item Interfejs wysyła żądanie do API.
+  \item API waliduje dane wejściowe.
+  \item Silnik wybiera odpowiednią ścieżkę: fact-check, common knowledge, news credibility albo image analysis.
+  \item Wynik jest zwracany jako JSON.
+  \item UI renderuje krótką odpowiedź, szczegóły, źródła i ostrzeżenia.
 \end{enumerate}
 
-\section{Metoda działania}
-\subsection{Fakty i twierdzenia}
-Dla krótkich stabilnych faktów system używa lokalnych reguł, arytmetyki i wybranych źródeł wiedzy.
-Dla twierdzeń wymagających źródeł pipeline najpierw szuka stron fact-checkingowych z jawnym werdyktem, a następnie może użyć zaufanych źródeł informacyjnych jako fallback.
+\subsection{Kontrakt API}
+Publiczny kontrakt zawiera cztery najważniejsze endpointy:
+\begin{verbatim}
+GET  /health
+GET  /ready
+POST /factcheck
+POST /factcheck-image
+\end{verbatim}
 
-\subsection{News credibility}
-Zwykły artykuł informacyjny nie dostaje automatycznie werdyktu \texttt{true} lub \texttt{fake}.
-Zamiast tego wyliczane są:
+Przykładowe pola wyniku:
+\begin{verbatim}
+verdict: true | fake | uncertain
+confidence: liczba 0.0-1.0
+summary: krótkie wyjaśnienie
+evidence: lista źródeł
+credibility: ocena wiarygodności newsów
+image_analysis: OCR albo ocena ryzyka AI
+trace: diagnostyka pipeline'u
+\end{verbatim}
+
+Stabilność tego kontraktu jest ważna, ponieważ korzysta z niego aplikacja Flutter.
+
+\section{Implementacja interfejsów}
+\subsection{Web UI}
+Interfejs webowy został zaimplementowany w \path{src/ui.py}.
+W aktualnej wersji widoczne są trzy sekcje:
 \begin{itemize}
-  \item \texttt{source\_score} -- zaufanie do domeny;
-  \item \texttt{article\_quality\_score} -- obecność tytułu, daty, autora, treści i cech artykułu;
-  \item \texttt{corroboration\_score} -- liczba niezależnych zaufanych źródeł opisujących ten sam temat;
-  \item \texttt{risk\_score} -- flagi ryzyka, np. brak tekstu, źródło społecznościowe lub sensacyjny język.
+  \item News;
+  \item Facts;
+  \item Images.
 \end{itemize}
 
-\subsection{Screenshot OCR}
-Zrzut ekranu jest walidowany, odczytywany przez OCR, a następnie tekst jest przekazywany do głównego silnika.
-Jeżeli użytkownik poda jednoznaczne twierdzenie w polu pytania, to ono może zastąpić zaszumiony tekst OCR jako główny przedmiot weryfikacji.
+Sekcja \textit{Screenshots} została usunięta z UI.
+Backendowa funkcja OCR nadal istnieje, ale nie jest osobnym modułem użytkownika.
+Po tej zmianie interfejs jest prostszy i lepiej odpowiada rzeczywistym zastosowaniom.
 
-\subsection{AI image risk}
-Moduł obrazu nie udowadnia autentyczności ani fałszu zdjęcia.
-Wykorzystuje metadane, sygnały forensyczne i opcjonalny klasyfikator obrazu.
-W środowisku chmurowym i w paczce desktopowej domyślnie używany jest tryb \texttt{metadata\_only}, aby uniknąć ciężkich modeli i fałszywych oskarżeń.
+\subsection{Aplikacja desktopowa Windows}
+Wersja desktopowa nie jest osobnym produktem logicznym.
+Jest opakowaniem lokalnego Web UI w okno aplikacji Windows.
+Działa następująco:
+\begin{enumerate}
+  \item \path{FakeNewsDetector.exe} uruchamia lokalny serwer Uvicorn.
+  \item Serwer publikuje \path{src.ui:app} na wolnym porcie localhost.
+  \item PyWebView otwiera lokalny adres w natywnym oknie.
+  \item Po zamknięciu okna serwer jest zatrzymywany.
+\end{enumerate}
 
-\section{Implementacja}
-Implementacja backendu jest oparta na Pythonie i FastAPI.
-Główny kontrakt publiczny znajduje się w \path{src/api_factcheck.py}.
-Udostępnia endpointy \texttt{/health}, \texttt{/ready}, \texttt{/factcheck} oraz \texttt{/factcheck-image}.
-Interfejs webowy w \path{src/ui.py} korzysta z tych samych struktur wynikowych co API.
-Wrapper desktopowy \path{src/desktop_app.py} uruchamia lokalny serwer i otwiera go w oknie aplikacji.
+Aktualna paczka desktopowa:
+\begin{itemize}
+  \item \path{dist/FakeNewsDetector/FakeNewsDetector.exe}
+  \item \path{dist/FakeNewsDetector-Windows-Portable.zip}
+\end{itemize}
 
-Aplikacja mobilna Flutter znajduje się w \path{apps/fake_news_detector_flutter/}.
-Nie zawiera osobnego silnika decyzyjnego; wysyła żądania do backendu przez klasę klienta API.
-Dzięki temu PC, web, desktop i telefon korzystają z tych samych reguł i tego samego kontraktu JSON.
+Po ostatniej przebudowie paczki desktopowej:
+\begin{itemize}
+  \item EXE SHA256: \texttt{273110CFC51015EC5924575B840A1A90}\\
+  \texttt{7B8963F05280195C9C8A9F0884F13FD0};
+  \item ZIP SHA256: \texttt{6B86B6FDA42937C7AE252700C6DA653A}\\
+  \texttt{9E7ADA6A6E8D8C94DA25BA995C4313C0}.
+\end{itemize}
 
-\section{Refaktoryzacja}
-W pierwszym etapie refaktoryzacji usunięto konflikt dwóch API.
-Stary plik \texttt{src/api.py} ładował prototypowy, niekanoniczny model Torch/DistilBERT przy imporcie.
-Został zastąpiony lekkim endpointem kompatybilności \texttt{/predict}, który deleguje do aktualnego silnika \texttt{src.api\_factcheck}.
-Zmiana zmniejsza ryzyko, że użytkownik uruchomi nieaktualny produkt.
-Analogicznie \texttt{src/predict.py} nie uruchamia już starego modelu multimodalnego, tylko zachowuje kompatybilne argumenty i deleguje do kanonicznego silnika.
+\subsection{Aplikacja mobilna Flutter}
+Aplikacja mobilna jest klientem API.
+Nie uruchamia Pythona na telefonie.
+Schemat pracy wygląda tak:
+\begin{center}
+\texttt{telefon -> internet -> Render API -> wynik -> telefon}
+\end{center}
 
-Kod treningowy i multimodalny został oddzielony od ścieżki produktu.
-Najważniejsza zasada dalszego porządkowania: kod produkcyjny ma prowadzić do jednego mózgu, czyli \path{src/factcheck/}.
-Stare pliki treningowe, modelowe i kompatybilnościowe przeniesiono z \path{src/}
-do \path{archive/legacy_multimodal/} oraz \path{archive/legacy_factcheck_v1/}.
-Lista plików archiwalnych została opisana w \path{docs/legacy_ml_inventory.md}, aby oddzielić prototyp badawczy od ścieżki produktu.
-Dodatkowo domyślne pliki zależności \path{requirements.txt} oraz \path{requirements.lock.txt} zostały ograniczone do lekkiego runtime'u produktu.
-Zależności opcjonalnego modelu AI przeniesiono do \path{requirements.optional-ai.txt}, a zależności archiwalnego treningu do \path{requirements.legacy-train.txt}.
+Pakiet Android:
+\begin{itemize}
+  \item identyfikator: \texttt{app.veritylens.mobile};
+  \item główna aktywność: \texttt{app.veritylens.mobile.MainActivity};
+  \item publiczny backend: \url{https://fake-news-detector-poi6.onrender.com};
+  \item aktualny cloud APK po czystej przebudowie: \path{outputs/phone_download/VerityLens-cloud.apk};
+  \item APK SHA256: \texttt{51DE2478B9C34E6CFA6CBD910E135758}\\
+  \texttt{E56DC4D5F9DEF9FE2733BA7D4DB32E12}.
+\end{itemize}
 
-\section{Wyniki testów}
+Telefon działa bez komputera, ale wymaga internetu i działającego backendu Render.
+Wersja darmowa Render może zasypiać, dlatego pierwszy request może trwać kilkadziesiąt sekund.
+To ograniczenie platformy hostingowej, nie błąd aplikacji.
+
+\section{Wdrożenie chmurowe}
+\subsection{Render}
+Backend został wdrożony jako web service na Render.
+Render buduje i uruchamia aplikację z repozytorium GitHub lub z Dockerfile, co odpowiada dokumentacji platformy dotyczącej usług webowych i Docker runtime \cite{render_docker, render_first_deploy}.
+W projekcie zastosowano lekki runtime API:
+\begin{itemize}
+  \item \path{requirements.api.txt};
+  \item \path{Dockerfile};
+  \item \path{render.yaml}.
+\end{itemize}
+
+Z paczki chmurowej wykluczono:
+\begin{itemize}
+  \item stare modele treningowe;
+  \item foldery build/dist/outputs;
+  \item lokalne środowisko \texttt{.venv};
+  \item ciężkie opcjonalne zależności Torch/Transformers.
+\end{itemize}
+
+\subsection{Dlaczego chmura była potrzebna}
+Telefon z aplikacją Flutter nie powinien wymagać komputera użytkownika.
+Dlatego sam APK nie wystarcza.
+Potrzebny jest publiczny backend HTTPS.
+Po wdrożeniu na Render telefon może wysłać żądanie z dowolnej sieci z dostępem do internetu.
+
+\section{Testy i dowody działania}
 \subsection{Testy automatyczne}
-Aktualny stan po ostatnim uruchomieniu bramki wydania:
+Aktualny stan po ostatnich pełnych kontrolach:
 \begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{p{0.21\textwidth}p{0.31\textwidth}Y}
+\begin{tabularx}{\textwidth}{p{0.28\textwidth}p{0.28\textwidth}Y}
 \toprule
-Zakres & Komenda & Wynik \\
+Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend tests & \path{unittest} & 116 testów OK \\
-Legacy API & \path{test_legacy_api} & OK \\
-Product gate & \path{acceptance} & 93/93 OK; każda sekcja spełnia próg 95\% \\
-Quality pack live & \path{quality_pack_v3} & 17/17 OK; 0 failures, 0 errors \\
-Release gate & \path{release_gate} & OK; 20 kroków, bez debug skipów \\
+Backend unit/integration & \texttt{unittest} & 116/116 OK \\
+Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
 Flutter tests & \path{flutter test} & 11/11 OK \\
+Release gate & release gate & OK, 25 kroków w ostatnim trybie cloud/phone \\
+Final cloud/phone & finalizer cloud-phone & OK \\
+Desktop package & verifier desktopowy & OK \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
 \subsection{Acceptance benchmark}
-Dodano skrypt \texttt{scripts/run\_product\_acceptance.py}.
-Sprawdza on widoczne sekcje produktu: Facts, News i Images, a także ukryte regresje Screenshot OCR oraz kontrakt API używany przez aplikację mobilną.
-Wynik ostatniego uruchomienia:
-
+Zamiast deklarować ogólną skuteczność na całym internecie, projekt ma mierzalną bramkę regresyjną.
+Ostatni wynik acceptance benchmark:
 \begin{center}
 \begin{tabular}{lrrr}
 \toprule
@@ -199,169 +414,270 @@ News & 15 & 15 & 100\% \\
 Screenshot OCR API & 12 & 12 & 100\% \\
 Images & 11 & 11 & 100\% \\
 API/mobile contract & 11 & 11 & 100\% \\
+\midrule
+Razem & 93 & 93 & 100\% \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Ten wynik nie oznacza jeszcze gwarancji 95\% na całym internecie.
-Oznacza natomiast, że powstała mierzalna bramka regresji produktu: każda sekcja ma własny minimalny próg liczby przypadków (Facts 40, News 15, Screenshot OCR API 12, Images 11, API/mobile 11) i minimum 95\% skuteczności.
-Bramkę można dalej rozszerzać o przypadki live i trudne przykłady, aż próba będzie wystarczająco reprezentatywna dla końcowej prezentacji.
+Należy to interpretować poprawnie: wynik 93/93 oznacza, że aktualny produkt przechodzi zdefiniowane przypadki kontrolne.
+Nie oznacza to matematycznej gwarancji 100\% dla wszystkich możliwych tekstów i newsów w internecie.
+To jednak dobry fundament inżynierski, bo każda przyszła zmiana może zostać porównana z tym samym zestawem regresji.
 
-Dodatkowo uruchomiono live quality pack z aktualnych źródeł RSS oraz ręcznych przypadków granicznych.
-Ostatni wynik to 17/17 przypadków OK, 0 błędów i 0 awarii wykonania; pełne dane zapisano w \path{reports/quality_pack_v3_live.md} oraz \path{reports/quality_pack_v3_live.json}.
+\subsection{Dowód działania na fizycznym telefonie}
+Fizyczny telefon został wykryty przez ADB jako:
+\begin{center}
+\texttt{RFCTC07YX2N}, model \texttt{SM-G781B}
+\end{center}
 
-\section{Wdrożenie na PC i telefon}
-\subsection{PC}
-Produkt działa lokalnie jako:
+W końcowym wrapperze wymagano prawdziwego urządzenia, a nie emulatora.
+Raporty potwierdziły:
 \begin{itemize}
-  \item REST API: \texttt{python -m uvicorn src.api\_factcheck:app --host 0.0.0.0 --port 8001};
-  \item Web UI: \texttt{python -m uvicorn src.ui:app --host 127.0.0.1 --port 8002};
-  \item aplikacja desktopowa: \texttt{run\_desktop\_app.bat}.
+  \item urządzenie jest fizyczne;
+  \item APK cloud jest w trybie release;
+  \item w APK osadzono publiczny adres Render;
+  \item telefon potrafi wykonać smoke test;
+  \item zrzut ekranu jest poprawnym plikiem PNG;
+  \item SHA256 zrzutu zgadza się z plikiem.
 \end{itemize}
-Skrypt \path{scripts/build_windows.ps1} tworzy folder desktopowy oraz przenośną paczkę ZIP.
-Paczka desktopowa nie zawiera opcjonalnych zależności Torch/Transformers.
-Skrypt \path{scripts/verify_desktop_package.ps1} sprawdza obecność pliku EXE w ZIP, brak ciężkich pakietów ML oraz uruchamia packaged smoke test.
 
-\subsection{Telefon}
-Aplikacja Flutter jest klientem API, więc telefon wymaga publicznego backendu HTTPS.
-Projekt zawiera konfigurację Render oraz lekki zestaw zależności API.
-Skrypt budowania Render tworzy paczkę deploymentu w katalogu wynikowym dla chmury.
-Plik dockerignore wyklucza z obrazu archiwalny prototyp ML i artefakty lokalne.
-Klient mobilny pokazuje baner statusu API, który sprawdza endpoint \texttt{/health} i informuje użytkownika, czy telefon realnie widzi backend.
-Build Android używa identyfikatora pakietu \texttt{app.veritylens.mobile}.
-Do demonstracji na fizycznym telefonie w tej samej sieci Wi-Fi dodano skrypt budowania release APK dla sieci LAN.
-Tworzy on APK oraz plik statusu połączenia z adresem API, trybem, rozmiarem i SHA256 w katalogu wynikowym dla telefonu.
-Do tymczasowej demonstracji przez internet bez stałego wdrożenia dodano także skrypt LocalTunnel.
-Tworzy on publiczny adres HTTPS, sprawdza \texttt{/health}, \texttt{/ready} i próbny fact-check, a następnie buduje \path{VerityLens-internet.apk}.
-Ten tryb działa tylko wtedy, gdy komputer i proces tunelu pozostają uruchomione; ścieżką docelową dla telefonu pozostaje Render.
-Przed instalacją APK można zweryfikować przez osobny skrypt, który zapisuje rozmiar pliku, skrót SHA256, adres API oraz wyniki probe.
-Skrypt sprawdza również zawartość APK i potwierdza, że oczekiwany adres API jest osadzony w binarnym pliku Flutter, więc stary build nie zostanie przypadkowo opisany jako aktualny.
-Dla obecnych artefaktów raporty \path{PHONE_APK_VERIFICATION.json} oraz \path{PHONE_LAN_APK_VERIFICATION.json} potwierdzają osobno APK internetowe i APK dla tej samej sieci Wi-Fi.
-Dodatkowo strona instalacyjna w katalogu \path{outputs/phone_download/} pozwala pobrać APK z telefonu przez lokalny adres HTTP.
-Raport gotowości telefonu sprawdza także, czy ta strona odpowiada kodem HTTP 200, czy pobieranie APK zwraca oczekiwany rozmiar pliku oraz czy raporty APK potwierdzają tryb \texttt{release}.
-Osobny link do stałego cloud APK jest pokazywany na stronie instalacyjnej dopiero wtedy, gdy \path{PHONE_CLOUD_APK_VERIFICATION.json} potwierdza tryb \texttt{release}, aktualny stamp źródeł Flutter, osadzony adres Render API oraz działający probe API, a \path{phone_readiness.json} ma \texttt{phone\_permanent\_cloud=true}.
-Jeżeli dostępny jest Android Virtual Device, skrypt emulatora instaluje i uruchamia APK, a wynik zapisuje w \path{PHONE_EMULATOR_SMOKE.json}.
-Dowód z fizycznego telefonu jest oddzielny: \path{PHONE_DEVICE_SMOKE.json} może być raportem pominiętym bez autoryzowanego urządzenia, natomiast finalne potwierdzenie wymaga uruchomienia z opcjami \texttt{-RequireDevice -RequirePhysicalDevice}, aby emulator nie mógł zastąpić telefonu.
-Gdy urządzenie jest dostępne, smoke test zapisuje także \path{PHONE_DEVICE_SCREENSHOT.png}, SHA256 tego zrzutu ekranu, potwierdzenie sygnatury PNG z dodatnimi wymiarami oraz pola identyfikacji ADB, takie jak producent, model, wersja Androida, SDK, hardware i flaga \texttt{ro.kernel.qemu}.
-Ścieżka stałej chmury korzysta ze wspólnej polityki adresów URL w \path{scripts/cloud_url_policy.ps1}: akceptowany jest tylko prawdziwy publiczny adres HTTPS, a adresy \texttt{localhost}, prywatne IP sieci LAN, nazwy \texttt{.local}, jednowyrazowe hosty i tymczasowe tunele nie mogą zostać uznane za gotowość telefonu bez komputera.
-Po wdrożeniu backendu na Render można zbudować APK:
+\subsection{Paczka oddania}
+Wygenerowano paczkę:
+\begin{center}
+\path{outputs/submission/VerityLens-submission.zip}
+\end{center}
 
-\begin{verbatim}
-.\scripts\build_phone_for_cloud.ps1 `
-  -ApiBaseUrl https://app.onrender.com `
-  -Mode release
-\end{verbatim}
-
-\subsection{Bramka wydania}
-Do projektu dodano jedną komendę kontroli przed demonstracją lub oddaniem:
-\begin{verbatim}
-.\scripts\run_release_gate.ps1
-.\scripts\run_release_gate.ps1 `
-  -ApiBaseUrl https://app.onrender.com `
-  -BuildCloudApk -CloudApkMode release
-.\scripts\check_final_external_prereqs.ps1 `
-  -ApiBaseUrl https://app.onrender.com `
-  -RequireReady
-.\scripts\finalize_cloud_phone_submission.ps1 `
-  -ApiBaseUrl https://app.onrender.com
-\end{verbatim}
-Pierwsza wersja wykonuje 20 kroków: sprawdza składnię Pythona, testy backendu, product acceptance, budowę PDF raportu, konfigurację deployu Render, przygotowanie paczki Render, smoke test rozpakowanej paczki Render, raport statusu chmury, weryfikację APK internetowego, stronę instalacyjną telefonu, lokalny serwer API dla trybu LAN, weryfikację APK LAN, raport gotowości telefonu, lokalny desktop smoke, packaged desktop verification, \texttt{flutter analyze}, \texttt{flutter test}, dostępność device smoke oraz końcowe odświeżenie readiness.
-Druga wersja po wdrożeniu Render dodatkowo sprawdza publiczne API HTTPS, buduje APK w trybie \texttt{release} wskazujące na ten backend i weryfikuje, że adres Render jest rzeczywiście osadzony w binarnym pliku APK.
-Weryfikacja APK porównuje również SHA256 źródeł Flutter zapisany podczas budowy z aktualnym drzewem źródeł, aby stary APK nie przeszedł po zmianie aplikacji mobilnej.
-Raport \path{CLOUD_DEPLOYMENT_STATUS.json} zapisuje także JSON weryfikacji cloud APK oraz sidecar \path{VerityLens-cloud-flutter-source-stamp.json}, aby stała paczka telefoniczna była powiązana z aktualnymi źródłami mobilnymi.
-Pola \texttt{verification\_ok} oraz \texttt{readiness\_ok} w tym raporcie są wyliczane z rzeczywistego JSON weryfikacji, trybu \texttt{release}, osadzonego adresu Render, probe API i zgodności stampu źródeł, więc parametr wrappera nie może samodzielnie oznaczyć starego lub debugowego APK jako gotowego.
-Gate uruchamia również lokalny smoke test paczki Render: rozpakowuje ZIP, startuje API z rozpakowanej kopii i sprawdza \texttt{/health}, \texttt{/ready} oraz próbny fact-check.
-Końcowy preflight chmury wykonuje ostrzejszą wersję tego testu w świeżym środowisku wirtualnym, instalując wyłącznie zależności z \path{requirements.api.txt} znajdującego się w rozpakowanej paczce.
-Przed długim wrapperem końcowym należy uruchomić \path{check_final_external_prereqs.ps1} z opcją \texttt{-RequireReady}; skrypt sprawdza politykę publicznego adresu Render, ponawia próby dla endpointów \texttt{/health}, \texttt{/ready} i próbnego \texttt{/factcheck} oraz sprawdza autoryzację fizycznego urządzenia przez ADB.
-Ten raport zapisuje również dokładną komendę \texttt{adb devices} i jej surowy wynik, aby rozróżnić brak telefonu, stany \texttt{offline}/\texttt{unauthorized}, sam emulator albo błąd uprawnień do uruchomienia ADB.
-Sekcja \texttt{Next Actions} jest zależna od wykrytego stanu, więc wskazuje akceptację komunikatu RSA, ponowne podłączenie lub restart ADB, użycie prawdziwego telefonu zamiast emulatora albo podłączenie telefonu przy pustej liście urządzeń.
-Procedura telefonu wymaga włączenia \texttt{USB debugging}, akceptacji komunikatu RSA i wyniku \texttt{adb devices} ze stanem \texttt{device}; stany \texttt{offline} oraz \texttt{unauthorized} nie są dowodem.
-Gdy podłączono więcej niż jedno urządzenie, finalny preflight i wrapper przyjmują wybrany numer seryjny przez \texttt{-PhoneDeviceId}.
-Jeżeli ścieżka \texttt{PATH} wskazuje niewłaściwe SDK Androida, te same skrypty oraz bramka wydania przyjmują jawny plik ADB przez \texttt{-AdbPath C:\textbackslash path\textbackslash to\textbackslash adb.exe}.
-Finalny wrapper dla chmury i telefonu uruchamia gate z \texttt{-RequirePhoneDevice -RequirePhysicalPhoneDevice}, buduje cloud APK, wymaga zrzutu ekranu z fizycznego Androida, odrzuca emulator jako dowód końcowy, zapisuje raport \path{final_cloud_phone_submission_latest.*}, traktuje pozytywny raport jako niezmienny, odświeża paczkę oddania tak, aby ten sam raport był spakowany pod \path{final/}, i natychmiast uruchamia weryfikator tej paczki.
-Nieudane raporty finalizera pozostają w katalogu \path{reports/} do diagnostyki, ale normalna paczka oddania kopiuje raport końcowy tylko wtedy, gdy ma \texttt{ok=true}; weryfikator zapisuje status \texttt{final\_cloud\_phone\_submission\_report.status}.
-Ponieważ raport końcowy znajduje się wewnątrz ZIP, pola SHA dotyczące \texttt{submission\_zip} i JSON weryfikatora w tym raporcie są oznaczone jako \texttt{pre\_final\_report\_bundle\_snapshot}; dowodem końcowego ZIP jest wynik weryfikatora zapisany po spakowaniu raportu.
-Końcowy audit oraz wrapper wymagają także efektywnego statusu chmury: \path{CLOUD_DEPLOYMENT_STATUS.json} musi mieć \texttt{outcome=permanent\_cloud\_phone\_ready}, \texttt{verification\_ok=true}, \texttt{readiness\_ok=true} oraz \texttt{cloud\_apk\_verification\_status.ready\_to\_publish=true}.
-Wrapper zapisuje i sprawdza również szczegóły dowodu z fizycznego telefonu z \path{PHONE_DEVICE_SMOKE.json}: \texttt{require\_physical\_device=true}, wybrany numer seryjny urządzenia, \texttt{selected\_device\_is\_emulator=false}, zapisane pola tożsamości urządzenia, poprawny plik PNG z dodatnimi wymiarami oraz SHA256 zrzutu ekranu zgodny z plikiem \path{PHONE_DEVICE_SCREENSHOT.png}.
-Ten wrapper akceptuje tylko tryb \texttt{-CloudApkMode release}; tryb debug pozostaje dostępny wyłącznie przez bezpośrednie uruchomienie \path{run_release_gate.ps1} do diagnostyki lokalnej.
-Weryfikator paczki oddania wymaga obecności konkretnych kroków release gate, zgodności SHA256 i rozmiarów artefaktów, spójności raportów telefonu oraz czystości źródeł.
-Paczka oddania zawiera również czysty ZIP źródeł \path{source/verity-lens-source.zip}, który obejmuje kod, testy, skrypty, konfigurację i klienta Flutter, ale wyklucza środowisko \texttt{.venv}, katalogi build/dist/outputs, cache, pliki lokalne IDE, wygenerowane rejestratory Flutter oraz archiwalne prototypy.
-Ostatnia weryfikacja źródeł wykazała 240 wpisów i 0 zabronionych plików generowanych lub lokalnych.
-
-\section{Ograniczenia i ryzyka}
+Weryfikator paczki sprawdził:
 \begin{itemize}
-  \item Nie da się uczciwie zagwarantować 95\% poprawności dla wszystkich możliwych newsów bez dużego, wersjonowanego benchmarku.
-  \item Aktualne fakty polityczne i urzędowe mogą się dezaktualizować.
-  \item OCR może błędnie odczytać zrzuty ekranu niskiej jakości.
-  \item Analiza AI obrazów jest oceną ryzyka, nie dowodem.
-  \item Render Free może zasypiać, powodując wolny pierwszy request.
-  \item Telefon nie działa offline, ponieważ silnik Python działa po stronie backendu.
-  \item Stała gotowość telefonu bez komputera wymaga jeszcze prawdziwego wdrożenia Render HTTPS i APK zbudowanego pod ten adres.
-  \item Finalny dowód fizycznego Androida wymaga autoryzowanego urządzenia USB i smoke testu z \texttt{-RequireDevice -RequirePhysicalDevice}; emulator jest tylko dowodem platformowym.
+  \item obecność raportów końcowych;
+  \item obecność desktop ZIP;
+  \item obecność APK;
+  \item czysty ZIP źródeł;
+  \item brak zabronionych plików lokalnych lub wygenerowanych w źródłach;
+  \item zgodność raportów z artefaktami.
+\end{itemize}
+
+Po końcowym audycie projekt miał status:
+\begin{center}
+\textbf{complete = true, estimated completion = 100\%, remaining = 0\%}
+\end{center}
+
+\section{Historia prac}
+\footnotesize
+\begin{longtable}{p{0.16\textwidth}p{0.28\textwidth}p{0.46\textwidth}}
+\toprule
+Etap & Co robiono & Najważniejszy efekt \\
+\midrule
+Analiza projektu & Przegląd istniejących plików, modeli i wejść API. & Wykryto konflikt między prototypem ML a produktem. \\
+Refaktoryzacja & Utworzenie kanonicznego pipeline'u i archiwizacja legacy. & Jeden silnik dla API, UI, desktopu i telefonu. \\
+Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie wymusza fałszywej pewności. \\
+Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
+News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
+Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku, nie o absolutnym dowodzie. \\
+Web UI & Zbudowanie oddzielnych paneli produktu. & Użytkownik może pracować przez przeglądarkę. \\
+Desktop & PyInstaller + PyWebView. & Powstała paczka Windows portable. \\
+Mobile & Flutter + API client. & Powstał APK Android. \\
+Chmura & Render + Docker + release scripts. & Telefon może działać bez PC. \\
+Dowody & Release gate, smoke tests, verifier, raporty. & Projekt ma powtarzalne potwierdzenie działania. \\
+Uproszczenie UI & Usunięcie widocznej zakładki Screenshots. & Interfejs ma trzy jasne funkcje: News, Facts, Images. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Najważniejsze decyzje projektowe}
+\subsection{Nie używać starego ML jako głównego produktu}
+Ta decyzja była kluczowa.
+Stary model mógł dawać szybkie etykiety, ale nie dawał zaufanego produktu.
+W projekcie weryfikacji informacji lepsza jest odpowiedź ostrożna i uzasadniona niż pewna, ale niekontrolowana.
+
+\subsection{Nie obiecywać globalnej dokładności 95\% bez benchmarku}
+W rozmowie projektowej pojawiał się cel wysokiej jakości.
+Zamiast deklarować pustą liczbę, utworzono \textit{product acceptance gate}.
+Dzięki temu 95\% jest sprawdzane na konkretnych sekcjach i przypadkach, a nie tylko wpisane w opis.
+
+\subsection{Traktować telefon jako klienta, nie jako backend}
+Uruchamianie całego Pythona i OCR bezpośrednio na telefonie byłoby kosztowne i niestabilne.
+Dlatego aplikacja mobilna wysyła żądania do chmury.
+To upraszcza APK, ale wymaga internetu.
+
+\subsection{Oddzielić demo od produkcji}
+Tryb LAN i tymczasowy tunnel są dobre do debugowania.
+Nie są jednak dowodem, że aplikacja działa sama na telefonie.
+Dlatego skrypty rozróżniają:
+\begin{itemize}
+  \item LAN APK;
+  \item internet tunnel APK;
+  \item cloud APK release dla stałego Render URL.
+\end{itemize}
+
+\subsection{Usunąć Screenshots z UI}
+Ostatnia decyzja produktowa dotyczyła uproszczenia.
+Funkcja screenshot OCR działa technicznie, ale jako oddzielna zakładka była mało użyteczna dla użytkownika końcowego.
+Została więc ukryta w API i testach regresyjnych, a interfejs końcowy ma tylko trzy czytelne moduły.
+
+\section{Aktualny sposób działania}
+\subsection{Na komputerze}
+Użytkownik może uruchomić:
+\begin{itemize}
+  \item \path{dist/FakeNewsDetector/FakeNewsDetector.exe} -- gotowa aplikacja desktopowa;
+  \item \path{run_desktop_app.bat} -- lokalny wrapper;
+  \item \texttt{python -m uvicorn src.ui:app --port 8002} -- Web UI;
+  \item \texttt{python -m uvicorn src.api\_factcheck:app --port 8001} -- samo API.
+\end{itemize}
+
+\subsection{Na telefonie}
+Telefon z aktualnym APK działa bez komputera, jeżeli ma internet.
+Schemat:
+\begin{center}
+\texttt{Verity Lens APK -> https://fake-news-detector-poi6.onrender.com -> FastAPI -> wynik}
+\end{center}
+
+Jeżeli Render Free zasnął, aplikacja może przez chwilę pokazać \textit{API not reachable}.
+Po wybudzeniu serwera odświeżenie statusu powinno przywrócić połączenie.
+
+\subsection{W repozytorium}
+Zmiany zostały wypchnięte na GitHub.
+Najważniejsze commity końcowe:
+\begin{center}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{0.14\textwidth}Y}
+\toprule
+Commit & Znaczenie \\
+\midrule
+\texttt{7c57851} & Początkowe uporządkowanie projektu Verity Lens. \\
+\texttt{fb97373} & Finalizacja dowodów cloud/phone. \\
+\texttt{d5d0e16} & Obsługa prostych faktów materiałowych. \\
+\texttt{ade5984} & Kalibracja wiarygodności newsów. \\
+\texttt{892555a} & Odświeżenie dowodów po kalibracji newsów. \\
+\texttt{b99006d} & Usunięcie zakładki Screenshots z UI aplikacji. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Ograniczenia}
+\begin{itemize}
+  \item Backend w Render Free może zasypiać, więc pierwszy request może być wolny.
+  \item Telefon nie działa offline, bo silnik działa w Pythonie po stronie backendu.
+  \item Ocena AI obrazu jest oceną ryzyka, nie dowodem sądowym.
+  \item OCR może się mylić przy zrzutach niskiej jakości, dlatego funkcja została wycofana z głównego UI.
+  \item Obecny benchmark jest dobry jako regresja produktu, ale nie reprezentuje całego internetu.
+  \item Aktualne fakty polityczne i urzędowe mogą się dezaktualizować, więc wymagają okresowej aktualizacji źródeł.
+\end{itemize}
+
+\section{Możliwe dalsze prace}
+\begin{itemize}
+  \item dodać ekran \textit{About / Version} w aplikacji mobilnej, aby od razu było widać commit, wersję APK i adres API;
+  \item poprawić baner połączenia tak, aby przy Render Free pokazywał \textit{Waking up server} i automatycznie ponawiał próbę;
+  \item rozszerzyć benchmark acceptance o większy zbiór żywych newsów i trudnych przypadków;
+  \item przygotować tryb demonstracyjny z zapisanymi przykładami wejściowymi;
+  \item dodać historię ostatnich sprawdzeń w aplikacji mobilnej;
+  \item rozważyć płatny hosting, jeżeli aplikacja ma działać szybko i stale.
 \end{itemize}
 
 \section{Wnioski}
-Projekt ma działający rdzeń, interfejs webowy, desktopowy i mobilny.
-Lokalna ścieżka PC, paczka desktopowa, Render bundle, APK internetowe, APK LAN, emulator i paczka oddania są objęte release gate oraz verifierem.
-Najważniejszym krokiem produktowym jest teraz utrzymanie i dalsze rozszerzanie acceptance benchmarku, stałe wdrożenie backendu do chmury oraz końcowy smoke test na fizycznym telefonie, aby aplikacja mobilna działała bez komputera i miała pełny dowód urządzeniowy.
-Najważniejszym krokiem inżynierskim jest dalsze utrzymywanie jednego jasnego runtime produktu i trzymanie kodu badawczego w archiwum.
+Projekt zakończył się działającym produktem, a nie tylko prototypem.
+Najważniejszym sukcesem jest zmiana podejścia: od starego klasyfikatora \textit{fake/real} do ostrożnego systemu weryfikacji informacji.
+Produkt ma jeden silnik, stabilne API, Web UI, desktop Windows, aplikację Flutter i backend w chmurze.
+Został przetestowany automatycznie i praktycznie, w tym na fizycznym telefonie.
+
+Najważniejsza lekcja projektowa brzmi: w systemach fact-checkingowych brak pewności nie jest porażką.
+Porażką byłoby udawanie pewności.
+Dlatego \textit{Verity Lens} jest zaprojektowany tak, aby pomagać użytkownikowi myśleć ostrożniej, a nie zastępować myślenie czarną skrzynką.
 
 \appendix
-\section{Najważniejsze komendy}
+\section{Załącznik A: Komendy reprodukcyjne}
 \begin{verbatim}
 python -m unittest discover -s tests -v
 python scripts/run_product_acceptance.py
+.\scripts\build_report.ps1
+.\scripts\build_windows.ps1
+.\scripts\verify_desktop_package.ps1
 .\scripts\run_release_gate.ps1
-.\scripts\check_phone_readiness.ps1
-.\scripts\verify_phone_apk.ps1 -ExpectedMode release -RequireHttps
-.\scripts\prepare_phone_install_page.ps1 -StartServer
-.\scripts\smoke_phone_emulator.ps1 `
-  -AvdName FakeNewsDetector_API36 -RequireEmulator
-.\scripts\smoke_phone_on_device.ps1 -RequireDevice `
-  -RequirePhysicalDevice
-adb devices
-.\scripts\check_final_external_prereqs.ps1 `
-  -ApiBaseUrl https://app.onrender.com `
-  -RequireReady
+.\scripts\build_phone_for_cloud.ps1 `
+  -ApiBaseUrl https://fake-news-detector-poi6.onrender.com `
+  -Mode release
 .\scripts\finalize_cloud_phone_submission.ps1 `
-  -ApiBaseUrl https://app.onrender.com
-.\scripts\make_submission_bundle.ps1
-.\scripts\verify_submission_bundle.ps1
-python -m uvicorn src.api_factcheck:app --port 8001
-python -m uvicorn src.ui:app --port 8002
+  -ApiBaseUrl https://fake-news-detector-poi6.onrender.com
 flutter analyze
 flutter test
+adb devices
 \end{verbatim}
 
-\section{Kontrakt API}
-\begin{verbatim}
-GET  /health
-GET  /ready
-POST /factcheck
-POST /factcheck-image
-\end{verbatim}
+\section{Załącznik B: Najważniejsze artefakty}
+\begin{longtable}{p{0.32\textwidth}p{0.58\textwidth}}
+\toprule
+Artefakt & Ścieżka \\
+\midrule
+Raport LaTeX & \path{docs/report/verity_lens_report.tex} \\
+Raport PDF & \path{docs/report/verity_lens_report.pdf} \\
+Desktop EXE & \path{dist/FakeNewsDetector/FakeNewsDetector.exe} \\
+Desktop ZIP & \path{dist/FakeNewsDetector-Windows-Portable.zip} \\
+Cloud APK & \path{outputs/phone_download/VerityLens-cloud.apk} \\
+Submission ZIP & \path{outputs/submission/VerityLens-submission.zip} \\
+Product acceptance report & \path{reports/product_acceptance_latest.json} \\
+Release gate report & \path{reports/release_gate_latest.json} \\
+Final cloud phone report & \path{reports/final_cloud_phone_submission_latest.json} \\
+\bottomrule
+\end{longtable}
 
-\begin{thebibliography}{9}
-\bibitem{kuleuven_report}
-KU Leuven Faculty of Engineering Science.
-\textit{Report writing: structure and content}.
-\url{https://eng.kuleuven.be/en/study/engineering-essentials/reporting/structure-content}
+\section{Załącznik C: Skrócony opis dla uruchomienia}
+\subsection*{PC}
+Uruchomić:
+\begin{center}
+\path{dist/FakeNewsDetector/FakeNewsDetector.exe}
+\end{center}
 
-\bibitem{ieee_reports}
-IEEE Professional Communication Society.
-\textit{Write Effective Reports}.
-\url{https://procomm.ieee.org/communication-resources-for-engineers/written-reports/write-effective-reports/}
+\subsection*{Telefon}
+Zainstalować:
+\begin{center}
+\path{outputs/phone_download/VerityLens-cloud.apk}
+\end{center}
+Telefon potrzebuje internetu.
+Backend działa pod adresem:
+\begin{center}
+\url{https://fake-news-detector-poi6.onrender.com}
+\end{center}
 
-\bibitem{cornell_report}
-Cornell Duffield Engineering.
-\textit{Undergraduate Research Report Guidelines}.
-\url{https://www.duffield.cornell.edu/undergraduate-research-report-guidelines/}
+\begin{thebibliography}{12}
+\bibitem{put_sprawozdanie}
+Politechnika Poznańska, Instytut Informatyki.
+\textit{Sprawozdanie -- wymagania dla projektu}.
+\href{https://www.cs.put.poznan.pl/mdrozdowski/dyd/ok/index.html}{strona kursu i wymagań sprawozdania}
 
-\bibitem{maynooth_software_docs}
-Delaney, D. and Brown, S.
-\textit{Guidelines for Documents Produced by Student Projects in Software Engineering}.
-Department of Computer Science, National University of Ireland, Maynooth, 2006.
-\url{https://mural.maynoothuniversity.ie/id/eprint/5971/}
+\bibitem{pw_latex}
+T. J. Kruk, Politechnika Warszawska.
+\textit{Przygotowywanie sprawozdania w systemie LaTeX}.
+\href{https://www.ia.pw.edu.pl/~tkruk/latex/}{materiały o sprawozdaniach w LaTeX-u}
+
+\bibitem{ug_latex}
+Uniwersytet Gdański.
+\textit{Matematyka obliczeniowa -- profil informatyczny: wymagania dotyczące sprawozdań w LaTeX-u}.
+\href{https://mfi.ug.edu.pl/sites/mfi.ug.edu.pl/files/_nodes/strona/45439/files/syl_matematyka_obliczeniowa_-_profil_informatyczny_2016-1522390169137.pdf}{sylabus i wymagania raportowe}
+
+\bibitem{put_hurtownie}
+Politechnika Poznańska.
+\textit{Projekt hurtowni danych -- sprawozdanie, opis problemów i rozwiązań}.
+\href{https://www.cs.put.poznan.pl/rwrembel/dws_etl_proj.html}{opis zaliczenia projektu}
+
+\bibitem{fastapi_docs}
+FastAPI.
+\textit{Features: automatic docs and OpenAPI}.
+\href{https://fastapi.tiangolo.com/features/}{oficjalna dokumentacja FastAPI}
+
+\bibitem{flutter_android}
+Flutter Documentation.
+\textit{Build and release an Android app}.
+\href{https://docs.flutter.dev/deployment/android}{oficjalna dokumentacja Flutter Android}
+
+\bibitem{render_docker}
+Render Documentation.
+\textit{Docker on Render}.
+\href{https://render.com/docs/docker}{oficjalna dokumentacja Render Docker}
+
+\bibitem{render_first_deploy}
+Render Documentation.
+\textit{Your First Render Deploy}.
+\href{https://render.com/docs/your-first-deploy}{oficjalna dokumentacja Render deploy}
 \end{thebibliography}
 
 \end{document}
