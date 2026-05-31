@@ -1,12 +1,12 @@
 # Verity Lens v1
 
-Local-first fact-check engine for text, article URLs, screenshots, and image AI-risk checks.
+Local-first fact-check engine for text, article URLs, image AI-risk checks, and optional screenshot OCR.
 
 ## Product Path
 - `text/url -> best_accuracy_pipeline -> CLI / REST API / Web UI`
 - English-first, local demo product.
 - Users do not choose modes. The engine internally selects explicit fact-check verdicts, ordinary news credibility scoring, or simple common-knowledge checks.
-- Screenshots are checked by OCR: `image -> extracted text -> best_accuracy_pipeline`.
+- The backend keeps optional screenshot OCR for regression/API use: `image -> extracted text -> best_accuracy_pipeline`.
 - AI-image checking returns a risk assessment, not proof. If signals are weak, it returns `uncertain`.
 - Ordinary news returns `credibility.score` and `credibility.label`; hard `true/fake` is reserved for explicit fact-check evidence or simple stable facts.
 - Simple everyday facts are checked with local arithmetic, a versioned local common-knowledge registry, and Wikipedia summaries/categories. If those sources do not give an exact answer, the engine returns `uncertain` instead of guessing.
@@ -101,9 +101,7 @@ Web UI:
 python -m uvicorn src.ui:app --host 0.0.0.0 --port 8002
 ```
 
-In the UI you can upload an image and choose:
-- `Check screenshot`: extracts text from a screenshot and checks it like normal news/claim text.
-- `Detect AI image`: returns a conservative risk badge: `Likely AI`, `Likely real`, or `Not enough certainty`. The app loads `.env` when present; `.env.example` uses `haywoodsloan/ai-image-detector-deploy` as the optional classifier. The packaged desktop app defaults to `FACTCHECK_AI_IMAGE_MODEL=metadata_only` to keep the Windows build lightweight.
+In the UI you can upload an image and choose `Detect AI image`, which returns a conservative risk badge: `Likely AI`, `Likely real`, or `Not enough certainty`. The app loads `.env` when present; `.env.example` uses `haywoodsloan/ai-image-detector-deploy` as the optional classifier. The packaged desktop app defaults to `FACTCHECK_AI_IMAGE_MODEL=metadata_only` to keep the Windows build lightweight. Screenshot OCR remains available as an internal/API capability but is not exposed as a separate product tab.
 
 Desktop prototype:
 
@@ -135,7 +133,7 @@ flutter build apk --dart-define=API_BASE_URL=https://<render-app>.onrender.com
 .\tool\build_internet_apk.ps1 -ApiBaseUrl https://<render-app>.onrender.com
 ```
 
-The Flutter client, branded as Verity Lens, supports News, Facts, Screenshots and Images by calling the existing REST API. Android builds use package id `app.veritylens.mobile`. Use `render.yaml` to deploy the FastAPI backend to Render, then pass the public API URL with `--dart-define=API_BASE_URL=...`. The app also has a gear-button API setting and a visible API connection banner, so an installed APK can be pointed at a new cloud API URL and immediately show whether the phone can reach it. For a permanent phone build that does not need this PC, deploy Render first and run `.\scripts\build_phone_for_cloud.ps1 -ApiBaseUrl https://<render-app>.onrender.com -Mode release`. Permanent cloud scripts require a real public HTTPS host and reject localhost, LAN/private IPs, `.local` names, single-label hosts, and temporary tunnel domains. See `docs/mobile_flutter_render.md`.
+The Flutter client, branded as Verity Lens, supports News, Facts and Images by calling the existing REST API. Android builds use package id `app.veritylens.mobile`. Use `render.yaml` to deploy the FastAPI backend to Render, then pass the public API URL with `--dart-define=API_BASE_URL=...`. The app also has a gear-button API setting and a visible API connection banner, so an installed APK can be pointed at a new cloud API URL and immediately show whether the phone can reach it. For a permanent phone build that does not need this PC, deploy Render first and run `.\scripts\build_phone_for_cloud.ps1 -ApiBaseUrl https://<render-app>.onrender.com -Mode release`. Permanent cloud scripts require a real public HTTPS host and reject localhost, LAN/private IPs, `.local` names, single-label hosts, and temporary tunnel domains. See `docs/mobile_flutter_render.md`.
 
 For a temporary phone demo through the internet before Render is deployed:
 
@@ -343,7 +341,7 @@ Product acceptance gate:
 python scripts/run_product_acceptance.py
 ```
 
-This deterministic gate checks News, Facts, Screenshots, Images and the API/mobile contract separately.
+This deterministic gate checks News, Facts, Images, hidden screenshot-OCR regressions, and the API/mobile contract separately.
 It fails if any section drops below 95% or below its section-specific minimum case count.
 
 AI-image detector benchmark:

@@ -183,14 +183,12 @@ class _VerificationHomeState extends State<VerificationHome> {
   final _newsUrlController = TextEditingController();
   final _newsTextController = TextEditingController();
   final _factController = TextEditingController();
-  final _screenshotQuestionController = TextEditingController();
   final _imageContextController = TextEditingController();
 
   int _selectedIndex = 0;
   bool _isLoading = false;
   String? _error;
   FactCheckResult? _result;
-  PickedImage? _screenshot;
   PickedImage? _image;
   BackendReachability _backendReachability = BackendReachability.unchecked;
   String _backendMessage = '';
@@ -218,7 +216,6 @@ class _VerificationHomeState extends State<VerificationHome> {
     _newsUrlController.dispose();
     _newsTextController.dispose();
     _factController.dispose();
-    _screenshotQuestionController.dispose();
     _imageContextController.dispose();
     super.dispose();
   }
@@ -272,7 +269,7 @@ class _VerificationHomeState extends State<VerificationHome> {
     }
   }
 
-  Future<void> _pickImage(ImageSlot slot) async {
+  Future<void> _pickImage() async {
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: true,
@@ -283,11 +280,7 @@ class _VerificationHomeState extends State<VerificationHome> {
     }
     setState(() {
       final image = PickedImage(name: file.name, bytes: file.bytes!);
-      if (slot == ImageSlot.screenshot) {
-        _screenshot = image;
-      } else {
-        _image = image;
-      }
+      _image = image;
     });
   }
 
@@ -302,22 +295,6 @@ class _VerificationHomeState extends State<VerificationHome> {
 
   Future<void> _checkFact() {
     return _run(() => widget.gateway.checkText(text: _factController.text));
-  }
-
-  Future<void> _checkScreenshot() {
-    final screenshot = _screenshot;
-    if (screenshot == null) {
-      setState(() => _error = 'Choose a screenshot first.');
-      return Future<void>.value();
-    }
-    return _run(
-      () => widget.gateway.checkImage(
-        bytes: screenshot.bytes,
-        filename: screenshot.name,
-        analysisType: ImageAnalysisType.screenshot,
-        question: _screenshotQuestionController.text,
-      ),
-    );
   }
 
   Future<void> _checkAiImage() {
@@ -472,22 +449,6 @@ class _VerificationHomeState extends State<VerificationHome> {
         ),
       ),
       VerificationMode(
-        label: 'Screenshots',
-        icon: Icons.screenshot_monitor_outlined,
-        selectedIcon: Icons.screenshot_monitor,
-        color: const Color(0xff2e6f64),
-        child: ImagePanel(
-          title: 'Screenshots',
-          contextLabel: 'Question',
-          contextController: _screenshotQuestionController,
-          selectedImage: _screenshot,
-          actionLabel: 'Check screenshot',
-          onPick: () => _pickImage(ImageSlot.screenshot),
-          onSubmit: _checkScreenshot,
-          isLoading: _isLoading,
-        ),
-      ),
-      VerificationMode(
         label: 'Images',
         icon: Icons.image_search_outlined,
         selectedIcon: Icons.image_search,
@@ -498,7 +459,7 @@ class _VerificationHomeState extends State<VerificationHome> {
           contextController: _imageContextController,
           selectedImage: _image,
           actionLabel: 'Detect AI image',
-          onPick: () => _pickImage(ImageSlot.image),
+          onPick: _pickImage,
           onSubmit: _checkAiImage,
           isLoading: _isLoading,
         ),
@@ -1232,8 +1193,6 @@ class VerificationMode {
   final Color color;
   final Widget child;
 }
-
-enum ImageSlot { screenshot, image }
 
 class PickedImage {
   const PickedImage({required this.name, required this.bytes});

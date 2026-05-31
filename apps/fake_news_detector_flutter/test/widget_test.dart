@@ -30,6 +30,9 @@ void main() {
   testWidgets('Image modes show a friendly missing-file error', (tester) async {
     await tester.pumpWidget(FakeNewsDetectorApp(gateway: FakeGateway()));
 
+    expect(find.text('Screenshots'), findsNothing);
+    expect(find.text('Check screenshot'), findsNothing);
+
     await tester.tap(find.text('Images'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Detect AI image'));

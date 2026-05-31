@@ -36,8 +36,7 @@ python scripts/run_product_acceptance.py
 Expected: simple stable facts may return `true` or `fake`; unsupported life/medical claims should say no exact answer and return `uncertain`; trusted fact-check URLs with explicit rulings return `true` or `fake`; unknown claims should return `uncertain`; ordinary news URLs should return a `credibility` payload.
 
 Image smoke checks in the UI:
-- Upload a screenshot with readable article/social-post text and click `Check screenshot`. Expected: OCR text appears, then the normal fact-check/credibility result is shown.
-- Upload a PNG/JPG and click `Detect AI image`. Expected: the UI shows `Likely AI`, `Likely real`, or `Not enough certainty`; weak signals should stay `uncertain` in `image_analysis.ai_label`. The app loads `.env` when present. The packaged desktop launcher defaults `FACTCHECK_AI_IMAGE_MODEL` to `metadata_only`; set a model such as `haywoodsloan/ai-image-detector-deploy` only when you intentionally want the optional classifier.
+- Upload a PNG/JPG and click `Detect AI image`. Expected: the UI shows `Likely AI`, `Likely real`, or `Not enough certainty`; weak signals should stay `uncertain` in `image_analysis.ai_label`. The app loads `.env` when present. The packaged desktop launcher defaults `FACTCHECK_AI_IMAGE_MODEL` to `metadata_only`; set a model such as `haywoodsloan/ai-image-detector-deploy` only when you intentionally want the optional classifier. Screenshot OCR remains available through the API/regression suite, but it is no longer exposed as a separate UI tab.
 
 ## 3) Start Services
 
@@ -254,7 +253,7 @@ Product acceptance gate:
 python scripts/run_product_acceptance.py
 ```
 
-Expected: every product section (`facts`, `news`, `screenshots`, `images`, `api_contract`) meets its section-specific minimum case count and has a pass rate of 95% or higher.
+Expected: visible product sections (`facts`, `news`, `images`, `api_contract`) plus the hidden screenshot-OCR regression section meet their section-specific minimum case counts and have a pass rate of 95% or higher.
 
 AI-image detector benchmark:
 
@@ -302,7 +301,7 @@ Cloud/mobile release gate after Render deployment:
 - The older `v3_60` benchmark is diagnostic for coverage; ordinary news credibility also needs mixed live URL smoke runs.
 
 ## 6) Operational Notes
-- CLI and API accept only `text` and `url`; UI exposes separate News, Facts, Screenshots and Images sections backed by the same canonical engine.
+- CLI accepts only `text` and `url`; the UI exposes separate News, Facts and Images sections backed by the same canonical engine.
 - `run_desktop_app.bat` opens the same local UI in a PyWebView desktop window; `scripts\build_windows.ps1` builds the portable Windows folder.
 - The single public pipeline is `best_accuracy_v2`; it internally routes fact-check URLs, ordinary news URLs/text, and simple everyday facts.
 - It does not use neural verdict scoring in the default product path. Everyday facts use local rules plus Wikipedia summaries/categories, with safe abstention when sources are not exact.

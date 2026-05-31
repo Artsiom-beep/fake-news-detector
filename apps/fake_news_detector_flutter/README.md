@@ -49,5 +49,4 @@ flutter test
 
 - News calls `POST /factcheck` with `url` and optional `text`.
 - Facts calls `POST /factcheck` with `text`.
-- Screenshots calls `POST /factcheck-image` with `analysis_type=screenshot`.
 - Images calls `POST /factcheck-image` with `analysis_type=ai_image`.

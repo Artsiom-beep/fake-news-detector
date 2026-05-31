@@ -7,13 +7,13 @@ from typing import Any
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import HTMLResponse, Response
 
-from src.factcheck.image_analysis import run_ai_image_check, run_screenshot_factcheck
+from src.factcheck.image_analysis import run_ai_image_check
 from src.factcheck.service import run_factcheck
 
 app = FastAPI(title="Verity Lens UI", version="1.1")
 
 DEFAULT_PANEL = "newsTool"
-VALID_PANELS = {"newsTool", "factsTool", "screenshotsTool", "imagesTool"}
+VALID_PANELS = {"newsTool", "factsTool", "imagesTool"}
 
 
 def _normalize_active_panel(value: str | None) -> str:
@@ -273,7 +273,6 @@ def render_page(
     news_url_value = url_value if active_panel == "newsTool" else ""
     news_text_value = text_value if active_panel == "newsTool" else ""
     fact_text_value = text_value if active_panel == "factsTool" else ""
-    screenshot_text_value = text_value if active_panel == "screenshotsTool" else ""
     image_text_value = text_value if active_panel == "imagesTool" else ""
 
     return f"""
@@ -430,7 +429,6 @@ def render_page(
     }}
     .menu-item.news-mode {{ --mode:#a95f3d; --mode-bg:#fff0e5; }}
     .menu-item.facts-mode {{ --mode:#8b6a16; --mode-bg:#fff4ce; }}
-    .menu-item.screenshots-mode {{ --mode:#2e6f64; --mode-bg:#e5f5ef; }}
     .menu-item.images-mode {{ --mode:#8d4d6f; --mode-bg:#fae8f2; }}
     .tool-stage {{
       min-width:0;
@@ -453,7 +451,6 @@ def render_page(
     }}
     .tool-card.news {{ --mode:#a95f3d; --mode-bg:#fff0e5; --mode-border:#edc6b5; }}
     .tool-card.facts {{ --mode:#8b6a16; --mode-bg:#fff4ce; --mode-border:#ead17c; }}
-    .tool-card.screenshot {{ --mode:#2e6f64; --mode-bg:#e5f5ef; --mode-border:#a8d4c8; }}
     .tool-card.image {{ --mode:#8d4d6f; --mode-bg:#fae8f2; --mode-border:#e7bdd2; }}
     .tool-card.active {{
       display:block;
@@ -616,7 +613,7 @@ def render_page(
     .tool-card.news textarea {{
       min-height:150px;
     }}
-    .tool-card.screenshot textarea, .tool-card.image textarea {{
+    .tool-card.image textarea {{
       min-height:110px;
     }}
     .url-input:focus, textarea:focus {{
@@ -1000,7 +997,7 @@ def render_page(
       <section class="hero">
             <div class="kicker">Verity Lens</div>
         <h1>Verification workspace</h1>
-        <p>News, claims, screenshots, and images now have separate checks.</p>
+        <p>News, claims, and images have separate checks.</p>
       </section>
 
       <section class="composer">
@@ -1012,10 +1009,6 @@ def render_page(
           <button class="menu-item facts-mode" type="button" data-target="factsTool" aria-selected="{menu_selected("factsTool")}">
             <span>Facts</span>
             <b>Claim</b>
-          </button>
-          <button class="menu-item screenshots-mode" type="button" data-target="screenshotsTool" aria-selected="{menu_selected("screenshotsTool")}">
-            <span>Screenshots</span>
-            <b>OCR</b>
           </button>
           <button class="menu-item images-mode" type="button" data-target="imagesTool" aria-selected="{menu_selected("imagesTool")}">
             <span>Images</span>
@@ -1072,41 +1065,6 @@ def render_page(
               <textarea id="factTextInput" name="text" placeholder="Example: Elephant is a mammal">{escape(fact_text_value)}</textarea>
               <div class="composer-actions">
                 <button class="primary-btn" type="submit" data-loading="Checking fact...">Check fact</button>
-              </div>
-            </form>
-          </article>
-
-          <article class="{panel_class("screenshot", "screenshotsTool")}" id="screenshotsTool" data-panel="screenshotsTool" aria-hidden="{aria_hidden("screenshotsTool")}">
-            <div class="tool-head">
-              <div class="tool-title">
-                <h2>Screenshots</h2>
-              </div>
-              <div class="tool-actions">
-                <button class="info-btn" type="button" data-info-toggle aria-expanded="false" aria-controls="screenshotsGuide">Guide</button>
-                <span class="tool-kind">OCR</span>
-              </div>
-            </div>
-            <div class="info-panel" id="screenshotsGuide" hidden>
-              <h3>What this mode does</h3>
-              <p>Extracts readable text from a screenshot, detects visible URLs when possible, and sends the extracted claim through the fact-check engine.</p>
-              <p><strong>Example:</strong> paste a screenshot of a viral post claiming “Apple is blue”, then use Check screenshot to inspect OCR text and verdict.</p>
-            </div>
-            <form class="tool-form" method="post" action="/check#screenshotsTool" enctype="multipart/form-data" data-media-picker>
-              <input type="hidden" name="active_panel" value="screenshotsTool" />
-              <input type="hidden" name="image_action" value="screenshot" />
-              <label for="screenshotQuestionInput">Question</label>
-              <textarea id="screenshotQuestionInput" name="text" placeholder="Optional question about the screenshot">{escape(screenshot_text_value)}</textarea>
-              <input class="file-input" id="screenshotInput" type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/bmp,image/tiff" />
-              <div class="media-drop" tabindex="0" aria-label="Screenshot upload area">
-                <div>
-                  <strong data-media-title>Screenshot</strong>
-                  <span data-media-status>Paste, drop, or choose an image file.</span>
-                </div>
-                <img class="image-preview" data-media-preview alt="Selected screenshot preview" />
-              </div>
-              <label class="file-chip" for="screenshotInput">Choose screenshot</label>
-              <div class="composer-actions">
-                <button class="primary-btn" type="submit" data-loading="Checking screenshot...">Check screenshot</button>
               </div>
             </form>
           </article>
@@ -1364,16 +1322,12 @@ async def check(
 
     if image_bytes:
         try:
-            if image_action == "ai_image":
-                active_panel = "imagesTool"
-                result = run_ai_image_check(image_bytes, filename=image_file.filename or "", question=clean_text).to_public_dict()
-            else:
-                active_panel = "screenshotsTool"
-                result = run_screenshot_factcheck(
-                    image_bytes,
-                    filename=image_file.filename or "",
-                    question=clean_text,
-                ).to_public_dict()
+            active_panel = "imagesTool"
+            result = run_ai_image_check(
+                image_bytes,
+                filename=image_file.filename or "",
+                question=clean_text,
+            ).to_public_dict()
         except Exception as exc:
             error_html = f"<div class='error'>Image check failed: {escape(str(exc))}</div>"
             return render_page(error_html=error_html, url_value=url, text_value=text, active_panel=active_panel)

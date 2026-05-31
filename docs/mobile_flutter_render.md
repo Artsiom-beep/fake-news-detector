@@ -265,7 +265,6 @@ Manual checks:
 
 - Facts: `2 plus 2 equals 4` returns likely reliable.
 - Facts: `2 plus 2 equals 5` returns likely false.
-- Screenshots: upload a readable claim screenshot.
 - Images: upload a PNG/JPG and verify AI risk output.
 
 ## 6. Phone demo without a laptop server

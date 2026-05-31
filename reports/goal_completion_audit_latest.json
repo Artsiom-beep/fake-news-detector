@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T12:53:31.2372624+02:00",
+  "generated_at": "2026-05-31T13:20:39.3562460+02:00",
   "complete": true,
   "estimated_completion_percent": 100,
   "estimated_remaining_percent": 0,
@@ -154,37 +154,37 @@
     "release_gate": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\release_gate_latest.json",
-      "size_bytes": 16127,
-      "sha256": "65EC7C67022601310277BD6E56B4382251B8D5578D9ECCB7527E3BA0E3FB1905",
-      "modified_at": "2026-05-31T12:52:32.9692246+02:00"
+      "size_bytes": 16126,
+      "sha256": "10581E786B501367DCBD7A2D9F32F3B0AC6F0F92A538331311C2AE33D362566A",
+      "modified_at": "2026-05-31T13:19:43.4920527+02:00"
     },
     "product_acceptance": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\product_acceptance_latest.json",
       "size_bytes": 37769,
-      "sha256": "D0CB9232DBB37A96C7FB745B8214F50C0E2F4801B70A74C0ED0BEAC0B252263B",
-      "modified_at": "2026-05-31T12:50:03.6454910+02:00"
+      "sha256": "F6B7C2774C0FA88DE58E404CEFCA7738C06AEDF9AF8297B7F3098F354DF7B787",
+      "modified_at": "2026-05-31T13:17:06.5721037+02:00"
     },
     "submission_verification": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\SUBMISSION_BUNDLE_VERIFICATION.json",
-      "size_bytes": 1072,
-      "sha256": "7BC42E233E4781D55026AA0972BADF7C2704AD18C107691CA0676FBE8A0EC78B",
-      "modified_at": "2026-05-31T12:53:30.6265329+02:00"
+      "size_bytes": 924,
+      "sha256": "E545B166B6DED4C7B6F288FFCEF4A29CD3DC5F119E9E4D82B3607B48B81ADC73",
+      "modified_at": "2026-05-31T13:20:38.7585591+02:00"
     },
     "submission_zip": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\VerityLens-submission.zip",
-      "size_bytes": 185373874,
-      "sha256": "EA5774C171D7506D417EB310A2049C3F4D21111208608D2EA46CEB127AFD5535",
-      "modified_at": "2026-05-31T12:53:25.7213763+02:00"
+      "size_bytes": 185281542,
+      "sha256": "FA9F57429F00FB2BE32D9D6701E7DE25995CED9BAFAAF94BA60F370352E8F142",
+      "modified_at": "2026-05-31T13:20:33.9177357+02:00"
     },
     "report_pdf": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\docs\\report\\verity_lens_report.pdf",
-      "size_bytes": 71636,
-      "sha256": "2663CD094309EA1A0F07C6A118A3245988E1666F061632E4EFA388A0FFBEAB2B",
-      "modified_at": "2026-05-31T12:50:05.9232167+02:00"
+      "size_bytes": 71773,
+      "sha256": "63B7E4F80E80AC28F1A3B3B86D9E772578764B063924F04582C3B990F531874D",
+      "modified_at": "2026-05-31T13:17:09.3434924+02:00"
     },
     "desktop_zip": {
       "exists": true,
@@ -196,16 +196,16 @@
     "cloud_apk": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
-      "size_bytes": 49843593,
-      "sha256": "F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE",
-      "modified_at": "2026-05-31T12:51:35.6428034+02:00"
+      "size_bytes": 49843377,
+      "sha256": "E93A7E8A7E16B3995D8712F2CB1F7173FDC7D48377BFA6FF8DD3A95C4ED1617C",
+      "modified_at": "2026-05-31T13:18:36.6663624+02:00"
     },
     "device_screenshot": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SCREENSHOT.png",
-      "size_bytes": 117355,
-      "sha256": "9F2FE9BDEE245C6594547451B3FFFBC2E6E514160BDB3C05172DAF1B3AE2276C",
-      "modified_at": "2026-05-31T12:52:11.3842764+02:00"
+      "size_bytes": 31739,
+      "sha256": "87436746AD2A96964138109B6F6A8DE5DB52A3EFA2FCD0449035BC5C391B0351",
+      "modified_at": "2026-05-31T13:19:15.8106162+02:00"
     }
   }
 }

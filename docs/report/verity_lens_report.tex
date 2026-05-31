@@ -68,9 +68,9 @@ Moduł & Wymaganie \\
 \midrule
 Facts & Użytkownik wpisuje twierdzenie; system zwraca \texttt{true}, \texttt{fake} albo \texttt{uncertain} wraz z krótkim uzasadnieniem. \\
 News & Użytkownik podaje URL artykułu; system zwraca ocenę \texttt{credibility}, a nie wymuszony werdykt prawda/fałsz. \\
-Screenshots & Użytkownik przesyła obraz; OCR odczytuje tekst, a wynik przechodzi przez kanoniczny pipeline. \\
 Images & Użytkownik przesyła zdjęcie/obraz; system zwraca etykietę ryzyka AI: \texttt{likely\_ai}, \texttt{likely\_not\_ai} albo \texttt{uncertain}. \\
 Mobile & Aplikacja Flutter działa jako klient API i może pracować poza komputerem użytkownika po wdrożeniu backendu do chmury. \\
+Screenshot OCR API & Funkcja OCR pozostaje w backendzie i w regresjach API, ale nie jest już osobną zakładką w aplikacji użytkownika. \\
 \bottomrule
 \end{longtable}
 
@@ -173,7 +173,7 @@ Aktualny stan po ostatnim uruchomieniu bramki wydania:
 \toprule
 Zakres & Komenda & Wynik \\
 \midrule
-Backend tests & \path{unittest} & 113 testów OK \\
+Backend tests & \path{unittest} & 116 testów OK \\
 Legacy API & \path{test_legacy_api} & OK \\
 Product gate & \path{acceptance} & 93/93 OK; każda sekcja spełnia próg 95\% \\
 Quality pack live & \path{quality_pack_v3} & 17/17 OK; 0 failures, 0 errors \\
@@ -186,7 +186,7 @@ Flutter tests & \path{flutter test} & 11/11 OK \\
 
 \subsection{Acceptance benchmark}
 Dodano skrypt \texttt{scripts/run\_product\_acceptance.py}.
-Sprawdza on cztery sekcje produktu: Facts, News, Screenshots i Images, a także kontrakt API używany przez aplikację mobilną.
+Sprawdza on widoczne sekcje produktu: Facts, News i Images, a także ukryte regresje Screenshot OCR oraz kontrakt API używany przez aplikację mobilną.
 Wynik ostatniego uruchomienia:
 
 \begin{center}
@@ -196,7 +196,7 @@ Sekcja & Poprawne & Wszystkie & Skuteczność \\
 \midrule
 Facts & 44 & 44 & 100\% \\
 News & 15 & 15 & 100\% \\
-Screenshots & 12 & 12 & 100\% \\
+Screenshot OCR API & 12 & 12 & 100\% \\
 Images & 11 & 11 & 100\% \\
 API/mobile contract & 11 & 11 & 100\% \\
 \bottomrule
@@ -204,7 +204,7 @@ API/mobile contract & 11 & 11 & 100\% \\
 \end{center}
 
 Ten wynik nie oznacza jeszcze gwarancji 95\% na całym internecie.
-Oznacza natomiast, że powstała mierzalna bramka regresji produktu: każda sekcja ma własny minimalny próg liczby przypadków (Facts 40, News 15, Screenshots 12, Images 11, API/mobile 11) i minimum 95\% skuteczności.
+Oznacza natomiast, że powstała mierzalna bramka regresji produktu: każda sekcja ma własny minimalny próg liczby przypadków (Facts 40, News 15, Screenshot OCR API 12, Images 11, API/mobile 11) i minimum 95\% skuteczności.
 Bramkę można dalej rozszerzać o przypadki live i trudne przykłady, aż próba będzie wystarczająco reprezentatywna dla końcowej prezentacji.
 
 Dodatkowo uruchomiono live quality pack z aktualnych źródeł RSS oraz ręcznych przypadków granicznych.

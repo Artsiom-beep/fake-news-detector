@@ -1679,11 +1679,11 @@ Write-Output 'apk name policy ok'
             "\\section{Wnioski}",
             "\\begin{thebibliography}",
             "93/93 OK",
-            "113 testów OK",
+            "116 testów OK",
             "17/17 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
-            "Screenshots & 12 & 12 & 100\\%",
+            "Screenshot OCR API & 12 & 12 & 100\\%",
             "Images & 11 & 11 & 100\\%",
             "API/mobile contract & 11 & 11 & 100\\%",
             "Flutter tests & \\path{flutter test} & 11/11 OK",
@@ -1753,8 +1753,9 @@ Write-Output 'apk name policy ok'
         self.assertIn('id="toolStage"', html)
         self.assertIn('id="newsTool"', html)
         self.assertIn('id="factsTool"', html)
-        self.assertIn('id="screenshotsTool"', html)
         self.assertIn('id="imagesTool"', html)
+        self.assertNotIn('id="screenshotsTool"', html)
+        self.assertNotIn('data-target="screenshotsTool"', html)
         self.assertIn('data-target="newsTool"', html)
         self.assertIn('data-panel="newsTool"', html)
         self.assertIn("activatePanel", html)
@@ -1769,8 +1770,9 @@ Write-Output 'apk name policy ok'
         self.assertIn("Example:", html)
         self.assertIn("Check news", html)
         self.assertIn("Check fact", html)
-        self.assertIn("Check screenshot", html)
         self.assertIn("Detect AI image", html)
+        self.assertNotIn("Screenshots", html)
+        self.assertNotIn("Check screenshot", html)
 
     def test_ui_can_render_requested_active_panel(self):
         html = render_page(active_panel="imagesTool")

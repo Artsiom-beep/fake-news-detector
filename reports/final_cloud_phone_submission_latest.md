@@ -1,6 +1,6 @@
 # Verity Lens Final Cloud Phone Submission
 
-- Generated: `2026-05-31T12:53:02.6169376+02:00`
+- Generated: `2026-05-31T13:20:11.7758762+02:00`
 - OK: `True`
 - Error: ``
 - API base URL: `https://fake-news-detector-poi6.onrender.com`
@@ -46,15 +46,15 @@
 
 ## Steps
 
-- `passed` Final external preflight (1.99s, exit=0)
-- `passed` Strict cloud phone release gate (189.88s, exit=0)
-- `passed` Submission bundle (26.13s, exit=0)
-- `passed` Submission verifier (2.31s, exit=0)
-- `passed` Goal completion audit (0.95s, exit=0)
+- `passed` Final external preflight (2.06s, exit=0)
+- `passed` Strict cloud phone release gate (196.65s, exit=0)
+- `passed` Submission bundle (24.74s, exit=0)
+- `passed` Submission verifier (2.34s, exit=0)
+- `passed` Goal completion audit (0.96s, exit=0)
 - `passed` Final cloud phone evidence check (0.08s, exit=0)
 
 ## Artifacts
 
-- Submission ZIP: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\submission\VerityLens-submission.zip` SHA256=`F11310DE3CB6D510B6D042F19944952E7020132A89AE4A8510A36DED8B324DFE`
-- Cloud APK: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\VerityLens-cloud.apk` SHA256=`F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE`
-- Device screenshot: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_DEVICE_SCREENSHOT.png` SHA256=`9F2FE9BDEE245C6594547451B3FFFBC2E6E514160BDB3C05172DAF1B3AE2276C`
+- Submission ZIP: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\submission\VerityLens-submission.zip` SHA256=`9A887C20F3F94B81D969890C26D33E40291DE0731733F2CFFC6F9B8A4621F797`
+- Cloud APK: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\VerityLens-cloud.apk` SHA256=`E93A7E8A7E16B3995D8712F2CB1F7173FDC7D48377BFA6FF8DD3A95C4ED1617C`
+- Device screenshot: `C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_DEVICE_SCREENSHOT.png` SHA256=`87436746AD2A96964138109B6F6A8DE5DB52A3EFA2FCD0449035BC5C391B0351`

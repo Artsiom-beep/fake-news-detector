@@ -1,6 +1,6 @@
 # Product Acceptance Report
 
-- Created: `2026-05-31T10:50:03+00:00`
+- Created: `2026-05-31T11:17:06+00:00`
 - Scope: facts, news credibility, screenshot OCR, AI-image risk, API/mobile contract
 - Target pass rate: `95.0%`
 - Default minimum cases per section: `5`

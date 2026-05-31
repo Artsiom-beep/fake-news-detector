@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T12:53:02.6169376+02:00",
+  "generated_at": "2026-05-31T13:20:11.7758762+02:00",
   "ok": true,
   "error": "",
   "api_base_url": "https://fake-news-detector-poi6.onrender.com",
@@ -24,53 +24,53 @@
     {
       "label": "Final external preflight",
       "status": "passed",
-      "started_at": "2026-05-31T12:49:21.2475593+02:00",
-      "ended_at": "2026-05-31T12:49:23.2362743+02:00",
-      "duration_seconds": 1.99,
+      "started_at": "2026-05-31T13:16:24.9171012+02:00",
+      "ended_at": "2026-05-31T13:16:26.9800764+02:00",
+      "duration_seconds": 2.06,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Strict cloud phone release gate",
       "status": "passed",
-      "started_at": "2026-05-31T12:49:23.2411721+02:00",
-      "ended_at": "2026-05-31T12:52:33.1212036+02:00",
-      "duration_seconds": 189.88,
+      "started_at": "2026-05-31T13:16:26.9850231+02:00",
+      "ended_at": "2026-05-31T13:19:43.6317334+02:00",
+      "duration_seconds": 196.65,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Submission bundle",
       "status": "passed",
-      "started_at": "2026-05-31T12:52:33.1222693+02:00",
-      "ended_at": "2026-05-31T12:52:59.2486230+02:00",
-      "duration_seconds": 26.13,
+      "started_at": "2026-05-31T13:19:43.6326626+02:00",
+      "ended_at": "2026-05-31T13:20:08.3703540+02:00",
+      "duration_seconds": 24.74,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Submission verifier",
       "status": "passed",
-      "started_at": "2026-05-31T12:52:59.2496791+02:00",
-      "ended_at": "2026-05-31T12:53:01.5648432+02:00",
-      "duration_seconds": 2.31,
+      "started_at": "2026-05-31T13:20:08.3713535+02:00",
+      "ended_at": "2026-05-31T13:20:10.7149292+02:00",
+      "duration_seconds": 2.34,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Goal completion audit",
       "status": "passed",
-      "started_at": "2026-05-31T12:53:01.5658085+02:00",
-      "ended_at": "2026-05-31T12:53:02.5157258+02:00",
-      "duration_seconds": 0.95,
+      "started_at": "2026-05-31T13:20:10.7158660+02:00",
+      "ended_at": "2026-05-31T13:20:11.6772922+02:00",
+      "duration_seconds": 0.96,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Final cloud phone evidence check",
       "status": "passed",
-      "started_at": "2026-05-31T12:53:02.5166675+02:00",
-      "ended_at": "2026-05-31T12:53:02.5970584+02:00",
+      "started_at": "2026-05-31T13:20:11.6780478+02:00",
+      "ended_at": "2026-05-31T13:20:11.7549723+02:00",
       "duration_seconds": 0.08,
       "exit_code": 0,
       "error": ""
@@ -111,65 +111,65 @@
     "release_gate_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\release_gate_latest.json",
-      "size_bytes": 16127,
-      "sha256": "65EC7C67022601310277BD6E56B4382251B8D5578D9ECCB7527E3BA0E3FB1905",
-      "modified_at": "2026-05-31T12:52:32.9692246+02:00"
+      "size_bytes": 16126,
+      "sha256": "10581E786B501367DCBD7A2D9F32F3B0AC6F0F92A538331311C2AE33D362566A",
+      "modified_at": "2026-05-31T13:19:43.4920527+02:00"
     },
     "submission_verification_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\SUBMISSION_BUNDLE_VERIFICATION.json",
-      "size_bytes": 1072,
-      "sha256": "1E270508200C395967244950EED7BD16BE991EBB628527C69023121740E8073B",
-      "modified_at": "2026-05-31T12:53:01.4083594+02:00"
+      "size_bytes": 930,
+      "sha256": "DA79C04BEBB18D095984AFE81FA21F780DDBBD6F13D4220B1168E5309F21BA3F",
+      "modified_at": "2026-05-31T13:20:10.5444532+02:00"
     },
     "submission_zip": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\VerityLens-submission.zip",
-      "size_bytes": 185373864,
-      "sha256": "F11310DE3CB6D510B6D042F19944952E7020132A89AE4A8510A36DED8B324DFE",
-      "modified_at": "2026-05-31T12:52:56.5293756+02:00"
+      "size_bytes": 185277946,
+      "sha256": "9A887C20F3F94B81D969890C26D33E40291DE0731733F2CFFC6F9B8A4621F797",
+      "modified_at": "2026-05-31T13:20:05.6844033+02:00"
     },
     "cloud_apk": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
-      "size_bytes": 49843593,
-      "sha256": "F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE",
-      "modified_at": "2026-05-31T12:51:35.6428034+02:00"
+      "size_bytes": 49843377,
+      "sha256": "E93A7E8A7E16B3995D8712F2CB1F7173FDC7D48377BFA6FF8DD3A95C4ED1617C",
+      "modified_at": "2026-05-31T13:18:36.6663624+02:00"
     },
     "cloud_apk_verification_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_CLOUD_APK_VERIFICATION.json",
       "size_bytes": 2272,
-      "sha256": "21F8C5E05D7D876EB82C9BD343CFEEC939439F56980F0A6B69EE2CE889491E16",
-      "modified_at": "2026-05-31T12:51:37.7655731+02:00"
+      "sha256": "5E6ED0D873F25C2D813885599268898885FA7E537FFF9DB3F638EFBC6355C22B",
+      "modified_at": "2026-05-31T13:18:38.7496727+02:00"
     },
     "cloud_deployment_status_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\cloud_deploy\\CLOUD_DEPLOYMENT_STATUS.json",
       "size_bytes": 3876,
-      "sha256": "F0B64549DB313962ADE7876772B592AAA7FCBFEDAEAC80C0C0F399F3D6748EDA",
-      "modified_at": "2026-05-31T12:52:02.0616395+02:00"
+      "sha256": "8F60831512765A618E07FB209019B5999D7A8986CCBD6D49344AB7DB385B3984",
+      "modified_at": "2026-05-31T13:19:06.2662430+02:00"
     },
     "phone_readiness_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\phone_readiness.json",
-      "size_bytes": 37720,
-      "sha256": "D8E7C67A3ECBEE2343D6FD9C0EA319BCD38CCACE9F46A30E7CA2AF06E5B2FC86",
-      "modified_at": "2026-05-31T12:52:32.4935611+02:00"
+      "size_bytes": 38729,
+      "sha256": "4696442B7176D425C8FE5198C92EFBFF0182B3C4F31C8826953E7DAE48014861",
+      "modified_at": "2026-05-31T13:19:43.0448650+02:00"
     },
     "phone_device_smoke_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SMOKE.json",
-      "size_bytes": 14694,
-      "sha256": "3190102B2F3464A1F28928172F08142D064F2B31F838329D2A7FE1FC6101D363",
-      "modified_at": "2026-05-31T12:52:11.4172796+02:00"
+      "size_bytes": 14685,
+      "sha256": "ABDD40B7B0483FCED75A4271CE0EA012109F4A25EC380FE04C09199120D6473C",
+      "modified_at": "2026-05-31T13:19:15.8456175+02:00"
     },
     "phone_device_screenshot": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SCREENSHOT.png",
-      "size_bytes": 117355,
-      "sha256": "9F2FE9BDEE245C6594547451B3FFFBC2E6E514160BDB3C05172DAF1B3AE2276C",
-      "modified_at": "2026-05-31T12:52:11.3842764+02:00"
+      "size_bytes": 31739,
+      "sha256": "87436746AD2A96964138109B6F6A8DE5DB52A3EFA2FCD0449035BC5C391B0351",
+      "modified_at": "2026-05-31T13:19:15.8106162+02:00"
     }
   }
 }
