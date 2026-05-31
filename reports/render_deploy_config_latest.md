@@ -1,6 +1,6 @@
 # Verity Lens Render Deploy Config Verification
 
-- Generated: `2026-05-30T15:37:31.010679+02:00`
+- Generated: `2026-05-31T12:21:37.525755+02:00`
 - OK: `True`
 - Service: `fake-news-detector-api`
 - Runtime: `docker`

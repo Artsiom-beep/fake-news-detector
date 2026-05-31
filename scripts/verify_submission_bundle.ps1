@@ -35,6 +35,27 @@ function Add-WarningMessage {
   $script:Warnings.Add($Message) | Out-Null
 }
 
+function ConvertTo-UtcDateTime {
+  param($Value)
+  if ($null -eq $Value) {
+    return $null
+  }
+  if ($Value -is [datetimeoffset]) {
+    return $Value.UtcDateTime
+  }
+  if ($Value -is [datetime]) {
+    if ($Value.Kind -eq [System.DateTimeKind]::Unspecified) {
+      return ([datetime]::SpecifyKind($Value, [System.DateTimeKind]::Local)).ToUniversalTime()
+    }
+    return $Value.ToUniversalTime()
+  }
+  return [datetimeoffset]::Parse(
+    [string]$Value,
+    [System.Globalization.CultureInfo]::InvariantCulture,
+    [System.Globalization.DateTimeStyles]::AssumeLocal
+  ).UtcDateTime
+}
+
 function Get-ZipEntry {
   param([Parameter(Mandatory = $true)][string]$Name)
   $Normalized = Normalize-ZipName $Name
@@ -1166,7 +1187,7 @@ try {
   $ReleaseGateGeneratedAtUtc = $null
   if ($ReleaseGate -and $ReleaseGate.generated_at) {
     try {
-      $ReleaseGateGeneratedAtUtc = [datetimeoffset]::Parse([string]$ReleaseGate.generated_at).UtcDateTime
+      $ReleaseGateGeneratedAtUtc = ConvertTo-UtcDateTime $ReleaseGate.generated_at
     } catch {
       Add-Failure "Release gate generated_at cannot be parsed for freshness check."
     }

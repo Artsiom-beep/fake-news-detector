@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-05-30T15:39:02.1255640+02:00",
-  "started_at": "2026-05-30T15:36:49.5940410+02:00",
+  "generated_at": "2026-05-31T12:24:16.5731083+02:00",
+  "started_at": "2026-05-31T12:20:55.8468022+02:00",
   "ok": true,
   "error": "",
   "project_root": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector",
   "options": {
-    "api_base_url": "",
-    "build_cloud_apk": false,
+    "api_base_url": "https://fake-news-detector-poi6.onrender.com",
+    "build_cloud_apk": true,
     "cloud_apk_mode": "release",
     "cloud_apk_output_name": "VerityLens-cloud.apk",
     "skip_flutter": false,
     "skip_desktop_smoke": false,
     "skip_fresh_render_venv": false,
     "phone_device_smoke": false,
-    "require_phone_device": false,
-    "require_physical_phone_device": false,
-    "phone_device_apk_path": "outputs\\phone_download\\VerityLens-internet.apk",
+    "require_phone_device": true,
+    "require_physical_phone_device": true,
+    "phone_device_apk_path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
     "phone_device_id": "",
-    "adb_path": ""
+    "adb_path": "C:\\Users\\marke\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe"
   },
   "steps": [
     {
       "label": "Check Python",
       "status": "passed",
-      "started_at": "2026-05-30T15:36:49.6021088+02:00",
-      "ended_at": "2026-05-30T15:36:49.6315523+02:00",
+      "started_at": "2026-05-31T12:20:55.8684552+02:00",
+      "ended_at": "2026-05-31T12:20:55.8985132+02:00",
       "duration_seconds": 0.03,
       "exit_code": 0,
       "error": ""
@@ -32,44 +32,44 @@
     {
       "label": "Python syntax",
       "status": "passed",
-      "started_at": "2026-05-30T15:36:49.6363436+02:00",
-      "ended_at": "2026-05-30T15:36:49.7180304+02:00",
-      "duration_seconds": 0.08,
+      "started_at": "2026-05-31T12:20:55.9028653+02:00",
+      "ended_at": "2026-05-31T12:20:55.9781522+02:00",
+      "duration_seconds": 0.07,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Backend unit and integration tests",
       "status": "passed",
-      "started_at": "2026-05-30T15:36:49.7190166+02:00",
-      "ended_at": "2026-05-30T15:37:17.1320689+02:00",
-      "duration_seconds": 27.41,
+      "started_at": "2026-05-31T12:20:55.9790383+02:00",
+      "ended_at": "2026-05-31T12:21:23.6959214+02:00",
+      "duration_seconds": 27.72,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Product acceptance gate",
       "status": "passed",
-      "started_at": "2026-05-30T15:37:17.1329690+02:00",
-      "ended_at": "2026-05-30T15:37:28.3336525+02:00",
-      "duration_seconds": 11.2,
+      "started_at": "2026-05-31T12:21:23.6970104+02:00",
+      "ended_at": "2026-05-31T12:21:34.6900299+02:00",
+      "duration_seconds": 10.99,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "University report PDF",
       "status": "passed",
-      "started_at": "2026-05-30T15:37:28.3348779+02:00",
-      "ended_at": "2026-05-30T15:37:30.9422087+02:00",
-      "duration_seconds": 2.61,
+      "started_at": "2026-05-31T12:21:34.6915487+02:00",
+      "ended_at": "2026-05-31T12:21:37.4554574+02:00",
+      "duration_seconds": 2.76,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Render deploy config verification",
       "status": "passed",
-      "started_at": "2026-05-30T15:37:30.9430937+02:00",
-      "ended_at": "2026-05-30T15:37:31.0198068+02:00",
+      "started_at": "2026-05-31T12:21:37.4563609+02:00",
+      "ended_at": "2026-05-31T12:21:37.5337552+02:00",
       "duration_seconds": 0.08,
       "exit_code": 0,
       "error": ""
@@ -77,133 +77,178 @@
     {
       "label": "Render backend bundle",
       "status": "passed",
-      "started_at": "2026-05-30T15:37:31.0205940+02:00",
-      "ended_at": "2026-05-30T15:37:32.0675772+02:00",
-      "duration_seconds": 1.05,
+      "started_at": "2026-05-31T12:21:37.5346768+02:00",
+      "ended_at": "2026-05-31T12:21:38.7154267+02:00",
+      "duration_seconds": 1.18,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Render backend bundle smoke",
       "status": "passed",
-      "started_at": "2026-05-30T15:37:32.0684022+02:00",
-      "ended_at": "2026-05-30T15:38:09.1032657+02:00",
-      "duration_seconds": 37.03,
+      "started_at": "2026-05-31T12:21:38.7162182+02:00",
+      "ended_at": "2026-05-31T12:22:17.4755069+02:00",
+      "duration_seconds": 38.76,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Cloud deployment status report",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:09.1041474+02:00",
-      "ended_at": "2026-05-30T15:38:09.5215898+02:00",
-      "duration_seconds": 0.42,
+      "started_at": "2026-05-31T12:22:17.4763453+02:00",
+      "ended_at": "2026-05-31T12:22:18.1627163+02:00",
+      "duration_seconds": 0.69,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Internet APK verification",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:09.5225032+02:00",
-      "ended_at": "2026-05-30T15:38:18.8375209+02:00",
-      "duration_seconds": 9.31,
+      "started_at": "2026-05-31T12:22:18.1636333+02:00",
+      "ended_at": "2026-05-31T12:22:30.6166796+02:00",
+      "duration_seconds": 12.45,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Phone install page server",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:18.8383964+02:00",
-      "ended_at": "2026-05-30T15:38:19.8216244+02:00",
-      "duration_seconds": 0.98,
+      "started_at": "2026-05-31T12:22:30.6291575+02:00",
+      "ended_at": "2026-05-31T12:22:31.8044701+02:00",
+      "duration_seconds": 1.17,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "LAN API server",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:19.8225289+02:00",
-      "ended_at": "2026-05-30T15:38:19.8966428+02:00",
-      "duration_seconds": 0.07,
+      "started_at": "2026-05-31T12:22:31.8053073+02:00",
+      "ended_at": "2026-05-31T12:22:31.8445538+02:00",
+      "duration_seconds": 0.04,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "LAN APK verification",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:19.8973996+02:00",
-      "ended_at": "2026-05-30T15:38:20.7890952+02:00",
-      "duration_seconds": 0.89,
+      "started_at": "2026-05-31T12:22:31.8451542+02:00",
+      "ended_at": "2026-05-31T12:22:32.9326540+02:00",
+      "duration_seconds": 1.09,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Phone readiness report",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:20.7899115+02:00",
-      "ended_at": "2026-05-30T15:38:36.6417774+02:00",
-      "duration_seconds": 15.85,
+      "started_at": "2026-05-31T12:22:32.9333768+02:00",
+      "ended_at": "2026-05-31T12:22:54.1582411+02:00",
+      "duration_seconds": 21.22,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Desktop smoke",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:36.6425664+02:00",
-      "ended_at": "2026-05-30T15:38:37.5220180+02:00",
-      "duration_seconds": 0.88,
+      "started_at": "2026-05-31T12:22:54.1590383+02:00",
+      "ended_at": "2026-05-31T12:22:55.0214700+02:00",
+      "duration_seconds": 0.86,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Desktop package verification",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:37.5226224+02:00",
-      "ended_at": "2026-05-30T15:38:39.0525800+02:00",
-      "duration_seconds": 1.53,
+      "started_at": "2026-05-31T12:22:55.0222187+02:00",
+      "ended_at": "2026-05-31T12:22:56.7351268+02:00",
+      "duration_seconds": 1.71,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Flutter analyze",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:39.0559199+02:00",
-      "ended_at": "2026-05-30T15:38:42.4068920+02:00",
-      "duration_seconds": 3.35,
+      "started_at": "2026-05-31T12:22:56.7385499+02:00",
+      "ended_at": "2026-05-31T12:23:00.2620971+02:00",
+      "duration_seconds": 3.52,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Flutter tests",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:42.4077466+02:00",
-      "ended_at": "2026-05-30T15:38:45.6120443+02:00",
-      "duration_seconds": 3.2,
+      "started_at": "2026-05-31T12:23:00.2629644+02:00",
+      "ended_at": "2026-05-31T12:23:03.8212844+02:00",
+      "duration_seconds": 3.56,
       "exit_code": 0,
       "error": ""
     },
     {
-      "label": "Phone device smoke availability",
+      "label": "Cloud API verification",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:45.6209766+02:00",
-      "ended_at": "2026-05-30T15:38:46.2094765+02:00",
-      "duration_seconds": 0.59,
+      "started_at": "2026-05-31T12:23:03.8237162+02:00",
+      "ended_at": "2026-05-31T12:23:05.5684185+02:00",
+      "duration_seconds": 1.74,
+      "exit_code": 0,
+      "error": ""
+    },
+    {
+      "label": "Cloud APK build",
+      "status": "passed",
+      "started_at": "2026-05-31T12:23:05.5705101+02:00",
+      "ended_at": "2026-05-31T12:23:10.7649349+02:00",
+      "duration_seconds": 5.19,
+      "exit_code": 0,
+      "error": ""
+    },
+    {
+      "label": "Cloud APK verification",
+      "status": "passed",
+      "started_at": "2026-05-31T12:23:10.7654651+02:00",
+      "ended_at": "2026-05-31T12:23:12.2964201+02:00",
+      "duration_seconds": 1.53,
+      "exit_code": 0,
+      "error": ""
+    },
+    {
+      "label": "Cloud phone readiness report",
+      "status": "passed",
+      "started_at": "2026-05-31T12:23:12.2973293+02:00",
+      "ended_at": "2026-05-31T12:23:37.3040959+02:00",
+      "duration_seconds": 25.01,
+      "exit_code": 0,
+      "error": ""
+    },
+    {
+      "label": "Permanent cloud deployment status report",
+      "status": "passed",
+      "started_at": "2026-05-31T12:23:37.3047833+02:00",
+      "ended_at": "2026-05-31T12:23:37.9765354+02:00",
+      "duration_seconds": 0.67,
+      "exit_code": 0,
+      "error": ""
+    },
+    {
+      "label": "Phone device smoke",
+      "status": "passed",
+      "started_at": "2026-05-31T12:23:37.9782505+02:00",
+      "ended_at": "2026-05-31T12:23:47.8548982+02:00",
+      "duration_seconds": 9.88,
       "exit_code": 0,
       "error": ""
     },
     {
       "label": "Phone readiness report refresh",
       "status": "passed",
-      "started_at": "2026-05-30T15:38:46.2101380+02:00",
-      "ended_at": "2026-05-30T15:39:02.0790394+02:00",
-      "duration_seconds": 15.87,
+      "started_at": "2026-05-31T12:23:47.8554584+02:00",
+      "ended_at": "2026-05-31T12:24:16.5107782+02:00",
+      "duration_seconds": 28.66,
       "exit_code": 0,
       "error": ""
     }
   ],
   "summaries": {
     "product_acceptance": {
-      "created_at": "2026-05-30T15:37:28+02:00",
+      "created_at": "2026-05-31T12:21:34+02:00",
       "target_pass_rate": 0.95,
       "min_cases_per_section": 5,
       "min_cases_by_section": {
@@ -255,10 +300,10 @@
       "pc_desktop": true,
       "phone_same_wifi": true,
       "render_deploy_package": true,
-      "phone_permanent_cloud": false,
+      "phone_permanent_cloud": true,
       "phone_install_download": true,
       "phone_temporary_tunnel": false,
-      "phone_device_smoke": false,
+      "phone_device_smoke": true,
       "phone_emulator_smoke": true
     },
     "lan_api_server": {
@@ -266,7 +311,7 @@
       "health_url": "http://127.0.0.1:8001/health",
       "healthy": true,
       "pid_path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone-lan-api-release-gate-pid.txt",
-      "pid": 35288,
+      "pid": 13272,
       "pid_running": true,
       "stdout_log": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone-lan-api-release-gate.log",
       "stderr_log": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone-lan-api-release-gate.err.log"
@@ -288,7 +333,7 @@
       "fake_probe": "fake / 0.78"
     },
     "desktop_package": {
-      "generated_at": "2026-05-30T15:38:38.9507531+02:00",
+      "generated_at": "2026-05-31T12:22:56.5469243+02:00",
       "ok": true,
       "executable": {
         "exists": true,
@@ -321,22 +366,22 @@
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\docs\\report\\verity_lens_report.pdf",
       "size_bytes": 71636,
-      "sha256": "FE572F7C0073DC7EB56CBA12BA0E9222AF61971B030C6789FCC1CCFA387A38FE",
-      "modified_at": "2026-05-30T15:37:30.8254545+02:00"
+      "sha256": "C37FAE50167760441558B16D332CD3DD63B5695ED424EED6C5AEBE97E3892DA2",
+      "modified_at": "2026-05-31T12:21:37.2817552+02:00"
     },
     "render_deploy_config": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\render_deploy_config_latest.json",
       "size_bytes": 4963,
-      "sha256": "EDFEAFBD42A04F3691F40A96F39E9DAC33C047FDC017F589B492E7D642C649B5",
-      "modified_at": "2026-05-30T15:37:31.0116776+02:00"
+      "sha256": "70D6F1DA64BC1FB01DD542631CBA0870B283633FBF44CA5B86B8F164FDBA566F",
+      "modified_at": "2026-05-31T12:21:37.5257552+02:00"
     },
     "render_backend_zip": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\cloud_deploy\\verity-lens-render-backend.zip",
-      "size_bytes": 1332769,
-      "sha256": "5BF974653E8ABC34B3869828471492274CE4D68B7269145955A21DAF96D5EBEC",
-      "modified_at": "2026-05-30T15:37:31.9517611+02:00"
+      "size_bytes": 1332799,
+      "sha256": "6463EF8685079A54C829FAE7BC9010FF81924CDD7DD7FF53C4944B1B5F299151",
+      "modified_at": "2026-05-31T12:21:38.5261677+02:00"
     },
     "desktop_zip": {
       "exists": true,
@@ -356,8 +401,8 @@
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_APK_VERIFICATION.json",
       "size_bytes": 2316,
-      "sha256": "33D3AB107FB8CD5F7F71727DF17E9E3F350C621723EDC884BD9D76FE1E88BC30",
-      "modified_at": "2026-05-30T15:38:18.7146774+02:00"
+      "sha256": "54B9D0523BE7D399BDD0F3F15D2E31CC0569D639233FDCE3E4C28240326209C4",
+      "modified_at": "2026-05-31T12:22:30.4835619+02:00"
     },
     "lan_apk": {
       "exists": true,
@@ -370,15 +415,15 @@
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_LAN_APK_VERIFICATION.json",
       "size_bytes": 2202,
-      "sha256": "3429D3A9CD7C0321DEB0C2681D2538E297CDA02278F050B86279ACC4E3CD79E5",
-      "modified_at": "2026-05-30T15:38:20.6807794+02:00"
+      "sha256": "66DF16575CE26FA88ABE45F9B95D687ADC99D0E149F01935BA742A5FD4EA09C9",
+      "modified_at": "2026-05-31T12:22:32.7665314+02:00"
     },
     "device_smoke": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SMOKE.json",
-      "size_bytes": 2126,
-      "sha256": "682850F454F4AE955027A4019AC753CE0102774A6630AD4469E4A96BA009267D",
-      "modified_at": "2026-05-30T15:38:46.1016013+02:00"
+      "size_bytes": 14685,
+      "sha256": "8DADA658798DACC5F9DC8B6119C1F28885D20A6EEF61F87B44A9E99C19881368",
+      "modified_at": "2026-05-31T12:23:47.6770637+02:00"
     },
     "emulator_smoke": {
       "exists": true,
@@ -388,11 +433,11 @@
       "modified_at": "2026-05-29T23:21:33.5092024+02:00"
     },
     "cloud_apk": {
-      "exists": false,
+      "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
-      "size_bytes": 0,
-      "sha256": "",
-      "modified_at": null
+      "size_bytes": 49843593,
+      "sha256": "F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE",
+      "modified_at": "2026-05-31T12:23:09.9949473+02:00"
     }
   }
 }

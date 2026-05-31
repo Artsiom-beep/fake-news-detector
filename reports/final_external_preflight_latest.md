@@ -1,25 +1,25 @@
 # Verity Lens Final External Preflight
 
-- Generated: `2026-05-31T11:05:05.9775983+02:00`
-- Ready to run finalizer: `False`
+- Generated: `2026-05-31T12:20:55.2787274+02:00`
+- Ready to run finalizer: `True`
 - Allow emulator: `False`
-- Require ready: `False`
-- Finalizer command: `.\scripts\finalize_cloud_phone_submission.ps1 -ApiBaseUrl 'https://<render-app>.onrender.com' -AdbPath 'C:\Users\marke\AppData\Local\Android\Sdk\platform-tools\adb.exe'`
+- Require ready: `True`
+- Finalizer command: `.\scripts\finalize_cloud_phone_submission.ps1 -ApiBaseUrl 'https://fake-news-detector-poi6.onrender.com' -AdbPath 'C:\Users\marke\AppData\Local\Android\Sdk\platform-tools\adb.exe'`
 
 ## Render API
 
-- Input URL: ``
-- Normalized URL: ``
-- URL policy OK: `False`
-- URL policy error: `ApiBaseUrl is required for the final cloud phone submission.`
-- Cloud API OK: `False`
-- Health: `not_checked`
-- Health attempts: `0`
-- Ready: `not_checked`
-- Ready attempts: `0`
-- Fake probe: `not_checked`
-- Fake probe attempts: `0`
-- Cloud API error: `ApiBaseUrl is required for the final cloud phone submission.`
+- Input URL: `https://fake-news-detector-poi6.onrender.com`
+- Normalized URL: `https://fake-news-detector-poi6.onrender.com`
+- URL policy OK: `True`
+- URL policy error: ``
+- Cloud API OK: `True`
+- Health: `ok`
+- Health attempts: `1`
+- Ready: `ready`
+- Ready attempts: `1`
+- Fake probe: `fake / 0.78`
+- Fake probe attempts: `1`
+- Cloud API error: ``
 
 ## Android Device
 
@@ -32,30 +32,28 @@
 - Requested device: ``
 - Requested device state: ``
 - Selected device: ``
-- Selected device authorized: `False`
+- Selected device authorized: `True`
 - Selected device is emulator: `False`
-- Selected physical device authorized: `False`
+- Selected physical device authorized: `True`
 - Unauthorized devices: `0`
 - Offline devices: `0`
 - Authorized emulator devices: `0`
-- Device error: `No authorized physical USB Android device is connected.`
+- Device error: ``
 
 ### Raw ADB Devices Output
 
 ```text
 List of devices attached
+RFCTC07YX2N	device
 ```
 
 ## Missing To Run Finalizer
 
-- real public HTTPS Render API URL
-- authorized physical USB Android device
+- None
 
 ## Next Actions
 
-- Deploy the Render backend from render.yaml or outputs\cloud_deploy\verity-lens-render-backend.zip, then rerun this preflight with -ApiBaseUrl https://<render-app>.onrender.com -RequireReady.
-- No Android devices are listed by adb devices. Connect a real phone by USB, enable USB debugging, accept the RSA prompt, and rerun adb devices until one row shows state device.
-- After the missing items are fixed, run: .\scripts\finalize_cloud_phone_submission.ps1 -ApiBaseUrl 'https://<render-app>.onrender.com' -AdbPath 'C:\Users\marke\AppData\Local\Android\Sdk\platform-tools\adb.exe'
+- Run the final wrapper now: .\scripts\finalize_cloud_phone_submission.ps1 -ApiBaseUrl 'https://fake-news-detector-poi6.onrender.com' -AdbPath 'C:\Users\marke\AppData\Local\Android\Sdk\platform-tools\adb.exe'
 
 ## Final Evidence Contract
 
@@ -105,7 +103,7 @@ Required final reports:
 ## Artifacts
 
 - Render backend ZIP: `True` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\cloud_deploy\verity-lens-render-backend.zip
-- Cloud APK: `False` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\VerityLens-cloud.apk
-- Cloud APK verification JSON: `False` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_CLOUD_APK_VERIFICATION.json
+- Cloud APK: `True` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\VerityLens-cloud.apk
+- Cloud APK verification JSON: `True` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_CLOUD_APK_VERIFICATION.json
 - Device smoke JSON: `True` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_DEVICE_SMOKE.json
-- Device screenshot: `False` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_DEVICE_SCREENSHOT.png
+- Device screenshot: `True` C:\Users\marke\University\project\fake-news-detector_transfer_bundle\fake-news-detector\outputs\phone_download\PHONE_DEVICE_SCREENSHOT.png
