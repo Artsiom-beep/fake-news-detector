@@ -106,7 +106,24 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun launchOriginalImagePicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+            type = "image/*"
+            putExtra(
+                Intent.EXTRA_MIME_TYPES,
+                arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
+            )
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        try {
+            startActivityForResult(galleryIntent, pickOriginalImageRequest)
+        } catch (_: ActivityNotFoundException) {
+            launchFileImagePicker()
+        }
+    }
+
+    private fun launchFileImagePicker() {
+        val fileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/*"
             putExtra(
@@ -118,14 +135,14 @@ class MainActivity : FlutterActivity() {
         }
 
         try {
-            startActivityForResult(intent, pickOriginalImageRequest)
+            startActivityForResult(fileIntent, pickOriginalImageRequest)
         } catch (_: ActivityNotFoundException) {
-            val fallback = Intent(Intent.ACTION_GET_CONTENT).apply {
+            val contentIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivityForResult(fallback, pickOriginalImageRequest)
+            startActivityForResult(contentIntent, pickOriginalImageRequest)
         }
     }
 
