@@ -3,6 +3,7 @@ package app.veritylens.mobile
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -112,6 +113,10 @@ class MainActivity : FlutterActivity() {
     private fun launchFileImagePicker() {
         val fileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
+            component = ComponentName(
+                "com.google.android.documentsui",
+                "com.android.documentsui.picker.PickActivity"
+            )
             type = "image/*"
             putExtra(
                 Intent.EXTRA_MIME_TYPES,
@@ -124,12 +129,38 @@ class MainActivity : FlutterActivity() {
         try {
             startActivityForResult(fileIntent, pickOriginalImageRequest)
         } catch (_: ActivityNotFoundException) {
-            val contentIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            val documentIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
+                )
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             }
-            startActivityForResult(contentIntent, pickOriginalImageRequest)
+            try {
+                startActivityForResult(documentIntent, pickOriginalImageRequest)
+            } catch (_: ActivityNotFoundException) {
+                val contentIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "image/*"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivityForResult(contentIntent, pickOriginalImageRequest)
+            }
+        } catch (_: SecurityException) {
+            val documentIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "image/*"
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
+                )
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+            }
+            startActivityForResult(documentIntent, pickOriginalImageRequest)
         }
     }
 
