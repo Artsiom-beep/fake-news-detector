@@ -183,7 +183,6 @@ class _VerificationHomeState extends State<VerificationHome> {
   final _newsUrlController = TextEditingController();
   final _newsTextController = TextEditingController();
   final _factController = TextEditingController();
-  final _imageContextController = TextEditingController();
 
   int _selectedIndex = 0;
   bool _isLoading = false;
@@ -216,7 +215,6 @@ class _VerificationHomeState extends State<VerificationHome> {
     _newsUrlController.dispose();
     _newsTextController.dispose();
     _factController.dispose();
-    _imageContextController.dispose();
     super.dispose();
   }
 
@@ -308,7 +306,6 @@ class _VerificationHomeState extends State<VerificationHome> {
         bytes: image.bytes,
         filename: image.name,
         analysisType: ImageAnalysisType.aiImage,
-        question: _imageContextController.text,
       ),
     );
   }
@@ -455,8 +452,6 @@ class _VerificationHomeState extends State<VerificationHome> {
         color: const Color(0xff8d4d6f),
         child: ImagePanel(
           title: 'Photos / images',
-          contextLabel: 'Context',
-          contextController: _imageContextController,
           selectedImage: _image,
           actionLabel: 'Detect AI image',
           onPick: _pickImage,
@@ -781,8 +776,6 @@ class ImagePanel extends StatelessWidget {
   const ImagePanel({
     super.key,
     required this.title,
-    required this.contextLabel,
-    required this.contextController,
     required this.selectedImage,
     required this.actionLabel,
     required this.onPick,
@@ -791,8 +784,6 @@ class ImagePanel extends StatelessWidget {
   });
 
   final String title;
-  final String contextLabel;
-  final TextEditingController contextController;
   final PickedImage? selectedImage;
   final String actionLabel;
   final VoidCallback onPick;
@@ -813,12 +804,6 @@ class ImagePanel extends StatelessWidget {
             title: title,
             image: selectedImage!,
           ),
-        AppTextField(
-          controller: contextController,
-          label: contextLabel,
-          minLines: 3,
-          maxLines: 5,
-        ),
         PrimaryActionButton(
           label: actionLabel,
           icon: Icons.search,

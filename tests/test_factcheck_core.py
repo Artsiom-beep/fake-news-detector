@@ -1789,10 +1789,8 @@ Write-Output 'apk name policy ok'
             f'<textarea id="factTextInput" name="text" placeholder="Example: Elephant is a mammal">{text}</textarea>',
             html,
         )
-        self.assertIn(
-            '<textarea id="imageQuestionInput" name="text" placeholder="Optional image context"></textarea>',
-            html,
-        )
+        self.assertNotIn("imageQuestionInput", html)
+        self.assertNotIn("Optional image context", html)
 
     @patch("src.ui.run_factcheck")
     def test_ui_preserves_active_panel_after_fact_submit(self, mock_run_factcheck):

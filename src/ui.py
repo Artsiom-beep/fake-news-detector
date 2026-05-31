@@ -1087,8 +1087,6 @@ def render_page(
             <form class="tool-form" method="post" action="/check#imagesTool" enctype="multipart/form-data" data-media-picker>
               <input type="hidden" name="active_panel" value="imagesTool" />
               <input type="hidden" name="image_action" value="ai_image" />
-              <label for="imageQuestionInput">Context</label>
-              <textarea id="imageQuestionInput" name="text" placeholder="Optional image context">{escape(image_text_value)}</textarea>
               <input class="file-input" id="imageInput" type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/bmp,image/tiff" />
               <div class="media-drop" tabindex="0" aria-label="Image upload area">
                 <div>
@@ -1326,7 +1324,7 @@ async def check(
             result = run_ai_image_check(
                 image_bytes,
                 filename=image_file.filename or "",
-                question=clean_text,
+                question="",
             ).to_public_dict()
         except Exception as exc:
             error_html = f"<div class='error'>Image check failed: {escape(str(exc))}</div>"
