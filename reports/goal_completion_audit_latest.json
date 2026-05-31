@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T12:25:16.5125729+02:00",
+  "generated_at": "2026-05-31T12:36:13.5722619+02:00",
   "complete": true,
   "estimated_completion_percent": 100,
   "estimated_remaining_percent": 0,
@@ -154,37 +154,37 @@
     "release_gate": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\release_gate_latest.json",
-      "size_bytes": 16128,
-      "sha256": "6DAAD070C595E8D687EE5EB88F7B5543308D0EFA4BAC8AF4FEE9AB867E74F4CE",
-      "modified_at": "2026-05-31T12:24:16.8468971+02:00"
+      "size_bytes": 16121,
+      "sha256": "DDE6F28EB4BD25373469BB0FD2B4E08E93589619987F7115FF18D306AF6EB16D",
+      "modified_at": "2026-05-31T12:35:20.5782354+02:00"
     },
     "product_acceptance": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\product_acceptance_latest.json",
       "size_bytes": 37767,
-      "sha256": "5FB3D1CCE18EEB604B7B70724C3A565826CF8E66E920470C1C36690060187B7E",
-      "modified_at": "2026-05-31T12:21:34.5844041+02:00"
+      "sha256": "4F9B1AFAA4F6B2113241C522033007346E5A73C1BE544929C1EFECA8489E853D",
+      "modified_at": "2026-05-31T12:32:43.1115936+02:00"
     },
     "submission_verification": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\SUBMISSION_BUNDLE_VERIFICATION.json",
       "size_bytes": 1072,
-      "sha256": "953B4502809B9CEAC235CC126A796CE9EE6A01F70FD244A2F6A0262F2E0C6FFD",
-      "modified_at": "2026-05-31T12:25:15.8587707+02:00"
+      "sha256": "83FF47B46480A72BDCE6B2994B4E3C1596C75D5AC5329167858F00864B0B7603",
+      "modified_at": "2026-05-31T12:36:12.9622431+02:00"
     },
     "submission_zip": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\VerityLens-submission.zip",
-      "size_bytes": 185284652,
-      "sha256": "A945993BCF46573A32971BE67AD2BE8F41A8639D27FAF49B4702305C9551AD45",
-      "modified_at": "2026-05-31T12:25:11.0365848+02:00"
+      "size_bytes": 185284819,
+      "sha256": "04472C502AE3B5E86B5EFE6B8BFD210B0385DB08A10C68F4CC301EB83A7C3653",
+      "modified_at": "2026-05-31T12:36:08.2348928+02:00"
     },
     "report_pdf": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\docs\\report\\verity_lens_report.pdf",
       "size_bytes": 71636,
-      "sha256": "C37FAE50167760441558B16D332CD3DD63B5695ED424EED6C5AEBE97E3892DA2",
-      "modified_at": "2026-05-31T12:21:37.2817552+02:00"
+      "sha256": "53CCEB5E57307B9BAD5614F2E99DA8210EB45BD2A67F1FF8986FFAC2D2A27C87",
+      "modified_at": "2026-05-31T12:32:45.3612571+02:00"
     },
     "desktop_zip": {
       "exists": true,
@@ -198,14 +198,14 @@
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
       "size_bytes": 49843593,
       "sha256": "F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE",
-      "modified_at": "2026-05-31T12:23:09.9949473+02:00"
+      "modified_at": "2026-05-31T12:34:16.2258625+02:00"
     },
     "device_screenshot": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SCREENSHOT.png",
-      "size_bytes": 32103,
-      "sha256": "9BE7A3E0AFD8EFF7E195F5E143A68941F85A1A30785318DB6CE55A13934B51D3",
-      "modified_at": "2026-05-31T12:23:47.6444919+02:00"
+      "size_bytes": 32006,
+      "sha256": "9086C5E914CA69A7E546B6F92DB88162E8099813F98D1B38AF474EC1E3349641",
+      "modified_at": "2026-05-31T12:35:00.1731226+02:00"
     }
   }
 }

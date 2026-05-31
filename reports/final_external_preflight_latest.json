@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T12:20:55.2787274+02:00",
+  "generated_at": "2026-05-31T12:32:05.0002411+02:00",
   "ready_to_run_finalizer": true,
   "allow_emulator": false,
   "require_ready": true,
@@ -65,14 +65,14 @@
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\cloud_deploy\\verity-lens-render-backend.zip",
       "size_bytes": 1332799,
       "sha256": "6463EF8685079A54C829FAE7BC9010FF81924CDD7DD7FF53C4944B1B5F299151",
-      "modified_at": "2026-05-31T12:16:08.2366093+02:00"
+      "modified_at": "2026-05-31T12:21:38.5261677+02:00"
     },
     "report_pdf": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\docs\\report\\verity_lens_report.pdf",
       "size_bytes": 71636,
-      "sha256": "E48B0ADED2F468ABC220D35B574FDD7BCB27F4BF699AF0C6ABEE83E92489DD6E",
-      "modified_at": "2026-05-31T12:16:06.9871901+02:00"
+      "sha256": "C37FAE50167760441558B16D332CD3DD63B5695ED424EED6C5AEBE97E3892DA2",
+      "modified_at": "2026-05-31T12:21:37.2817552+02:00"
     },
     "desktop_zip": {
       "exists": true,
@@ -86,28 +86,28 @@
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
       "size_bytes": 49843593,
       "sha256": "F3D94E40EE7DB1A06ED0FBB3E7B1ED7033B754DEFFBFCCDCCAD2CD2201D111AE",
-      "modified_at": "2026-05-31T12:18:02.1949284+02:00"
+      "modified_at": "2026-05-31T12:23:09.9949473+02:00"
     },
     "cloud_apk_verification_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_CLOUD_APK_VERIFICATION.json",
       "size_bytes": 2272,
-      "sha256": "BA89ACAE32F054CFBDA69F59830CD35869D77F22EE1FADF24F470A16AFF8855B",
-      "modified_at": "2026-05-31T12:18:04.3579224+02:00"
+      "sha256": "D39D33F1C1F505C8EF583D13A87930D6371D9A5C1B0B4F8B802510CF850999BE",
+      "modified_at": "2026-05-31T12:23:12.1193298+02:00"
     },
     "device_smoke_json": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SMOKE.json",
       "size_bytes": 14685,
-      "sha256": "F28C86A9BDD945B9F2017140CB76D898BCACE9DDCD7279055E9AFB4DA1E948E6",
-      "modified_at": "2026-05-31T12:18:46.0643807+02:00"
+      "sha256": "8DADA658798DACC5F9DC8B6119C1F28885D20A6EEF61F87B44A9E99C19881368",
+      "modified_at": "2026-05-31T12:23:47.6770637+02:00"
     },
     "device_screenshot": {
       "exists": true,
       "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SCREENSHOT.png",
-      "size_bytes": 30202,
-      "sha256": "4A692CDA6CC2F39F6C31F87A7931009569119C3A19AF347917F134E3F3BE48DE",
-      "modified_at": "2026-05-31T12:18:46.0312393+02:00"
+      "size_bytes": 32103,
+      "sha256": "9BE7A3E0AFD8EFF7E195F5E143A68941F85A1A30785318DB6CE55A13934B51D3",
+      "modified_at": "2026-05-31T12:23:47.6444919+02:00"
     }
   },
   "final_evidence_contract": {
@@ -160,12 +160,9 @@
   },
   "current_goal_audit": {
     "exists": true,
-    "complete": false,
-    "estimated_completion_percent": 92,
-    "remaining": [
-      "phone_permanent_cloud",
-      "physical_phone_proof"
-    ]
+    "complete": true,
+    "estimated_completion_percent": 100,
+    "remaining": null
   },
   "missing_to_run_finalizer": [],
   "next_actions": [
