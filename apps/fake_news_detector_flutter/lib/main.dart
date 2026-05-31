@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_client.dart';
@@ -268,18 +269,35 @@ class _VerificationHomeState extends State<VerificationHome> {
   }
 
   Future<void> _pickImage() async {
+    PickedImage? image;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        image = await AndroidOriginalImagePicker.pickImage();
+      } on PlatformException {
+        image = null;
+      }
+    }
+
+    image ??= await _pickImageWithFilePicker();
+    if (image == null) {
+      return;
+    }
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  Future<PickedImage?> _pickImageWithFilePicker() async {
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: true,
     );
     final file = picked?.files.single;
     if (file == null || file.bytes == null) {
-      return;
+      return null;
     }
-    setState(() {
-      final image = PickedImage(name: file.name, bytes: file.bytes!);
-      _image = image;
-    });
+    return PickedImage(name: file.name, bytes: file.bytes!);
   }
 
   Future<void> _checkNews() {
@@ -1243,6 +1261,26 @@ class PickedImage {
 
   final String name;
   final Uint8List bytes;
+}
+
+class AndroidOriginalImagePicker {
+  static const _channel =
+      MethodChannel('app.veritylens.mobile/original_image_picker');
+
+  static Future<PickedImage?> pickImage() async {
+    final result = await _channel.invokeMapMethod<String, dynamic>(
+      'pickOriginalImage',
+    );
+    if (result == null) {
+      return null;
+    }
+    final bytes = result['bytes'];
+    final name = result['name'];
+    if (bytes is! Uint8List || name is! String || name.trim().isEmpty) {
+      return null;
+    }
+    return PickedImage(name: name, bytes: bytes);
+  }
 }
 
 class AppTheme {
