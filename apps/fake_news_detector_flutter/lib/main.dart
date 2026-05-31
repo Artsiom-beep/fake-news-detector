@@ -269,23 +269,52 @@ class _VerificationHomeState extends State<VerificationHome> {
   }
 
   Future<void> _pickImage() async {
-    PickedImage? image;
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      try {
-        image = await AndroidOriginalImagePicker.pickImage();
-      } on PlatformException {
-        image = null;
-      }
-    }
-
-    image ??= await _pickImageWithFilePicker();
+    final image = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        ? await _pickImageFromCameraOriginals()
+        : await _pickImageWithFilePicker();
     if (image == null) {
       return;
     }
 
     setState(() {
+      _error = null;
       _image = image;
     });
+  }
+
+  Future<PickedImage?> _pickImageFromCameraOriginals() async {
+    try {
+      final items = await AndroidOriginalImagePicker.listCameraImages();
+      if (!mounted) {
+        return null;
+      }
+      if (items.isEmpty) {
+        setState(
+          () => _error = 'No camera originals found in DCIM/Camera.',
+        );
+        return null;
+      }
+
+      final selected = await showModalBottomSheet<CameraImageItem>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) => CameraOriginalPickerSheet(items: items),
+      );
+      if (selected == null) {
+        return null;
+      }
+      return AndroidOriginalImagePicker.loadCameraImage(selected.id);
+    } on PlatformException catch (error) {
+      if (!mounted) {
+        return null;
+      }
+      setState(
+        () =>
+            _error = error.message ?? 'Could not open original camera photos.',
+      );
+      return null;
+    }
   }
 
   Future<PickedImage?> _pickImageWithFilePicker() async {
@@ -314,8 +343,8 @@ class _VerificationHomeState extends State<VerificationHome> {
       if (!mounted) {
         return;
       }
-      setState(() => _error =
-          error.message ?? 'Could not load the latest camera photo.');
+      setState(() =>
+          _error = error.message ?? 'Could not load the latest camera photo.');
     }
   }
 
@@ -490,6 +519,9 @@ class _VerificationHomeState extends State<VerificationHome> {
         child: ImagePanel(
           title: 'Image metadata',
           selectedImage: _image,
+          pickLabel: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+              ? 'Camera originals'
+              : 'Open image file',
           actionLabel: 'Check metadata',
           onPick: _pickImage,
           onPickLatestCamera:
@@ -818,6 +850,7 @@ class ImagePanel extends StatelessWidget {
     super.key,
     required this.title,
     required this.selectedImage,
+    required this.pickLabel,
     required this.actionLabel,
     required this.onPick,
     this.onPickLatestCamera,
@@ -827,6 +860,7 @@ class ImagePanel extends StatelessWidget {
 
   final String title;
   final PickedImage? selectedImage;
+  final String pickLabel;
   final String actionLabel;
   final VoidCallback onPick;
   final VoidCallback? onPickLatestCamera;
@@ -840,7 +874,10 @@ class ImagePanel extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: isLoading ? null : onPick,
           icon: const Icon(Icons.upload_file),
-          label: Text(selectedImage?.name ?? 'Open file manager'),
+          label: Text(
+            selectedImage?.name ?? pickLabel,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         if (onPickLatestCamera != null)
           OutlinedButton.icon(
@@ -956,6 +993,118 @@ class ImagePreview extends StatelessWidget {
           image.bytes,
           fit: BoxFit.cover,
           semanticLabel: title,
+        ),
+      ),
+    );
+  }
+}
+
+class CameraOriginalPickerSheet extends StatelessWidget {
+  const CameraOriginalPickerSheet({super.key, required this.items});
+
+  final List<CameraImageItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final crossAxisCount = width >= 620 ? 5 : (width >= 430 ? 4 : 3);
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height * 0.72,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Camera originals',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: GridView.builder(
+                  itemCount: items.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.72,
+                  ),
+                  itemBuilder: (context, index) {
+                    return _CameraOriginalTile(item: items[index]);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CameraOriginalTile extends StatelessWidget {
+  const _CameraOriginalTile({required this.item});
+
+  final CameraImageItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final details = [
+      item.dateLabel,
+      item.sizeLabel,
+      item.dimensionsLabel,
+    ].where((value) => value.isNotEmpty).join(' | ');
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => Navigator.of(context).pop(item),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xffe3d4c2)),
+          color: const Color(0xfffffcf7),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: item.thumbnail == null
+                  ? const ColoredBox(
+                      color: Color(0xfff2e8dc),
+                      child: Icon(Icons.image_outlined, size: 34),
+                    )
+                  : Image.memory(
+                      item.thumbnail!,
+                      fit: BoxFit.cover,
+                      gaplessPlayback: true,
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    details,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1287,11 +1436,92 @@ class VerificationMode {
   final Widget child;
 }
 
+class CameraImageItem {
+  const CameraImageItem({
+    required this.id,
+    required this.name,
+    required this.mimeType,
+    required this.dateTaken,
+    required this.sizeBytes,
+    required this.width,
+    required this.height,
+    required this.thumbnail,
+  });
+
+  final int id;
+  final String name;
+  final String mimeType;
+  final int dateTaken;
+  final int sizeBytes;
+  final int width;
+  final int height;
+  final Uint8List? thumbnail;
+
+  String get dateLabel => _formatPhotoDate(dateTaken);
+  String get sizeLabel => _formatFileSize(sizeBytes);
+  String get dimensionsLabel =>
+      width > 0 && height > 0 ? '${width}x$height' : '';
+
+  factory CameraImageItem.fromMap(Map<dynamic, dynamic> map) {
+    return CameraImageItem(
+      id: _asInt(map['id']),
+      name: (map['name'] as String?)?.trim().isNotEmpty == true
+          ? map['name'] as String
+          : 'camera_original.jpg',
+      mimeType: (map['mimeType'] as String?) ?? 'image/jpeg',
+      dateTaken: _asInt(map['dateTaken']),
+      sizeBytes: _asInt(map['sizeBytes']),
+      width: _asInt(map['width']),
+      height: _asInt(map['height']),
+      thumbnail:
+          map['thumbnail'] is Uint8List ? map['thumbnail'] as Uint8List : null,
+    );
+  }
+}
+
 class PickedImage {
   const PickedImage({required this.name, required this.bytes});
 
   final String name;
   final Uint8List bytes;
+}
+
+int _asInt(dynamic value) {
+  if (value is int) {
+    return value;
+  }
+  if (value is num) {
+    return value.toInt();
+  }
+  if (value is String) {
+    return int.tryParse(value) ?? 0;
+  }
+  return 0;
+}
+
+String _formatPhotoDate(int millisecondsSinceEpoch) {
+  if (millisecondsSinceEpoch <= 0) {
+    return '';
+  }
+  final value =
+      DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch).toLocal();
+  String twoDigits(int number) => number.toString().padLeft(2, '0');
+  return '${twoDigits(value.day)}.${twoDigits(value.month)} ${twoDigits(value.hour)}:${twoDigits(value.minute)}';
+}
+
+String _formatFileSize(int bytes) {
+  if (bytes <= 0) {
+    return '';
+  }
+  if (bytes < 1024) {
+    return '$bytes B';
+  }
+  final kib = bytes / 1024;
+  if (kib < 1024) {
+    return '${kib.toStringAsFixed(kib >= 100 ? 0 : 1)} KB';
+  }
+  final mib = kib / 1024;
+  return '${mib.toStringAsFixed(mib >= 100 ? 0 : 1)} MB';
 }
 
 class AndroidOriginalImagePicker {
@@ -1302,21 +1532,41 @@ class AndroidOriginalImagePicker {
     final result = await _channel.invokeMapMethod<String, dynamic>(
       'pickOriginalImage',
     );
+    return _pickedImageFromResult(result);
+  }
+
+  static Future<List<CameraImageItem>> listCameraImages({
+    int limit = 80,
+  }) async {
+    final result = await _channel.invokeMethod<List<dynamic>>(
+      'listCameraImages',
+      {'limit': limit},
+    );
     if (result == null) {
-      return null;
+      return const [];
     }
-    final bytes = result['bytes'];
-    final name = result['name'];
-    if (bytes is! Uint8List || name is! String || name.trim().isEmpty) {
-      return null;
-    }
-    return PickedImage(name: name, bytes: bytes);
+    return [
+      for (final item in result)
+        if (item is Map) CameraImageItem.fromMap(item),
+    ];
+  }
+
+  static Future<PickedImage?> loadCameraImage(int id) async {
+    final result = await _channel.invokeMapMethod<String, dynamic>(
+      'loadCameraImage',
+      {'id': id},
+    );
+    return _pickedImageFromResult(result);
   }
 
   static Future<PickedImage?> pickLatestCameraImage() async {
     final result = await _channel.invokeMapMethod<String, dynamic>(
       'pickLatestCameraImage',
     );
+    return _pickedImageFromResult(result);
+  }
+
+  static PickedImage? _pickedImageFromResult(Map<dynamic, dynamic>? result) {
     if (result == null) {
       return null;
     }

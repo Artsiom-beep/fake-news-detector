@@ -7,14 +7,17 @@ import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Size
 import android.webkit.MimeTypeMap
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.io.ByteArrayOutputStream
 
 class MainActivity : FlutterActivity() {
     private val channelName = "app.veritylens.mobile/original_image_picker"
@@ -25,11 +28,15 @@ class MainActivity : FlutterActivity() {
 
     private enum class PendingAction {
         PICK_IMAGE,
-        LATEST_CAMERA
+        LATEST_CAMERA,
+        LIST_CAMERA,
+        LOAD_CAMERA
     }
 
     private var pendingPickResult: MethodChannel.Result? = null
     private var pendingAction: PendingAction? = null
+    private var pendingListLimit = 80
+    private var pendingLoadId: Long? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -37,6 +44,11 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "pickOriginalImage" -> pickOriginalImage(result)
                 "pickLatestCameraImage" -> pickLatestCameraImage(result)
+                "listCameraImages" -> listCameraImages(result, call.argument<Int>("limit") ?: 80)
+                "loadCameraImage" -> loadCameraImage(
+                    result,
+                    (call.argument<Number>("id"))?.toLong()
+                )
                 else -> result.notImplemented()
             }
         }
@@ -66,6 +78,38 @@ class MainActivity : FlutterActivity() {
             return
         }
         loadLatestCameraImage()
+    }
+
+    private fun listCameraImages(result: MethodChannel.Result, limit: Int) {
+        if (!startPending(result)) {
+            return
+        }
+        val permissions = missingPermissions(needsImageReadPermission = true)
+        if (permissions.isNotEmpty()) {
+            pendingAction = PendingAction.LIST_CAMERA
+            pendingListLimit = limit
+            requestPermissions(permissions, permissionRequest)
+            return
+        }
+        completePick(queryCameraImageItems(limit))
+    }
+
+    private fun loadCameraImage(result: MethodChannel.Result, id: Long?) {
+        if (id == null) {
+            result.error("missing_id", "Image id is required.", null)
+            return
+        }
+        if (!startPending(result)) {
+            return
+        }
+        val permissions = missingPermissions(needsImageReadPermission = true)
+        if (permissions.isNotEmpty()) {
+            pendingAction = PendingAction.LOAD_CAMERA
+            pendingLoadId = id
+            requestPermissions(permissions, permissionRequest)
+            return
+        }
+        loadCameraImageById(id)
     }
 
     private fun startPending(result: MethodChannel.Result): Boolean {
@@ -185,6 +229,28 @@ class MainActivity : FlutterActivity() {
                     )
                 }
             }
+            PendingAction.LIST_CAMERA -> {
+                if (hasImageReadPermission()) {
+                    completePick(queryCameraImageItems(pendingListLimit))
+                } else {
+                    completePickError(
+                        "permission_denied",
+                        "Photo permission is required to list original camera files."
+                    )
+                }
+            }
+            PendingAction.LOAD_CAMERA -> {
+                val id = pendingLoadId
+                if (hasImageReadPermission() && id != null) {
+                    loadCameraImageById(id)
+                } else {
+                    completePickError(
+                        "permission_denied",
+                        "Photo permission is required to read the original camera file."
+                    )
+                }
+                pendingLoadId = null
+            }
             null -> Unit
         }
         pendingAction = null
@@ -275,20 +341,18 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private data class MediaItem(val uri: Uri, val name: String, val mimeType: String)
+    private data class MediaItem(
+        val id: Long,
+        val uri: Uri,
+        val name: String,
+        val mimeType: String,
+        val dateTaken: Long,
+        val sizeBytes: Long,
+        val width: Int,
+        val height: Int
+    )
 
     private fun queryLatestImage(cameraOnly: Boolean): MediaItem? {
-        val projection = mutableListOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.DISPLAY_NAME,
-            MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.DATE_TAKEN,
-            MediaStore.Images.Media.DATE_ADDED
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            projection.add(MediaStore.Images.Media.RELATIVE_PATH)
-        }
-
         val selectionParts = mutableListOf("${MediaStore.Images.Media.MIME_TYPE} = ?")
         val selectionArgs = mutableListOf("image/jpeg")
         if (cameraOnly && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -300,7 +364,7 @@ class MainActivity : FlutterActivity() {
             "${MediaStore.Images.Media.DATE_TAKEN} DESC, ${MediaStore.Images.Media.DATE_ADDED} DESC"
         contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            projection.toTypedArray(),
+            imageProjection(),
             selectionParts.joinToString(" AND "),
             selectionArgs.toTypedArray(),
             sortOrder
@@ -308,16 +372,157 @@ class MainActivity : FlutterActivity() {
             if (!cursor.moveToFirst()) {
                 return null
             }
-            val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            val nameIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-            val mimeIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE)
-            val id = cursor.getLong(idIndex)
-            val name = cursor.getString(nameIndex) ?: "camera_original.jpg"
-            val mimeType = cursor.getString(mimeIndex) ?: "image/jpeg"
-            val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            return MediaItem(uri, name, mimeType)
+            return mediaItemFromCursor(cursor)
         }
         return null
+    }
+
+    private fun queryCameraImageItems(limit: Int): List<Map<String, Any?>> {
+        val safeLimit = limit.coerceIn(1, 120)
+        val items = mutableListOf<Map<String, Any?>>()
+        contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            imageProjection(),
+            cameraImageSelection(),
+            cameraImageSelectionArgs(),
+            "${MediaStore.Images.Media.DATE_TAKEN} DESC, ${MediaStore.Images.Media.DATE_ADDED} DESC"
+        )?.use { cursor ->
+            while (cursor.moveToNext() && items.size < safeLimit) {
+                val media = mediaItemFromCursor(cursor)
+                items.add(
+                    mapOf(
+                        "id" to media.id,
+                        "name" to media.name,
+                        "mimeType" to media.mimeType,
+                        "dateTaken" to media.dateTaken,
+                        "sizeBytes" to media.sizeBytes,
+                        "width" to media.width,
+                        "height" to media.height,
+                        "thumbnail" to thumbnailBytes(media.uri)
+                    )
+                )
+            }
+        }
+        return items
+    }
+
+    private fun loadCameraImageById(id: Long) {
+        try {
+            val media = queryImageById(id)
+            if (media == null) {
+                completePickError("not_found", "The selected camera photo was not found.")
+                return
+            }
+            val originalUri = originalMediaUri(media.uri)
+            val bytes = readUriBytes(originalUri) ?: readUriBytes(media.uri)
+            if (bytes == null) {
+                completePickError("read_failed", "Could not read the selected camera photo.")
+                return
+            }
+            completePick(
+                mapOf(
+                    "name" to media.name,
+                    "bytes" to bytes,
+                    "mimeType" to media.mimeType,
+                    "usedOriginalUri" to (originalUri != media.uri),
+                    "source" to "camera_original_list"
+                )
+            )
+        } catch (error: Exception) {
+            completePickError("load_camera_failed", error.message ?: "Could not load the selected camera photo.")
+        }
+    }
+
+    private fun queryImageById(id: Long): MediaItem? {
+        contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            imageProjection(),
+            "${MediaStore.Images.Media._ID} = ?",
+            arrayOf(id.toString()),
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                return mediaItemFromCursor(cursor)
+            }
+        }
+        return null
+    }
+
+    private fun imageProjection(): Array<String> {
+        val projection = mutableListOf(
+            MediaStore.Images.Media._ID,
+            MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media.MIME_TYPE,
+            MediaStore.Images.Media.DATE_TAKEN,
+            MediaStore.Images.Media.DATE_ADDED,
+            MediaStore.Images.Media.SIZE,
+            MediaStore.Images.Media.WIDTH,
+            MediaStore.Images.Media.HEIGHT
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            projection.add(MediaStore.Images.Media.RELATIVE_PATH)
+        }
+        return projection.toTypedArray()
+    }
+
+    private fun cameraImageSelection(): String {
+        val selectionParts = mutableListOf("${MediaStore.Images.Media.MIME_TYPE} = ?")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            selectionParts.add("${MediaStore.Images.Media.RELATIVE_PATH} LIKE ?")
+        }
+        return selectionParts.joinToString(" AND ")
+    }
+
+    private fun cameraImageSelectionArgs(): Array<String> {
+        val args = mutableListOf("image/jpeg")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            args.add("%DCIM/Camera%")
+        }
+        return args.toTypedArray()
+    }
+
+    private fun mediaItemFromCursor(cursor: android.database.Cursor): MediaItem {
+        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+        val name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME))
+            ?: "camera_original.jpg"
+        val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE))
+            ?: "image/jpeg"
+        val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+        return MediaItem(
+            id = id,
+            uri = uri,
+            name = name,
+            mimeType = mimeType,
+            dateTaken = cursorLong(cursor, MediaStore.Images.Media.DATE_TAKEN),
+            sizeBytes = cursorLong(cursor, MediaStore.Images.Media.SIZE),
+            width = cursorInt(cursor, MediaStore.Images.Media.WIDTH),
+            height = cursorInt(cursor, MediaStore.Images.Media.HEIGHT)
+        )
+    }
+
+    private fun thumbnailBytes(uri: Uri): ByteArray? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return null
+        }
+        return try {
+            val bitmap = contentResolver.loadThumbnail(uri, Size(240, 240), null)
+            ByteArrayOutputStream().use { output ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 72, output)
+                output.toByteArray()
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun cursorLong(cursor: android.database.Cursor, column: String): Long {
+        val index = cursor.getColumnIndex(column)
+        return if (index >= 0 && !cursor.isNull(index)) cursor.getLong(index) else 0L
+    }
+
+    private fun cursorInt(cursor: android.database.Cursor, column: String): Int {
+        val index = cursor.getColumnIndex(column)
+        return if (index >= 0 && !cursor.isNull(index)) cursor.getInt(index) else 0
     }
 
     private fun queryCameraTwinForExportedName(displayName: String): MediaItem? {
@@ -329,17 +534,6 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun queryCameraImageByNameFragment(fragment: String): MediaItem? {
-        val projection = mutableListOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.DISPLAY_NAME,
-            MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.DATE_TAKEN,
-            MediaStore.Images.Media.DATE_ADDED
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            projection.add(MediaStore.Images.Media.RELATIVE_PATH)
-        }
-
         val selectionParts = mutableListOf(
             "${MediaStore.Images.Media.MIME_TYPE} = ?",
             "${MediaStore.Images.Media.DISPLAY_NAME} LIKE ?"
@@ -354,7 +548,7 @@ class MainActivity : FlutterActivity() {
             "${MediaStore.Images.Media.DATE_TAKEN} DESC, ${MediaStore.Images.Media.DATE_ADDED} DESC"
         contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            projection.toTypedArray(),
+            imageProjection(),
             selectionParts.joinToString(" AND "),
             selectionArgs.toTypedArray(),
             sortOrder
@@ -362,14 +556,7 @@ class MainActivity : FlutterActivity() {
             if (!cursor.moveToFirst()) {
                 return null
             }
-            val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            val nameIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-            val mimeIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE)
-            val id = cursor.getLong(idIndex)
-            val name = cursor.getString(nameIndex) ?: "$fragment.jpg"
-            val mimeType = cursor.getString(mimeIndex) ?: "image/jpeg"
-            val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            return MediaItem(uri, name, mimeType)
+            return mediaItemFromCursor(cursor)
         }
         return null
     }
