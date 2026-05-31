@@ -537,27 +537,53 @@ def run_ai_image_check(
     trace.decision_reasons.extend(analysis.reasons)
     trace.fallbacks_used.extend(analysis.warnings)
     label = analysis.ai_label
-    if label == "likely_ai":
-        summary = "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    has_ai_metadata = any(reason.startswith("ai_metadata_marker=") for reason in analysis.reasons)
+    has_ai_filename = any(reason.startswith("ai_filename_marker=") for reason in analysis.reasons)
+    has_camera_metadata = any(reason.startswith("camera_metadata_present=") for reason in analysis.reasons)
+    metadata_missing = "camera_metadata_missing_not_proof" in analysis.warnings
+    if has_ai_metadata:
+        summary = (
+            "AI-generator metadata was found in the image file. This is a strong metadata clue, "
+            "although metadata can be edited."
+        )
         confidence = max(0.55, min(0.82, analysis.ai_generated_score))
+    elif has_ai_filename:
+        summary = (
+            "The filename contains an AI-generator clue. This is useful metadata context, "
+            "but it is not proof by itself."
+        )
+        confidence = max(0.50, min(0.72, analysis.ai_generated_score))
+    elif label == "likely_ai":
+        summary = "The image has strong AI-related signals. Treat this as a risk flag, not a final proof."
+        confidence = max(0.55, min(0.82, analysis.ai_generated_score))
+    elif has_camera_metadata:
+        summary = (
+            "Original camera metadata was found in the file. That supports a camera-photo origin, "
+            "but it does not prove the image was never edited."
+        )
+        confidence = 0.50
     elif label == "likely_not_ai":
-        summary = "The image has low AI-generation risk based on available metadata, but this is not proof that it is authentic."
+        summary = "The image has low metadata risk based on available signals, but this is not proof that it is authentic."
         confidence = 0.55
     else:
         if analysis.ai_generated_score >= 0.65:
             summary = (
-                "The image has some AI or non-original-file signals, but not enough evidence "
-                "for a likely AI verdict."
+                "The file has some AI-like metadata or non-original-file signals, but not enough evidence "
+                "for a strong warning."
             )
         elif analysis.ai_generated_score >= 0.35:
             summary = (
-                "The image has weak file or format clues, but the lightweight cloud check "
-                "cannot confirm AI generation."
+                "The file has weak metadata or format clues, but the lightweight cloud check "
+                "cannot confirm AI generation from metadata alone."
+            )
+        elif metadata_missing:
+            summary = (
+                "No original camera metadata or AI-generator metadata was found. The file may have been "
+                "exported, edited, downloaded, or stripped of metadata."
             )
         else:
             summary = (
-                "The lightweight cloud check found no strong AI markers. This does not prove "
-                "that the image is real."
+                "No AI-generator metadata was found in the file. This does not prove that the image is real."
             )
         confidence = 0.34
 

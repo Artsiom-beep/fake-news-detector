@@ -1771,7 +1771,8 @@ Write-Output 'apk name policy ok'
         self.assertIn("Example:", html)
         self.assertIn("Check news", html)
         self.assertIn("Check fact", html)
-        self.assertIn("Detect AI image", html)
+        self.assertIn("Check metadata", html)
+        self.assertIn("Image metadata", html)
         self.assertNotIn("Screenshots", html)
         self.assertNotIn("Check screenshot", html)
 
@@ -1996,8 +1997,9 @@ Write-Output 'apk name policy ok'
                 filename="generated.png",
             ).to_public_dict()
         )
-        self.assertIn("Likely AI", html)
-        self.assertIn("Image risk check", html)
+        self.assertIn("AI metadata found", html)
+        self.assertIn("Image metadata check", html)
+        self.assertIn("Metadata risk", html)
 
     def test_image_eval_manifest_is_versioned_and_readable(self):
         cases = _load_manifest(DEFAULT_MANIFEST)

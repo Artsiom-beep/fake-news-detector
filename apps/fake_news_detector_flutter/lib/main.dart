@@ -451,9 +451,9 @@ class _VerificationHomeState extends State<VerificationHome> {
         selectedIcon: Icons.image_search,
         color: const Color(0xff8d4d6f),
         child: ImagePanel(
-          title: 'Photos / images',
+          title: 'Image metadata',
           selectedImage: _image,
-          actionLabel: 'Detect AI image',
+          actionLabel: 'Check metadata',
           onPick: _pickImage,
           onSubmit: _checkAiImage,
           isLoading: _isLoading,
@@ -1068,10 +1068,11 @@ class ImageAnalysisSection extends StatelessWidget {
         mode == 'screenshot_ocr' ? reasons : _friendlyImageSignals(reasons);
     final friendlyWarnings =
         mode == 'screenshot_ocr' ? warnings : _friendlyImageSignals(warnings);
-    final reasonLabel = mode == 'screenshot_ocr' ? 'Reasons' : 'Signals';
+    final reasonLabel =
+        mode == 'screenshot_ocr' ? 'Reasons' : 'Metadata signals';
     final warningLabel = mode == 'screenshot_ocr' ? 'Warnings' : 'Limits';
     final title =
-        mode == 'screenshot_ocr' ? 'Screenshot text' : 'Image risk signals';
+        mode == 'screenshot_ocr' ? 'Screenshot text' : 'Image metadata';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1146,13 +1147,13 @@ String _friendlyImageSignal(String value) {
     return 'No original camera metadata was found.';
   }
   if (value == 'image_may_be_exported_or_shared_not_original_camera') {
-    return 'The file may be exported, shared, downloaded, or generated.';
+    return 'The file may be exported, shared, downloaded, or stripped.';
   }
   if (value == 'limited_metadata_only_ai_check') {
-    return 'This is a limited cloud check, not a full visual AI model.';
+    return 'This cloud check reads metadata, not the full visual content.';
   }
   if (value == 'ai_image_detection_not_definitive') {
-    return 'The result is a risk estimate, not proof.';
+    return 'Metadata is useful context, not proof.';
   }
   if (value.startsWith('model_')) {
     return 'Optional visual model signal: $value';

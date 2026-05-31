@@ -28,6 +28,54 @@ void main() {
     expect(result.statusView.tone, StatusTone.neutral);
   });
 
+  test('generator and camera metadata use explicit mobile statuses', () {
+    const aiMetadata = FactCheckResult({
+      'verdict': 'uncertain',
+      'confidence': 0.55,
+      'claim': 'generated.png',
+      'summary': 'AI-generator metadata was found.',
+      'image_analysis': {
+        'mode': 'ai_image_detection',
+        'ai_label': 'likely_ai',
+        'ai_generated_score': 0.92,
+        'reasons': ['ai_metadata_marker=stable diffusion'],
+        'warnings': <String>[],
+      },
+    });
+    const cameraMetadata = FactCheckResult({
+      'verdict': 'uncertain',
+      'confidence': 0.50,
+      'claim': 'photo.jpg',
+      'summary': 'Original camera metadata was found.',
+      'image_analysis': {
+        'mode': 'ai_image_detection',
+        'ai_label': 'uncertain',
+        'ai_generated_score': 0.08,
+        'reasons': ['camera_metadata_present=make,model'],
+        'warnings': ['ai_image_detection_not_definitive'],
+      },
+    });
+    const missingMetadata = FactCheckResult({
+      'verdict': 'uncertain',
+      'confidence': 0.34,
+      'claim': 'download.jpg',
+      'summary': 'No original metadata was found.',
+      'image_analysis': {
+        'mode': 'ai_image_detection',
+        'ai_label': 'uncertain',
+        'ai_generated_score': 0.26,
+        'reasons': ['optional_ai_image_model_disabled'],
+        'warnings': ['camera_metadata_missing_not_proof'],
+      },
+    });
+
+    expect(aiMetadata.statusView.label, 'AI metadata found');
+    expect(aiMetadata.statusView.scoreLabel, 'Metadata risk');
+    expect(cameraMetadata.statusView.label, 'Camera metadata found');
+    expect(cameraMetadata.statusView.tone, StatusTone.good);
+    expect(missingMetadata.statusView.label, 'Metadata missing');
+  });
+
   testWidgets('Facts mode submits a claim and renders the verdict',
       (tester) async {
     final gateway = FakeGateway();
@@ -54,7 +102,7 @@ void main() {
 
     await tester.tap(find.text('Images'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Detect AI image'));
+    await tester.tap(find.text('Check metadata'));
     await tester.pumpAndSettle();
 
     expect(find.text('Choose an image first.'), findsOneWidget);

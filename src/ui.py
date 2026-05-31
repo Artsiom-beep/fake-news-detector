@@ -35,26 +35,47 @@ def _pct(value: Any) -> str:
     return f"{max(0.0, min(1.0, _as_float(value))) * 100:.1f}%"
 
 
-def _ai_label_display(ai_label: str, ai_score: float = 0.0) -> tuple[str, str, str]:
-    label = (ai_label or "uncertain").lower()
-    if label == "likely_ai":
-        return "Likely AI", "low", "We found strong AI-generation signals."
-    if label == "likely_not_ai":
-        return "Likely real", "high", "We found low AI-generation risk."
-    if ai_score >= 0.65:
-        return "Possible AI signals", "medium", "Some AI-like signals were found, but not enough for a likely AI verdict."
-    if ai_score >= 0.35:
-        return "Weak file clues", "unknown", "The file has weak non-original or generator-like clues, but no strong AI proof."
-    return "No strong AI markers", "unknown", "The lightweight check found no strong AI markers."
+def _image_metadata_display(
+    image_analysis: dict[str, Any],
+) -> tuple[str, str, str, float]:
+    ai_label = (image_analysis.get("ai_label") or "uncertain").lower()
+    ai_score = _as_float(image_analysis.get("ai_generated_score", 0.0))
+    reasons = [str(item) for item in image_analysis.get("reasons") or []]
+    warnings = [str(item) for item in image_analysis.get("warnings") or []]
+    has_ai_metadata = any(item.startswith("ai_metadata_marker=") for item in reasons)
+    has_ai_filename = any(item.startswith("ai_filename_marker=") for item in reasons)
+    has_camera_metadata = any(item.startswith("camera_metadata_present=") for item in reasons)
+    has_strong_model_signal = any(item.startswith("model_strong_ai_signal") for item in reasons)
+    metadata_missing = "camera_metadata_missing_not_proof" in warnings
 
+    if has_ai_metadata:
+        return "AI metadata found", "low", "The file contains metadata from an AI image generator.", ai_score
+    if has_ai_filename:
+        return "AI filename clue", "medium", "The filename mentions an AI image generator.", ai_score
+    if ai_label == "likely_ai":
+        return "AI signals found", "low", "Strong AI-related signals were found.", ai_score
+    if has_camera_metadata:
+        return (
+            "Camera metadata found",
+            "high",
+            "The file contains original camera metadata, but this is not proof of authenticity.",
+            ai_score,
+        )
+    if ai_label == "likely_not_ai":
+        return "Low metadata risk", "high", "The available signals show low metadata risk.", ai_score
+    if ai_score >= 0.65 or has_strong_model_signal:
+        return "Possible AI signals", "medium", "Some AI-like signals were found, but not enough for a likely AI verdict.", ai_score
+    if ai_score >= 0.35:
+        return "Weak file clues", "unknown", "The file has weak non-original or generator-like clues, but no strong AI proof.", ai_score
+    if metadata_missing:
+        return "Metadata missing", "unknown", "No original camera metadata or AI-generator metadata was found.", ai_score
+    return "No AI metadata found", "unknown", "No AI-generator metadata was found in the file.", ai_score
 
 def _primary_status(result: dict[str, Any]) -> tuple[str, str, float, str]:
     image_analysis = result.get("image_analysis") or {}
     if image_analysis.get("mode") == "ai_image_detection":
-        ai_label = (image_analysis.get("ai_label") or "uncertain").lower()
-        ai_score = _as_float(image_analysis.get("ai_generated_score", 0.0))
-        display, tone, _explanation = _ai_label_display(ai_label, ai_score)
-        return display, tone, ai_score, "AI risk score"
+        display, tone, _explanation, metadata_score = _image_metadata_display(image_analysis)
+        return display, tone, metadata_score, "Metadata risk"
 
     credibility = result.get("credibility") or {}
     verdict = (result.get("verdict") or "uncertain").lower()
@@ -163,17 +184,16 @@ def _render_image_analysis(image_analysis: dict[str, Any]) -> str:
         </section>
         """
 
-    ai_score = _as_float(image_analysis.get("ai_generated_score", 0.0))
-    display_label, tone, explanation = _ai_label_display(str(image_analysis.get("ai_label", "uncertain")), ai_score)
+    display_label, tone, explanation, _metadata_score = _image_metadata_display(image_analysis)
     return f"""
     <section class="image-card">
       <div class="section-heading">
-        <h3>Image risk check</h3>
+        <h3>Image metadata check</h3>
         {_badge(display_label, tone)}
       </div>
-      <p>{escape(explanation)} This is a risk assessment, not proof.</p>
+      <p>{escape(explanation)} This is a metadata check, not proof.</p>
       <div class="signal-grid">
-        <div><span>AI risk</span><b>{_fmt_score(image_analysis.get("ai_generated_score", 0.0))}</b></div>
+        <div><span>Metadata risk</span><b>{_fmt_score(image_analysis.get("ai_generated_score", 0.0))}</b></div>
         <div><span>Width</span><b>{escape(str((image_analysis.get("metadata") or {}).get("width", "")))}</b></div>
         <div><span>Height</span><b>{escape(str((image_analysis.get("metadata") or {}).get("height", "")))}</b></div>
         <div><span>Format</span><b>{escape(str((image_analysis.get("metadata") or {}).get("format", "")))}</b></div>
@@ -1017,7 +1037,7 @@ def render_page(
           </button>
           <button class="menu-item images-mode" type="button" data-target="imagesTool" aria-selected="{menu_selected("imagesTool")}">
             <span>Images</span>
-            <b>AI risk</b>
+            <b>Metadata</b>
           </button>
         </nav>
 
@@ -1077,17 +1097,17 @@ def render_page(
           <article class="{panel_class("image", "imagesTool")}" id="imagesTool" data-panel="imagesTool" aria-hidden="{aria_hidden("imagesTool")}">
             <div class="tool-head">
               <div class="tool-title">
-                <h2>Photos / images</h2>
+                <h2>Image metadata</h2>
               </div>
               <div class="tool-actions">
                 <button class="info-btn" type="button" data-info-toggle aria-expanded="false" aria-controls="imagesGuide">Guide</button>
-                <span class="tool-kind">AI risk</span>
+                <span class="tool-kind">Metadata</span>
               </div>
             </div>
             <div class="info-panel" id="imagesGuide" hidden>
               <h3>What this mode does</h3>
-              <p>Checks image metadata and model signals for AI-generation risk. It can say likely AI, likely real, or not enough certainty.</p>
-              <p><strong>Example:</strong> upload an AI-generated portrait or a real photo, then use Detect AI image to see the risk score and reasons.</p>
+              <p>Checks file metadata, camera EXIF, filename clues, dimensions, and generator markers. It does not prove whether pixels were AI-generated.</p>
+              <p><strong>Example:</strong> upload a photo or generated image, then use Check metadata to see what the file itself reveals.</p>
             </div>
             <form class="tool-form" method="post" action="/check#imagesTool" enctype="multipart/form-data" data-media-picker>
               <input type="hidden" name="active_panel" value="imagesTool" />
@@ -1102,7 +1122,7 @@ def render_page(
               </div>
               <label class="file-chip" for="imageInput">Choose image</label>
               <div class="composer-actions">
-                <button class="primary-btn" type="submit" data-loading="Detecting image...">Detect AI image</button>
+                <button class="primary-btn" type="submit" data-loading="Checking metadata...">Check metadata</button>
               </div>
             </form>
           </article>

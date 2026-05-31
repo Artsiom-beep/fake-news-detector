@@ -287,28 +287,50 @@ class FactCheckResult {
       final label =
           (imageAnalysis['ai_label'] as String?)?.toLowerCase() ?? 'uncertain';
       final score = _asDouble(imageAnalysis['ai_generated_score']);
+      final reasons = _asStringList(imageAnalysis['reasons']);
+      final warnings = _asStringList(imageAnalysis['warnings']);
+      final hasAiMetadata =
+          reasons.any((reason) => reason.startsWith('ai_metadata_marker='));
+      final hasAiFilename =
+          reasons.any((reason) => reason.startsWith('ai_filename_marker='));
+      final hasCameraMetadata =
+          reasons.any((reason) => reason.startsWith('camera_metadata_present='));
+      final hasStrongModelSignal =
+          reasons.any((reason) => reason.startsWith('model_strong_ai_signal'));
+      final metadataMissing = warnings.contains('camera_metadata_missing_not_proof');
+      const scoreLabel = 'Metadata risk';
+
+      if (hasAiMetadata) {
+        return StatusView('AI metadata found', StatusTone.bad, score, scoreLabel);
+      }
+      if (hasAiFilename) {
+        return StatusView('AI filename clue', StatusTone.warn, score, scoreLabel);
+      }
       if (label == 'likely_ai') {
-        return StatusView('Likely AI', StatusTone.bad, score, 'AI risk score');
+        return StatusView('AI signals found', StatusTone.bad, score, scoreLabel);
+      }
+      if (hasCameraMetadata) {
+        return StatusView(
+            'Camera metadata found', StatusTone.good, score, scoreLabel);
       }
       if (label == 'likely_not_ai') {
         return StatusView(
-            'Likely real', StatusTone.good, score, 'AI risk score');
+            'Low metadata risk', StatusTone.good, score, scoreLabel);
       }
-      final reasons = _asStringList(imageAnalysis['reasons']);
-      final hasStrongUncertainSignal = reasons.any((reason) =>
-          reason.startsWith('model_strong_ai_signal') ||
-          reason.startsWith('ai_metadata_marker=') ||
-          reason.startsWith('ai_filename_marker='));
-      if (score >= 0.65 || hasStrongUncertainSignal) {
+      if (score >= 0.65 || hasStrongModelSignal) {
         return StatusView(
-            'Possible AI signals', StatusTone.warn, score, 'AI risk score');
+            'Possible AI signals', StatusTone.warn, score, scoreLabel);
       }
       if (score >= 0.35) {
         return StatusView(
-            'Weak file clues', StatusTone.neutral, score, 'AI risk score');
+            'Weak file clues', StatusTone.neutral, score, scoreLabel);
+      }
+      if (metadataMissing) {
+        return StatusView(
+            'Metadata missing', StatusTone.neutral, score, scoreLabel);
       }
       return StatusView(
-          'No strong AI markers', StatusTone.neutral, score, 'AI risk score');
+          'No AI metadata found', StatusTone.neutral, score, scoreLabel);
     }
 
     if (credibility.isNotEmpty) {
