@@ -23,8 +23,176 @@ class KnowledgeSummary:
     categories: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class PropertySignal:
+    stance: str
+    reason: str
+    detail: str
+
+
+PROPERTY_CLASS_ALIASES: dict[str, frozenset[str]] = {
+    "animal": frozenset({"animal", "animals"}),
+    "mammal": frozenset({"mammal", "mammals"}),
+    "bird": frozenset({"bird", "birds", "avian"}),
+    "fish": frozenset({"fish", "fishes"}),
+    "insect": frozenset({"insect", "insects"}),
+    "arachnid": frozenset({"arachnid", "arachnids"}),
+    "reptile": frozenset({"reptile", "reptiles"}),
+    "amphibian": frozenset({"amphibian", "amphibians"}),
+    "plant": frozenset({"plant", "plants"}),
+    "fungus": frozenset({"fungus", "fungi", "fungal"}),
+    "bacterium": frozenset({"bacterium", "bacteria", "bacterial"}),
+    "virus": frozenset({"virus", "viruses", "viral"}),
+    "disease": frozenset({"disease", "diseases", "illness"}),
+    "planet": frozenset({"planet", "planets"}),
+    "star": frozenset({"star", "stars"}),
+    "natural satellite": frozenset({"natural satellite", "satellite", "moon"}),
+    "galaxy": frozenset({"galaxy", "galaxies"}),
+    "metal": frozenset({"metal", "metals", "metallic"}),
+    "nonmetal": frozenset({"nonmetal", "non-metal", "nonmetals", "non-metals"}),
+    "solid": frozenset({"solid", "solids"}),
+    "liquid": frozenset({"liquid", "liquids"}),
+    "gas": frozenset({"gas", "gases"}),
+    "city": frozenset({"city", "cities", "town"}),
+    "country": frozenset({"country", "countries", "nation"}),
+    "continent": frozenset({"continent", "continents"}),
+    "river": frozenset({"river", "rivers"}),
+    "mountain": frozenset({"mountain", "mountains"}),
+}
+
+INCOMPATIBLE_CLASS_GROUPS = (
+    frozenset({"mammal", "bird", "fish", "insect", "arachnid", "reptile", "amphibian", "plant", "fungus"}),
+    frozenset({"planet", "star", "natural satellite", "galaxy"}),
+    frozenset({"metal", "nonmetal"}),
+    frozenset({"solid", "liquid", "gas"}),
+    frozenset({"city", "country", "continent", "river", "mountain"}),
+    frozenset({"disease", "virus", "bacterium", "fungus"}),
+)
+
+CLASS_IMPLICATIONS: dict[str, frozenset[str]] = {
+    "mammal": frozenset({"animal"}),
+    "bird": frozenset({"animal"}),
+    "fish": frozenset({"animal"}),
+    "insect": frozenset({"animal"}),
+    "arachnid": frozenset({"animal"}),
+    "reptile": frozenset({"animal"}),
+    "amphibian": frozenset({"animal"}),
+    "planet": frozenset({"astronomical object"}),
+    "star": frozenset({"astronomical object"}),
+    "natural satellite": frozenset({"astronomical object"}),
+    "galaxy": frozenset({"astronomical object"}),
+}
+
+
 def _normalize_key(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").strip().lower())
+
+
+def _token_variants(token: str) -> set[str]:
+    values = {token}
+    if token.endswith("ies") and len(token) > 4:
+        values.add(f"{token[:-3]}y")
+    elif token.endswith("y") and len(token) > 3:
+        values.add(f"{token[:-1]}ies")
+    if token.endswith("us") and len(token) > 3:
+        values.add(f"{token[:-1]}ses")
+    elif token.endswith(("s", "x", "z")) or token.endswith(("ch", "sh")):
+        values.add(f"{token}es")
+    elif not token.endswith("s"):
+        values.add(f"{token}s")
+    if token.endswith("s") and len(token) > 3:
+        values.add(token[:-1])
+    if token.endswith("es") and len(token) > 4:
+        values.add(token[:-2])
+    return values
+
+
+def _phrase_variants(phrase: str) -> set[str]:
+    variants = {phrase}
+    tokens = phrase.split()
+    if not tokens:
+        return variants
+    for candidate in _token_variants(tokens[-1]):
+        variants.add(" ".join([*tokens[:-1], candidate]))
+    return variants
+
+
+def _normalized_summary_text(summary: KnowledgeSummary) -> str:
+    category_text = " ".join(getattr(summary, "categories", ()))
+    normalized = " " + re.sub(r"[^a-z0-9\s-]", " ", f"{summary.extract} {category_text}".lower()) + " "
+    return re.sub(r"\s+", " ", normalized)
+
+
+def _contains_phrase(normalized_text: str, phrase: str) -> bool:
+    normalized_phrase = _normalize_key(re.sub(r"[^a-z0-9\s-]", " ", phrase.lower()))
+    return any(f" {candidate} " in normalized_text for candidate in _phrase_variants(normalized_phrase))
+
+
+def _directly_negates_property(normalized_text: str, prop: str) -> bool:
+    for candidate in _phrase_variants(prop):
+        pattern = rf"\b(?:not|no|without)\s+(?:a\s+|an\s+|the\s+)?(?:[a-z0-9-]+\s+){{0,2}}{re.escape(candidate)}\b"
+        if re.search(pattern, normalized_text):
+            return True
+    return False
+
+
+def _property_classes(property_text: str) -> set[str]:
+    prop = _normalize_key(re.sub(r"[^a-z0-9\s-]", " ", property_text.lower()))
+    tokens = prop.split()
+    classes: set[str] = set()
+    for class_name, aliases in PROPERTY_CLASS_ALIASES.items():
+        for alias in aliases:
+            alias_variants = _phrase_variants(alias)
+            if prop in alias_variants or (tokens and tokens[-1] in alias_variants):
+                classes.add(class_name)
+                break
+    return classes
+
+
+def _summary_classes(summary: KnowledgeSummary) -> set[str]:
+    text = _normalized_summary_text(summary)
+    classes: set[str] = set()
+    for class_name, aliases in PROPERTY_CLASS_ALIASES.items():
+        if any(_contains_phrase(text, alias) for alias in aliases):
+            classes.add(class_name)
+    return classes
+
+
+def _classes_conflict(summary_class: str, property_class: str) -> bool:
+    return any({summary_class, property_class} <= group for group in INCOMPATIBLE_CLASS_GROUPS)
+
+
+def _class_supports(summary_class: str, property_class: str) -> bool:
+    return summary_class == property_class or property_class in CLASS_IMPLICATIONS.get(summary_class, frozenset())
+
+
+def _capital_relation_signal(summary: KnowledgeSummary, property_text: str) -> PropertySignal | None:
+    prop = _normalize_key(re.sub(r"[^a-z0-9\s-]", " ", property_text.lower()))
+    prop_match = re.match(r"^capital(?: city)? of (?P<place>.+)$", prop)
+    if not prop_match:
+        return None
+    claimed_place = prop_match.group("place").strip()
+    first_sentence = re.split(r"[.!?]", summary.extract, maxsplit=1)[0].lower()
+    first_sentence = re.sub(r"[^a-z0-9\s-]", " ", first_sentence)
+    first_sentence = re.sub(r"\s+", " ", first_sentence)
+    summary_match = re.search(
+        r"\bcapital(?:\s+and\s+largest\s+city|\s+city)?\s+of\s+(?:the\s+)?(?P<place>[a-z0-9 -]+?)(?:\s+with|\s+and|,|$)",
+        first_sentence,
+    )
+    if not summary_match:
+        return None
+    summary_place = summary_match.group("place").strip()
+    if claimed_place == summary_place or claimed_place in summary_place or summary_place in claimed_place:
+        return PropertySignal(
+            stance="support",
+            reason=f"capital_relation_supports={claimed_place}",
+            detail=f"the summary identifies {summary.title} as the capital of {summary_place}",
+        )
+    return PropertySignal(
+        stance="refute",
+        reason=f"capital_relation_refutes={claimed_place};actual={summary_place}",
+        detail=f"the summary identifies {summary.title} as the capital of {summary_place}, not {claimed_place}",
+    )
 
 
 def _summary_from_payload(payload: dict) -> KnowledgeSummary | None:
@@ -170,9 +338,7 @@ def summary_supports_property(summary: KnowledgeSummary, property_text: str) -> 
     prop = _normalize_key(property_text)
     if not prop:
         return False
-    category_text = " ".join(getattr(summary, "categories", ()))
-    normalized_extract = " " + re.sub(r"[^a-z0-9\s-]", " ", f"{summary.extract} {category_text}".lower()) + " "
-    normalized_extract = re.sub(r"\s+", " ", normalized_extract)
+    normalized_extract = _normalized_summary_text(summary)
     if f" {prop} " in normalized_extract:
         return True
 
@@ -180,17 +346,54 @@ def summary_supports_property(summary: KnowledgeSummary, property_text: str) -> 
     if not prop_tokens:
         return False
     extract_tokens = set(re.findall(r"[a-z0-9]+", normalized_extract))
+    return all(extract_tokens & _token_variants(token) for token in prop_tokens)
 
-    def variants(token: str) -> set[str]:
-        values = {token}
-        if token.endswith("ies") and len(token) > 4:
-            values.add(f"{token[:-3]}y")
-        elif token.endswith("y") and len(token) > 3:
-            values.add(f"{token[:-1]}ies")
-        if token.endswith("s") and len(token) > 3:
-            values.add(token[:-1])
-        else:
-            values.add(f"{token}s")
-        return values
 
-    return all(extract_tokens & variants(token) for token in prop_tokens)
+def evaluate_summary_property(summary: KnowledgeSummary, property_text: str) -> PropertySignal:
+    prop = _normalize_key(property_text)
+    if not prop:
+        return PropertySignal("unknown", "empty_property", "the property was empty")
+
+    normalized_text = _normalized_summary_text(summary)
+    capital_signal = _capital_relation_signal(summary, prop)
+    if capital_signal is not None:
+        return capital_signal
+
+    if _directly_negates_property(normalized_text, prop):
+        return PropertySignal(
+            stance="refute",
+            reason=f"wikipedia_summary_direct_negation={prop}",
+            detail=f"the summary directly negates {prop}",
+        )
+
+    if summary_supports_property(summary, prop):
+        return PropertySignal(
+            stance="support",
+            reason=f"wikipedia_summary_supports={prop}",
+            detail=f"the summary contains evidence for {prop}",
+        )
+
+    property_classes = _property_classes(prop)
+    if not property_classes:
+        return PropertySignal("unknown", f"wikipedia_summary_no_exact_answer={prop}", f"the summary does not verify {prop}")
+
+    classes = _summary_classes(summary)
+    for property_class in sorted(property_classes):
+        for summary_class in sorted(classes):
+            if _class_supports(summary_class, property_class):
+                return PropertySignal(
+                    stance="support",
+                    reason=f"taxonomy_supports={summary_class}->{property_class}",
+                    detail=f"the summary classifies {summary.title} as {summary_class}, which supports {property_class}",
+                )
+
+    for property_class in sorted(property_classes):
+        for summary_class in sorted(classes):
+            if _classes_conflict(summary_class, property_class):
+                return PropertySignal(
+                    stance="refute",
+                    reason=f"taxonomy_refutes={summary_class}!={property_class}",
+                    detail=f"the summary classifies {summary.title} as {summary_class}, which conflicts with {property_class}",
+                )
+
+    return PropertySignal("unknown", f"wikipedia_summary_no_exact_answer={prop}", f"the summary does not verify {prop}")

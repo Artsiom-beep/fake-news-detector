@@ -2873,6 +2873,63 @@ Write-Output 'apk name policy ok'
         self.assertEqual(payload["verdict"], "fake")
         self.assertEqual(payload["evidence"][0]["source_type"], "knowledge_source")
 
+    @patch("factcheck.common_knowledge.fetch_wikipedia_summary")
+    def test_best_pipeline_uses_wikipedia_taxonomy_for_general_facts(self, mock_summary):
+        summaries = {
+            "mars": SimpleNamespace(
+                title="Mars",
+                extract="Mars is the fourth planet from the Sun. It is also known as the Red Planet.",
+                url="https://en.wikipedia.org/wiki/Mars",
+                source="wikipedia_summary_v1",
+                categories=(),
+            ),
+            "spiders": SimpleNamespace(
+                title="Spider",
+                extract="Spiders are air-breathing arthropods. They are the largest order of arachnids.",
+                url="https://en.wikipedia.org/wiki/Spider",
+                source="wikipedia_summary_v1",
+                categories=(),
+            ),
+            "whales": SimpleNamespace(
+                title="Whale",
+                extract="Whales are a widely distributed group of fully aquatic placental marine mammals.",
+                url="https://en.wikipedia.org/wiki/Whale",
+                source="wikipedia_summary_v1",
+                categories=(),
+            ),
+            "paris": SimpleNamespace(
+                title="Paris",
+                extract="Paris is the capital and largest city of France, with an estimated city population of 2.04 million.",
+                url="https://en.wikipedia.org/wiki/Paris",
+                source="wikipedia_summary_v1",
+                categories=(),
+            ),
+            "oxygen": SimpleNamespace(
+                title="Oxygen",
+                extract="Oxygen is a chemical element. It is highly reactive, a nonmetal, and is used in breathing gases.",
+                url="https://en.wikipedia.org/wiki/Oxygen",
+                source="wikipedia_summary_v1",
+                categories=("Breathing gases",),
+            ),
+        }
+        mock_summary.side_effect = lambda subject: summaries.get(subject.lower())
+
+        cases = [
+            ("Mars is a star", "fake", "taxonomy_refutes"),
+            ("Spiders are animals", "true", "taxonomy_supports"),
+            ("Spiders are insects", "fake", "taxonomy_refutes"),
+            ("Whales are fish", "fake", "taxonomy_refutes"),
+            ("Paris is the capital of Germany", "fake", "capital_relation_refutes"),
+            ("Oxygen is a gas", "true", "wikipedia_summary_supports"),
+            ("Oxygen is a metal", "fake", "taxonomy_refutes"),
+        ]
+        for text, expected_verdict, expected_reason in cases:
+            with self.subTest(text=text):
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], expected_verdict)
+                self.assertEqual(payload["evidence"][0]["source_type"], "knowledge_source")
+                self.assertIn(expected_reason, " ".join(payload["claims"][0]["reasons"]))
+
     def test_best_pipeline_handles_false_numeric_comparison(self):
         payload = run_factcheck(text="15 is greater than 20").to_public_dict()
         self.assertEqual(payload["verdict"], "fake")

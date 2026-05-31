@@ -7,7 +7,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-from .knowledge_sources import fetch_wikipedia_summary, summary_supports_property
+from .knowledge_sources import evaluate_summary_property, fetch_wikipedia_summary
 from .schemas import ClaimCandidate, ClaimDecision, EvidenceItem, FactCheckTrace
 
 
@@ -1375,16 +1375,35 @@ def _decide_source_backed_statement(
     supported: list[str] = []
     unknown: list[str] = []
     refuted_by_negation: list[str] = []
+    refuted_by_source: list[str] = []
+    support_details: list[str] = []
+    refute_details: list[str] = []
+    support_signal_reasons: list[str] = []
+    refute_signal_reasons: list[str] = []
     for prop, negated in properties:
-        if summary_supports_property(summary, prop):
+        signal = evaluate_summary_property(summary, prop)
+        if signal.stance == "support":
             if negated:
                 refuted_by_negation.append(prop)
+                refute_details.append(signal.detail)
+                refute_signal_reasons.append(signal.reason)
             else:
                 supported.append(prop)
+                support_details.append(signal.detail)
+                support_signal_reasons.append(signal.reason)
+        elif signal.stance == "refute":
+            if negated:
+                supported.append(prop)
+                support_details.append(signal.detail)
+                support_signal_reasons.append(signal.reason)
+            else:
+                refuted_by_source.append(prop)
+                refute_details.append(signal.detail)
+                refute_signal_reasons.append(signal.reason)
         else:
             unknown.append(prop)
 
-    if not supported and not refuted_by_negation:
+    if not supported and not refuted_by_negation and not refuted_by_source:
         prop_text = ", ".join(prop for prop, _ in properties)
         evidence = EvidenceItem(
             url=summary.url,
@@ -1419,8 +1438,21 @@ def _decide_source_backed_statement(
         stance = "refute"
         support_score = 0.0
         refute_score = 0.78
-        reason = f"wikipedia_summary_refutes_negation={','.join(refuted_by_negation)}"
-        passage = f"Wikipedia summary for {summary.title} supports {', '.join(refuted_by_negation)}, contrary to the negated claim."
+        reason = f"wikipedia_summary_refutes_negation={','.join(refuted_by_negation)};signals={','.join(refute_signal_reasons)}"
+        detail_text = " ".join(refute_details)
+        passage = (
+            f"Wikipedia summary for {summary.title} supports {', '.join(refuted_by_negation)}, "
+            f"contrary to the negated claim. {detail_text}"
+        ).strip()
+    elif refuted_by_source:
+        verdict = "fake"
+        confidence = 0.7 if unknown else 0.76
+        stance = "refute"
+        support_score = 0.0
+        refute_score = 0.8
+        reason = f"wikipedia_summary_refutes={','.join(refuted_by_source)};signals={','.join(refute_signal_reasons)}"
+        detail_text = " ".join(refute_details)
+        passage = f"Wikipedia summary for {summary.title} conflicts with {', '.join(refuted_by_source)}. {detail_text}".strip()
     elif unknown:
         verdict = "uncertain"
         confidence = 0.38
@@ -1435,8 +1467,9 @@ def _decide_source_backed_statement(
         stance = "support"
         support_score = 0.78
         refute_score = 0.0
-        reason = f"wikipedia_summary_supports={','.join(supported)}"
-        passage = f"Wikipedia summary for {summary.title} supports: {', '.join(supported)}."
+        reason = f"wikipedia_summary_supports={','.join(supported)};signals={','.join(support_signal_reasons)}"
+        detail_text = " ".join(support_details)
+        passage = f"Wikipedia summary for {summary.title} supports: {', '.join(supported)}. {detail_text}".strip()
 
     evidence = EvidenceItem(
         url=summary.url,
