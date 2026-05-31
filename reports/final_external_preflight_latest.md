@@ -1,6 +1,6 @@
 # Verity Lens Final External Preflight
 
-- Generated: `2026-05-31T12:32:05.0002411+02:00`
+- Generated: `2026-05-31T12:49:23.0277973+02:00`
 - Ready to run finalizer: `True`
 - Allow emulator: `False`
 - Require ready: `True`
