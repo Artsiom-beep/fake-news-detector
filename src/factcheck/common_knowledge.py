@@ -330,6 +330,12 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_url="https://en.wikipedia.org/wiki/Moon",
         source_title="Common knowledge: Moon",
     ),
+    "book": KnowledgeFact(
+        true_properties=frozenset({"paper", "made of paper", "made out of paper", "printed", "readable"}),
+        false_properties=frozenset({"food", "liquid", "gas", "made of cheese", "made out of cheese"}),
+        source_url="https://en.wikipedia.org/wiki/Book",
+        source_title="Common knowledge: book",
+    ),
     "cat": KnowledgeFact(
         true_properties=frozenset({"animal", "mammal", "pet"}),
         false_properties=frozenset({"plant", "vegetable", "mineral"}),

@@ -97,6 +97,12 @@
       "source_url": "https://en.wikipedia.org/wiki/Moon",
       "source_title": "Common knowledge: Moon"
     },
+    "book": {
+      "true_properties": ["paper", "made of paper", "made out of paper", "printed", "readable"],
+      "false_properties": ["food", "liquid", "gas", "made of cheese", "made out of cheese"],
+      "source_url": "https://en.wikipedia.org/wiki/Book",
+      "source_title": "Common knowledge: book"
+    },
     "cat": {
       "true_properties": ["animal", "mammal", "pet"],
       "false_properties": ["plant", "vegetable", "mineral"],

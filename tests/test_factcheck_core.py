@@ -2645,6 +2645,12 @@ Write-Output 'apk name policy ok'
         self.assertEqual(insect_payload["verdict"], "fake")
         self.assertEqual(insect_payload["evidence"][0]["source_type"], "common_knowledge")
 
+    def test_best_pipeline_handles_common_material_claims(self):
+        paper_payload = run_factcheck(text="Books are made out of paper").to_public_dict()
+        self.assertEqual(paper_payload["verdict"], "true")
+        self.assertEqual(paper_payload["evidence"][0]["source_type"], "common_knowledge")
+        self.assertIn("common_knowledge_supports", " ".join(paper_payload["claims"][0]["reasons"]))
+
     def test_best_pipeline_handles_capital_and_orbit_claims(self):
         capital_true = run_factcheck(text="The capital of France is Paris.").to_public_dict()
         self.assertEqual(capital_true["verdict"], "true")
