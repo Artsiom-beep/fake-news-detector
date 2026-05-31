@@ -300,6 +300,25 @@ class _VerificationHomeState extends State<VerificationHome> {
     return PickedImage(name: file.name, bytes: file.bytes!);
   }
 
+  Future<void> _pickLatestCameraImage() async {
+    try {
+      final image = await AndroidOriginalImagePicker.pickLatestCameraImage();
+      if (!mounted || image == null) {
+        return;
+      }
+      setState(() {
+        _error = null;
+        _image = image;
+      });
+    } on PlatformException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error =
+          error.message ?? 'Could not load the latest camera photo.');
+    }
+  }
+
   Future<void> _checkNews() {
     return _run(
       () => widget.gateway.checkText(
@@ -473,6 +492,10 @@ class _VerificationHomeState extends State<VerificationHome> {
           selectedImage: _image,
           actionLabel: 'Check metadata',
           onPick: _pickImage,
+          onPickLatestCamera:
+              !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+                  ? _pickLatestCameraImage
+                  : null,
           onSubmit: _checkAiImage,
           isLoading: _isLoading,
         ),
@@ -797,6 +820,7 @@ class ImagePanel extends StatelessWidget {
     required this.selectedImage,
     required this.actionLabel,
     required this.onPick,
+    this.onPickLatestCamera,
     required this.onSubmit,
     required this.isLoading,
   });
@@ -805,6 +829,7 @@ class ImagePanel extends StatelessWidget {
   final PickedImage? selectedImage;
   final String actionLabel;
   final VoidCallback onPick;
+  final VoidCallback? onPickLatestCamera;
   final VoidCallback onSubmit;
   final bool isLoading;
 
@@ -817,6 +842,12 @@ class ImagePanel extends StatelessWidget {
           icon: const Icon(Icons.upload_file),
           label: Text(selectedImage?.name ?? 'Choose image'),
         ),
+        if (onPickLatestCamera != null)
+          OutlinedButton.icon(
+            onPressed: isLoading ? null : onPickLatestCamera,
+            icon: const Icon(Icons.photo_camera_back_outlined),
+            label: const Text('Latest camera photo'),
+          ),
         if (selectedImage != null)
           ImagePreview(
             title: title,
@@ -1270,6 +1301,21 @@ class AndroidOriginalImagePicker {
   static Future<PickedImage?> pickImage() async {
     final result = await _channel.invokeMapMethod<String, dynamic>(
       'pickOriginalImage',
+    );
+    if (result == null) {
+      return null;
+    }
+    final bytes = result['bytes'];
+    final name = result['name'];
+    if (bytes is! Uint8List || name is! String || name.trim().isEmpty) {
+      return null;
+    }
+    return PickedImage(name: name, bytes: bytes);
+  }
+
+  static Future<PickedImage?> pickLatestCameraImage() async {
+    final result = await _channel.invokeMapMethod<String, dynamic>(
+      'pickLatestCameraImage',
     );
     if (result == null) {
       return null;
