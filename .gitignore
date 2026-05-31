@@ -1,0 +1,30 @@
+.venv/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+outputs/
+build/
+dist/
+*.spec.bak
+*.manifest
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# local data artifacts
+/data/**/raw*
+/data/**/tmp*
+/data/**/cache*
+/data/news/
+/data/liar/
+/data/external/
+/data/train.csv
+/data/test.csv
+/data/val.csv
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

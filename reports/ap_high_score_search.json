@@ -1,0 +1,146 @@
+[
+  {
+    "url": "https://apnews.com/article/iran-war-europe-jet-fuel-flight-cancellations-birol-6e67fafd493861b3858de5548aa77703",
+    "score": 0.476,
+    "label": "low",
+    "claim": "AP Exclusive: Europe could run out of jet fuel within weeks, IEA warns | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.08
+  },
+  {
+    "url": "https://apnews.com/article/ice-warehouse-detention-nome-mullin-465f29bf754b365fda75b723b0dd0322",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Protesters rally against planned Maryland ICE facility | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.14
+  },
+  {
+    "url": "https://apnews.com/article/france-holocaust-auschwitz-ginette-kolinka-steven-spielberg-58b9594cc8290d40f1687dcb1c4a2579",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Auschwitz-Birkenau survivor Ginette Kolinka reflects on Nazi horrors at 101 | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.68
+  },
+  {
+    "url": "https://apnews.com/article/profound-autism-trump-autism-speaks-8b1d269a0672fc33a3de66c0c8e9d7fe",
+    "score": 0.476,
+    "label": "low",
+    "claim": "These twins need around-the-clock care. Should their “profound autism” be its own diagnosis? | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.0
+  },
+  {
+    "url": "https://apnews.com/article/children-immigration-detention-dilley-trump-administration-ice-8ab12c9357ff3b8d400cfa2b2dbe85ed",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Trump administration is holding children in immigration detention for months | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.71
+  },
+  {
+    "url": "https://apnews.com/article/ice-arrests-warrants-minneapolis-trump-00d0ab0338e82341fd91b160758aeb2d",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Memo tells ICE officers they can enter homes without a warrant | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.29
+  },
+  {
+    "url": "https://apnews.com/article/justice-department-bondi-trump-firings-prosecutors-b4134e5db9d9ff7963fc8c4bf7a0a166",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Firings at Justice Department create fear among career lawyers | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.49
+  },
+  {
+    "url": "https://apnews.com/article/russia-war-ukraine-occupation-putin-cf2ca7071c54da307650c3b9e2fa8f07",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Residents who escaped describe the fear of living in Russian-occupied Ukraine | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.8
+  },
+  {
+    "url": "https://apnews.com/article/hoeg-urato-fda-drugs-antidepressants-pregnancy-warnings-a2a48cd2285f5b33aef2d390b5b60d0c",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Top FDA official seeks to hire friend pushing new antidepressants warning | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.34
+  },
+  {
+    "url": "https://apnews.com/article/trump-tariffs-economy-liberation-day-d3458da225c1fdfade97ed494b23e868",
+    "score": 0.476,
+    "label": "low",
+    "claim": "How Trump's import taxes are impacting global commerce | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.23
+  },
+  {
+    "url": "https://apnews.com/article/trump-epa-wastewater-systems-minority-dei-8f67357e87f9fe67e8c7351b6d5244de",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Aging sewers threaten health in poor communities as aid slashed under Trump | AP News",
+    "matched": 0,
+    "matched_domains": [],
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.58
+  },
+  {
+    "url": "https://apnews.com/article/iran-us-pilot-military-rescue-fde473d07fb59e871a71cd2ad2ffe4fe",
+    "score": 0.656,
+    "label": "medium",
+    "claim": "What to know about the rescue of a US aviator in Iran | AP News",
+    "matched": 1,
+    "matched_domains": [
+      "aljazeera.com"
+    ],
+    "risk_flags": [],
+    "seconds": 0.71
+  }
+]

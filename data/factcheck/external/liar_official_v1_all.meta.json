@@ -1,0 +1,52 @@
+{
+  "dataset_name": "LIAR",
+  "paper_title": "\"Liar, Liar Pants on Fire\": A New Benchmark Dataset for Fake News Detection",
+  "paper_url": "https://arxiv.org/abs/1705.00648",
+  "github_url": "https://github.com/tfs4/liar_dataset",
+  "official_zip_url": "https://www.cs.ucsb.edu/~william/data/liar_dataset.zip",
+  "origin": "12.8K human-labeled short statements from PolitiFact",
+  "label_mapping": {
+    "true": "true",
+    "mostly-true": "true",
+    "false": "fake",
+    "pants-fire": "fake",
+    "half-true": "uncertain",
+    "barely-true": "uncertain"
+  },
+  "n": 12789,
+  "by_split": {
+    "test": {
+      "true": 449,
+      "fake": 341,
+      "uncertain": 477
+    },
+    "train": {
+      "fake": 2832,
+      "uncertain": 3768,
+      "true": 3638
+    },
+    "valid": {
+      "uncertain": 485,
+      "fake": 379,
+      "true": 420
+    }
+  },
+  "by_expected": {
+    "fake": 3552,
+    "uncertain": 4730,
+    "true": 4507
+  },
+  "by_original_label": {
+    "false": 2505,
+    "half-true": 2627,
+    "mostly-true": 2454,
+    "true": 2053,
+    "barely-true": 2103,
+    "pants-fire": 1047
+  },
+  "cache_files": {
+    "train": "data\\external\\liar_official_raw\\train.tsv",
+    "valid": "data\\external\\liar_official_raw\\valid.tsv",
+    "test": "data\\external\\liar_official_raw\\test.tsv"
+  }
+}

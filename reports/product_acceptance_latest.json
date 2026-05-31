@@ -1,0 +1,1037 @@
+{
+  "summary": {
+    "created_at": "2026-05-30T13:37:28+00:00",
+    "target_pass_rate": 0.95,
+    "min_cases_per_section": 5,
+    "min_cases_by_section": {
+      "facts": 40,
+      "news": 15,
+      "screenshots": 12,
+      "images": 11,
+      "api_contract": 11
+    },
+    "total": 93,
+    "passed": 93,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "gate_passed": true,
+    "sections": {
+      "facts": {
+        "total": 44,
+        "passed": 44,
+        "failed": 0,
+        "pass_rate": 1.0
+      },
+      "news": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0,
+        "pass_rate": 1.0
+      },
+      "screenshots": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "pass_rate": 1.0
+      },
+      "images": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "pass_rate": 1.0
+      },
+      "api_contract": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "fact_arithmetic_true",
+      "section": "facts",
+      "input": "2 plus 2 equals 4",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: 2 plus 2 equals 4"
+    },
+    {
+      "id": "fact_arithmetic_false",
+      "section": "facts",
+      "input": "2 plus 2 equals 5",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+    },
+    {
+      "id": "fact_word_arithmetic_true",
+      "section": "facts",
+      "input": "Two plus two equals four",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: Two plus two equals four"
+    },
+    {
+      "id": "fact_word_arithmetic_false",
+      "section": "facts",
+      "input": "Ten divided by two equals three",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: Ten divided by two equals three"
+    },
+    {
+      "id": "fact_arithmetic_multiplication_true",
+      "section": "facts",
+      "input": "3 times 7 equals 21",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: 3 times 7 equals 21"
+    },
+    {
+      "id": "fact_arithmetic_division_false",
+      "section": "facts",
+      "input": "10 divided by 2 equals 3",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: 10 divided by 2 equals 3"
+    },
+    {
+      "id": "fact_arithmetic_addition_false",
+      "section": "facts",
+      "input": "5 + 5 = 11",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: 5 + 5 = 11"
+    },
+    {
+      "id": "fact_numeric_true",
+      "section": "facts",
+      "input": "100 is lower than 200",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: 100 is lower than 200"
+    },
+    {
+      "id": "fact_numeric_false",
+      "section": "facts",
+      "input": "100 > 200",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: 100 > 200"
+    },
+    {
+      "id": "fact_numeric_less_true",
+      "section": "facts",
+      "input": "15 is less than 20",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: 15 is less than 20"
+    },
+    {
+      "id": "fact_symbolic_comparison_true",
+      "section": "facts",
+      "input": "20 >= 15",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: 20 >= 15"
+    },
+    {
+      "id": "fact_word_numeric_true",
+      "section": "facts",
+      "input": "Five is greater than three",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic supports the claim: Five is greater than three"
+    },
+    {
+      "id": "fact_elephant_mammal",
+      "section": "facts",
+      "input": "Elephants are mammals.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+    },
+    {
+      "id": "fact_elephant_insect",
+      "section": "facts",
+      "input": "Elephants are insects.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+    },
+    {
+      "id": "fact_dog_mammal",
+      "section": "facts",
+      "input": "Dogs are mammals.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Dogs are mammals"
+    },
+    {
+      "id": "fact_cat_plant",
+      "section": "facts",
+      "input": "Cats are plants.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Cats are plants"
+    },
+    {
+      "id": "fact_apple_food",
+      "section": "facts",
+      "input": "An apple is food.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: An apple is food"
+    },
+    {
+      "id": "fact_apple_blue",
+      "section": "facts",
+      "input": "An apple is blue.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: An apple is blue"
+    },
+    {
+      "id": "fact_banana_yellow",
+      "section": "facts",
+      "input": "Bananas are yellow.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Bananas are yellow"
+    },
+    {
+      "id": "fact_banana_blue",
+      "section": "facts",
+      "input": "Bananas are blue.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Bananas are blue"
+    },
+    {
+      "id": "fact_cucumber_green",
+      "section": "facts",
+      "input": "Cucumbers are green.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Cucumbers are green"
+    },
+    {
+      "id": "fact_grass_red",
+      "section": "facts",
+      "input": "Grass is red.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Grass is red"
+    },
+    {
+      "id": "fact_water_liquid",
+      "section": "facts",
+      "input": "Water is liquid.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Water is liquid"
+    },
+    {
+      "id": "fact_ice_hot",
+      "section": "facts",
+      "input": "Ice is hot.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Ice is hot"
+    },
+    {
+      "id": "fact_fire_hot",
+      "section": "facts",
+      "input": "Fire is hot.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Fire is hot"
+    },
+    {
+      "id": "fact_snow_cold",
+      "section": "facts",
+      "input": "Snow is cold.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Snow is cold"
+    },
+    {
+      "id": "fact_snow_black",
+      "section": "facts",
+      "input": "Snow is black.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Snow is black"
+    },
+    {
+      "id": "fact_rock_edible",
+      "section": "facts",
+      "input": "A rock is edible.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: A rock is edible"
+    },
+    {
+      "id": "fact_capital_true",
+      "section": "facts",
+      "input": "The capital of France is Paris.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The capital of France is Paris"
+    },
+    {
+      "id": "fact_capital_false",
+      "section": "facts",
+      "input": "The capital of France is Berlin.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The capital of France is Berlin"
+    },
+    {
+      "id": "fact_capital_germany_true",
+      "section": "facts",
+      "input": "The capital of Germany is Berlin.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The capital of Germany is Berlin"
+    },
+    {
+      "id": "fact_capital_us_false",
+      "section": "facts",
+      "input": "The capital of the United States is New York.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The capital of the United States is New York"
+    },
+    {
+      "id": "fact_capital_usa_true",
+      "section": "facts",
+      "input": "The capital of USA is Washington DC.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The capital of USA is Washington DC"
+    },
+    {
+      "id": "fact_capital_poland_true",
+      "section": "facts",
+      "input": "The capital of Poland is Warsaw.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The capital of Poland is Warsaw"
+    },
+    {
+      "id": "fact_orbit_true",
+      "section": "facts",
+      "input": "Earth orbits the Sun.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Earth orbits the Sun"
+    },
+    {
+      "id": "fact_orbit_false",
+      "section": "facts",
+      "input": "The Sun orbits the Earth.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The Sun orbits the Earth"
+    },
+    {
+      "id": "fact_moon_satellite",
+      "section": "facts",
+      "input": "The Moon is a natural satellite.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The Moon is a natural satellite"
+    },
+    {
+      "id": "fact_moon_cheese",
+      "section": "facts",
+      "input": "The Moon is made of cheese.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The Moon is made of cheese"
+    },
+    {
+      "id": "fact_sky_blue",
+      "section": "facts",
+      "input": "The sky is blue.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: The sky is blue"
+    },
+    {
+      "id": "fact_sky_green",
+      "section": "facts",
+      "input": "The sky is green.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The sky is green"
+    },
+    {
+      "id": "fact_taste_false",
+      "section": "facts",
+      "input": "Salt is sweet.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Salt is sweet"
+    },
+    {
+      "id": "fact_taste_true",
+      "section": "facts",
+      "input": "Sugar is sweet.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Sugar is sweet"
+    },
+    {
+      "id": "fact_medical_abstain",
+      "section": "facts",
+      "input": "Coffee cures cancer.",
+      "passed": true,
+      "detail": "expected verdict=uncertain, got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.34,
+      "summary": "No exact answer was found in the available knowledge sources for the claim: Coffee cures cancer"
+    },
+    {
+      "id": "fact_unsourced_abstain",
+      "section": "facts",
+      "input": "An unverified forum post proves a secret cure works.",
+      "passed": true,
+      "detail": "expected verdict=uncertain, got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.26,
+      "summary": "No exact answer was found in the available sources for this claim."
+    },
+    {
+      "id": "news_primary_high_with_corroboration",
+      "section": "news",
+      "input": "https://www.reuters.com/science/space/nasa-updates-artemis-ii-moon-mission-schedule-2026-05-10/",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.76,
+      "credibility_label": "high",
+      "credibility_score": 0.76,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_primary_climate_high_with_corroboration",
+      "section": "news",
+      "input": "https://www.reuters.com/sustainability/climate/noaa-publishes-climate-data-update-2026-05-13/",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.76,
+      "credibility_label": "high",
+      "credibility_score": 0.76,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_institutional_high_without_corroboration",
+      "section": "news",
+      "input": "https://www.nasa.gov/news-release/artemis-ii-crew-moon-mission-update",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.72,
+      "credibility_label": "high",
+      "credibility_score": 0.72,
+      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_primary_medium_without_corroboration",
+      "section": "news",
+      "input": "https://apnews.com/article/central-bank-publishes-rate-decision-analysis-2026",
+      "passed": true,
+      "detail": "expected credibility in ['medium'], got medium",
+      "verdict": "uncertain",
+      "confidence": 0.64,
+      "credibility_label": "medium",
+      "credibility_score": 0.64,
+      "summary": "News credibility is medium (0.64). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_major_news_medium_without_corroboration",
+      "section": "news",
+      "input": "https://www.bbc.com/news/articles/central-bank-rate-decision-analysis",
+      "passed": true,
+      "detail": "expected credibility in ['medium'], got medium",
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "credibility_label": "medium",
+      "credibility_score": 0.5,
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_institutional_health_high_with_matches",
+      "section": "news",
+      "input": "https://www.who.int/news/item/12-05-2026-health-alert-for-travellers",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.757,
+      "credibility_label": "high",
+      "credibility_score": 0.757,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_major_listing_guardrail",
+      "section": "news",
+      "input": "https://www.bbc.com/news",
+      "passed": true,
+      "detail": "expected credibility in ['low', 'unknown'], got unknown",
+      "verdict": "uncertain",
+      "confidence": 0.1786,
+      "credibility_label": "unknown",
+      "credibility_score": 0.1786,
+      "summary": "News credibility is unknown (0.18). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_social_guardrail",
+      "section": "news",
+      "input": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "passed": true,
+      "detail": "expected credibility in ['unknown'], got unknown",
+      "verdict": "uncertain",
+      "confidence": 0.0,
+      "credibility_label": "unknown",
+      "credibility_score": 0.0,
+      "summary": "News credibility is unknown (0.00). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_low_trust_guardrail",
+      "section": "news",
+      "input": "https://medium.com/example/shocking-secret-cure-exposed-world-news-claim",
+      "passed": true,
+      "detail": "expected credibility in ['low', 'unknown'], got unknown",
+      "verdict": "uncertain",
+      "confidence": 0.004,
+      "credibility_label": "unknown",
+      "credibility_score": 0.004,
+      "summary": "News credibility is unknown (0.00). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_unknown_source_without_matches",
+      "section": "news",
+      "input": "https://example-blog.invalid/viral/shocking-secret-cure-world-news-claim",
+      "passed": true,
+      "detail": "expected credibility in ['low', 'unknown'], got unknown",
+      "verdict": "uncertain",
+      "confidence": 0.076,
+      "credibility_label": "unknown",
+      "credibility_score": 0.076,
+      "summary": "News credibility is unknown (0.08). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_unknown_source_with_two_matches",
+      "section": "news",
+      "input": "https://example.com/news/world/nasa-artemis-ii-moon-mission-update",
+      "passed": true,
+      "detail": "expected credibility in ['high', 'medium'], got medium",
+      "verdict": "uncertain",
+      "confidence": 0.615,
+      "credibility_label": "medium",
+      "credibility_score": 0.615,
+      "summary": "News credibility is medium (0.61). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_unknown_source_with_three_matches",
+      "section": "news",
+      "input": "https://example.com/news/world/noaa-climate-data-update",
+      "passed": true,
+      "detail": "expected credibility in ['high', 'medium'], got medium",
+      "verdict": "uncertain",
+      "confidence": 0.615,
+      "credibility_label": "medium",
+      "credibility_score": 0.615,
+      "summary": "News credibility is medium (0.61). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_institutional_fda_high_with_matches",
+      "section": "news",
+      "input": "https://www.fda.gov/news-events/press-announcements/fda-announces-food-safety-recall-update",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.748,
+      "credibility_label": "high",
+      "credibility_score": 0.748,
+      "summary": "News credibility is high (0.75). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_institutional_eac_high_without_matches",
+      "section": "news",
+      "input": "https://www.eac.gov/news/2026/05/election-commission-publishes-voter-guidance-update",
+      "passed": true,
+      "detail": "expected credibility in ['high'], got high",
+      "verdict": "uncertain",
+      "confidence": 0.72,
+      "credibility_label": "high",
+      "credibility_score": 0.72,
+      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "news_social_reddit_guardrail",
+      "section": "news",
+      "input": "https://www.reddit.com/r/news/comments/example/viral_claim/",
+      "passed": true,
+      "detail": "expected credibility in ['unknown'], got unknown",
+      "verdict": "uncertain",
+      "confidence": 0.0,
+      "credibility_label": "unknown",
+      "credibility_score": 0.0,
+      "summary": "News credibility is unknown (0.00). This is a credibility assessment, not a definitive true/fake verdict."
+    },
+    {
+      "id": "screenshot_ocr_fake_claim",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "ocr_confidence": 0.9925,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+    },
+    {
+      "id": "screenshot_ocr_true_claim",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "ocr_confidence": 0.9937,
+      "summary": "Evidence from local_common_knowledge supports the claim: The capital of France is Paris"
+    },
+    {
+      "id": "screenshot_ocr_arithmetic_false",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "ocr_confidence": 0.9943,
+      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+    },
+    {
+      "id": "screenshot_ocr_sky_false",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "ocr_confidence": 0.9993,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The sky is green"
+    },
+    {
+      "id": "screenshot_ocr_moon_false",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "ocr_confidence": 0.9928,
+      "summary": "Evidence from local_common_knowledge refutes the claim: The Moon is made of cheese"
+    },
+    {
+      "id": "screenshot_ocr_banana_true",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "ocr_confidence": 0.9935,
+      "summary": "Evidence from local_common_knowledge supports the claim: Bananas are yellow"
+    },
+    {
+      "id": "screenshot_question_overrides_ocr",
+      "section": "screenshots",
+      "input": "Elephants are mammals.",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "ocr_confidence": 0.9969,
+      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+    },
+    {
+      "id": "screenshot_question_override_fake",
+      "section": "screenshots",
+      "input": "Elephants are insects.",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "ocr_confidence": 0.9995,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+    },
+    {
+      "id": "screenshot_blank_abstains",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=uncertain, got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.2,
+      "ocr_confidence": 0.0,
+      "summary": "No readable claim was found in the image. This version can check text in screenshots, but it cannot prove the authenticity of a photo without text."
+    },
+    {
+      "id": "screenshot_ocr_dog_true",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "ocr_confidence": 0.9994,
+      "summary": "Evidence from local_common_knowledge supports the claim: Dogs are mammals"
+    },
+    {
+      "id": "screenshot_ocr_cat_plant_false",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "ocr_confidence": 0.9997,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Cats are plants"
+    },
+    {
+      "id": "screenshot_ocr_numeric_true",
+      "section": "screenshots",
+      "input": "generated screenshot",
+      "passed": true,
+      "detail": "expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.97,
+      "ocr_confidence": 0.9846,
+      "summary": "Evidence from local_arithmetic supports the claim: 100 is lower than 200"
+    },
+    {
+      "id": "image_ai_metadata_marker",
+      "section": "images",
+      "input": "metadata_ai.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_midjourney_metadata_marker",
+      "section": "images",
+      "input": "midjourney_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_dalle_metadata_marker",
+      "section": "images",
+      "input": "dalle_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_firefly_metadata_marker",
+      "section": "images",
+      "input": "firefly_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_ideogram_metadata_marker",
+      "section": "images",
+      "input": "ideogram_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_plain_jpeg_no_false_ai",
+      "section": "images",
+      "input": "plain_photo.jpg",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_not_ai', 'uncertain'], got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.34,
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty."
+    },
+    {
+      "id": "image_square_no_metadata_no_false_ai",
+      "section": "images",
+      "input": "square_plain.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_not_ai', 'uncertain'], got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.34,
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.34,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty."
+    },
+    {
+      "id": "image_camera_metadata_not_proof_of_real",
+      "section": "images",
+      "input": "camera_metadata.jpg",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_not_ai', 'uncertain'], got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.34,
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.04,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty."
+    },
+    {
+      "id": "image_leonardo_metadata_marker",
+      "section": "images",
+      "input": "leonardo_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_automatic1111_metadata_marker",
+      "section": "images",
+      "input": "automatic1111_metadata.png",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "ai_label": "likely_ai",
+      "ai_generated_score": 1.0,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "image_second_plain_jpeg_no_false_ai",
+      "section": "images",
+      "input": "plain_photo_second.jpg",
+      "passed": true,
+      "detail": "expected ai_label in ['likely_not_ai', 'uncertain'], got uncertain",
+      "verdict": "uncertain",
+      "confidence": 0.34,
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty."
+    },
+    {
+      "id": "api_health_ok",
+      "section": "api_contract",
+      "input": "GET /health",
+      "passed": true,
+      "detail": "status_code=200; expected status=ok, got ok",
+      "verdict": null,
+      "confidence": null,
+      "summary": "ok"
+    },
+    {
+      "id": "api_ready_ok",
+      "section": "api_contract",
+      "input": "GET /ready",
+      "passed": true,
+      "detail": "status_code=200; expected status=ready, got ready",
+      "verdict": null,
+      "confidence": null,
+      "summary": "ready"
+    },
+    {
+      "id": "api_cors_preflight_ok",
+      "section": "api_contract",
+      "input": "OPTIONS /factcheck",
+      "passed": true,
+      "detail": "status_code=200; expected status=ok, got ok; methods=GET, POST, OPTIONS",
+      "summary": "CORS preflight for Flutter Web/mobile gateway"
+    },
+    {
+      "id": "api_factcheck_true",
+      "section": "api_contract",
+      "input": "POST /factcheck",
+      "passed": true,
+      "detail": "status_code=200; expected verdict=true, got true",
+      "verdict": "true",
+      "confidence": 0.82,
+      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+    },
+    {
+      "id": "api_factcheck_fake",
+      "section": "api_contract",
+      "input": "POST /factcheck",
+      "passed": true,
+      "detail": "status_code=200; expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.78,
+      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+    },
+    {
+      "id": "api_screenshot_fake",
+      "section": "api_contract",
+      "input": "POST /factcheck-image",
+      "passed": true,
+      "detail": "status_code=200; expected verdict=fake, got fake",
+      "verdict": "fake",
+      "confidence": 0.97,
+      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+    },
+    {
+      "id": "api_ai_image_metadata",
+      "section": "api_contract",
+      "input": "POST /factcheck-image",
+      "passed": true,
+      "detail": "status_code=200; expected ai_label in ['likely_ai'], got likely_ai",
+      "verdict": "uncertain",
+      "confidence": 0.82,
+      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+    },
+    {
+      "id": "api_factcheck_empty_rejected",
+      "section": "api_contract",
+      "input": "POST /factcheck",
+      "passed": true,
+      "detail": "status_code=400; expected 400 for missing text/url",
+      "summary": "Rejects empty fact-check requests"
+    },
+    {
+      "id": "api_image_invalid_analysis_rejected",
+      "section": "api_contract",
+      "input": "POST /factcheck-image",
+      "passed": true,
+      "detail": "status_code=400; expected 400 for invalid analysis_type",
+      "summary": "Rejects unsupported image analysis modes"
+    },
+    {
+      "id": "api_image_missing_file_rejected",
+      "section": "api_contract",
+      "input": "POST /factcheck-image",
+      "passed": true,
+      "detail": "status_code=422; expected client error for missing image_file",
+      "summary": "Rejects image analysis requests without an uploaded file"
+    },
+    {
+      "id": "api_factcheck_get_method_rejected",
+      "section": "api_contract",
+      "input": "GET /factcheck",
+      "passed": true,
+      "detail": "status_code=405; expected 405 for unsupported method",
+      "summary": "Rejects unsupported GET method on factcheck endpoint"
+    }
+  ]
+}

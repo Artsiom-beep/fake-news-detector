@@ -1,0 +1,1360 @@
+{
+  "summary": {
+    "created_at": "2026-05-29T15:27:38+00:00",
+    "dataset_version": "quality_pack_v3_live",
+    "pipeline_version": "best_accuracy_v2",
+    "total": 17,
+    "ok": 17,
+    "errors": 0,
+    "passed": 17,
+    "failed": 0,
+    "by_case_type": {
+      "listing_guardrail": 2,
+      "low_trust_guardrail": 1,
+      "social_guardrail": 1,
+      "factcheck_url": 1,
+      "simple_fact": 2,
+      "trusted_news_article": 10
+    },
+    "by_source_type": {
+      "major_news": 10,
+      "primary_news": 2,
+      "low_trust": 1,
+      "social": 1,
+      "factcheck_org": 1,
+      "unknown": 2
+    },
+    "by_credibility_label": {
+      "low": 1,
+      "unknown": 3,
+      "none": 3,
+      "medium": 9,
+      "high": 1
+    },
+    "by_verdict": {
+      "uncertain": 14,
+      "fake": 2,
+      "true": 1
+    },
+    "feed_sources": [
+      {
+        "id": "bbc_world",
+        "name": "BBC World RSS",
+        "source_url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+        "fetched_at": "2026-05-29T15:24:17+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "npr_news",
+        "name": "NPR News RSS",
+        "source_url": "https://feeds.npr.org/1001/rss.xml",
+        "fetched_at": "2026-05-29T15:24:18+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "guardian_world",
+        "name": "The Guardian World RSS",
+        "source_url": "https://www.theguardian.com/world/rss",
+        "fetched_at": "2026-05-29T15:24:18+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "aljazeera_all",
+        "name": "Al Jazeera RSS",
+        "source_url": "https://www.aljazeera.com/xml/rss/all.xml",
+        "fetched_at": "2026-05-29T15:24:18+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "cbs_latest",
+        "name": "CBS News latest RSS",
+        "source_url": "https://www.cbsnews.com/latest/rss/main",
+        "fetched_at": "2026-05-29T15:24:19+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "nbc_news",
+        "name": "NBC News RSS",
+        "source_url": "https://feeds.nbcnews.com/nbcnews/public/news",
+        "fetched_at": "2026-05-29T15:24:19+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "dw_all",
+        "name": "DW RSS",
+        "source_url": "https://rss.dw.com/rdf/rss-en-all",
+        "fetched_at": "2026-05-29T15:24:19+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 0
+      },
+      {
+        "id": "france24_en",
+        "name": "France24 RSS",
+        "source_url": "https://www.france24.com/en/rss",
+        "fetched_at": "2026-05-29T15:24:20+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "abc_top",
+        "name": "ABC News top stories RSS",
+        "source_url": "https://abcnews.go.com/abcnews/topstories",
+        "fetched_at": "2026-05-29T15:24:20+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "sky_world",
+        "name": "Sky News world RSS",
+        "source_url": "https://feeds.skynews.com/feeds/rss/world.xml",
+        "fetched_at": "2026-05-29T15:24:20+00:00",
+        "status": "ok",
+        "error": "",
+        "items_collected": 1
+      },
+      {
+        "id": "ap_top",
+        "name": "AP News top news RSS",
+        "source_url": "https://apnews.com/hub/ap-top-news?output=rss",
+        "fetched_at": "2026-05-29T15:24:21+00:00",
+        "status": "html_fallback",
+        "error": "not well-formed (invalid token): line 3, column 239",
+        "items_collected": 1
+      }
+    ]
+  },
+  "rows": [
+    {
+      "id": "guardrail_bbc_listing",
+      "case_type": "listing_guardrail",
+      "source_name": "BBC listing page",
+      "collection_source": "manual_guardrail",
+      "url": "https://www.bbc.com/news",
+      "text": "",
+      "title": "",
+      "expected": {
+        "allowed_labels": [
+          "unknown",
+          "low"
+        ],
+        "max_score": 0.49
+      },
+      "notes": "Listing pages should not receive high credibility.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "bbc.com",
+      "source_type": "major_news",
+      "source_trust": 0.86,
+      "verdict": "uncertain",
+      "confidence": 0.4726,
+      "claim": "news",
+      "summary": "News credibility is low (0.47). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.4726,
+      "credibility_label": "low",
+      "source_score": 0.817,
+      "article_quality_score": 0.18,
+      "corroboration_score": 0.92,
+      "risk_score": 0.87,
+      "matched_sources": [
+        {
+          "domain": "reuters.com",
+          "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPWFQ4OU5FbGVINEdlY0hjVG5EZTFEdFlYaC1jZTNDaFRuRWdScGlTQ1NFX0FHaTdYY3R1ZXlwaVViUnUxYUJZMjlXWUhYZFl6ZWR3WnVLbXZSUFVBQldFY0hnc3lUM1FGZjFXeW85dEE4SWVndm9ZZUlyVVhqeGRWWklvNzV3WHJvbkFhTGl1NUZtY2QxcGQyNmtR?oc=5",
+          "title": "Joint statement on Gaza from Reuters, AFP, The AP and BBC News",
+          "score": 0.991,
+          "source_type": "primary_news",
+          "source_trust": 0.98,
+          "claim": "news"
+        },
+        {
+          "domain": "afp.com",
+          "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPT1NxeDh0SzlzUlAxNzhGWFU1d2g5cXdoYlQybnJ5MTRKeEJjZWNBTFFLS1lpTzhiRnh6b21TVU1wc2Q2RERGMHVSeXpWVVJTUFdJWE43YTBjOUVGUUcwYko2VFhvQ1kxaWQ2a2RRTjVEMHJMaUhVSEw4MjZ2SEtDMUxTWDZrOWUyUktNd3pHdlExTEk0ZjZoZzEzMmxlZ0VuSW9jMjhCODAzZw?oc=5",
+          "title": "BBC, AFP, AP and Reuters launch film calling for Gaza access - afp.com",
+          "score": 0.9775,
+          "source_type": "primary_news",
+          "source_trust": 0.95,
+          "claim": "news"
+        },
+        {
+          "domain": "nytimes.com",
+          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBfTUV3OWVlNjd2NXBPN2ZBSVpsNnZoUFlpMnowdzdZUnZPMENUVHY4U2NZTkdrNDNHRUpQMnJkR05yUVdMSmt4VXFjZEFmYVJ3b0RtWEtOTDdEZzJBLTE2alR3SFYwNVRIOXNPT2FrVUI2blZSR3FLN0hacHg1Zkk?oc=5",
+          "title": "Islamabad Reopens After U.S.-Iran Talks Fail to Materialize - The New York Times",
+          "score": 0.937,
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "claim": "news"
+        },
+        {
+          "domain": "theguardian.com",
+          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeW5iNmNRWTBqY3J6b1AxVS1qd20wak1IYWlvVVhmbHJOWnhtYU1YaXlFc0tpOGQ4QVc2QjJidXdja2o0UHlyWVJyMU9KZUVtZVVldlhGRTNsLXR0S0c5RnI5djJ6Y1RaZk5LNWdBTV9WMXp5X3hmMjZZSnF0NHRZR1c0OHpoakdyTTU1U3BnWTJPTmlXVDBjQ3ZreTh1S2x6dDlTQUVueTB5M2Nsa2FWeFprbw?oc=5",
+          "title": "King Charles’s security for US visit under review after Washington shooting",
+          "score": 0.919,
+          "source_type": "major_news",
+          "source_trust": 0.82,
+          "claim": "news"
+        }
+      ],
+      "risk_flags": [
+        "fetch_fallback:non_article_url",
+        "listing_or_non_article_url",
+        "missing_article_text",
+        "missing_author",
+        "missing_date"
+      ],
+      "evidence_count": 4,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPWFQ4OU5FbGVINEdlY0hjVG5EZTFEdFlYaC1jZTNDaFRuRWdScGlTQ1NFX0FHaTdYY3R1ZXlwaVViUnUxYUJZMjlXWUhYZFl6ZWR3WnVLbXZSUFVBQldFY0hnc3lUM1FGZjFXeW85dEE4SWVndm9ZZUlyVVhqeGRWWklvNzV3WHJvbkFhTGl1NUZtY2QxcGQyNmtR?oc=5",
+          "title": "Joint statement on Gaza from Reuters, AFP, The AP and BBC News",
+          "stance": "support",
+          "score": 0.991,
+          "snippet": "Corroborating source for: news",
+          "passage": "reuters.com appears to cover the same claim: news",
+          "source_type": "primary_news",
+          "source_trust": 0.98,
+          "relevance": 0.991,
+          "freshness": 0.7,
+          "domain": "reuters.com",
+          "claim_match_score": 0.991,
+          "verdict_source": ""
+        },
+        {
+          "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPT1NxeDh0SzlzUlAxNzhGWFU1d2g5cXdoYlQybnJ5MTRKeEJjZWNBTFFLS1lpTzhiRnh6b21TVU1wc2Q2RERGMHVSeXpWVVJTUFdJWE43YTBjOUVGUUcwYko2VFhvQ1kxaWQ2a2RRTjVEMHJMaUhVSEw4MjZ2SEtDMUxTWDZrOWUyUktNd3pHdlExTEk0ZjZoZzEzMmxlZ0VuSW9jMjhCODAzZw?oc=5",
+          "title": "BBC, AFP, AP and Reuters launch film calling for Gaza access - afp.com",
+          "stance": "support",
+          "score": 0.9775,
+          "snippet": "Corroborating source for: news",
+          "passage": "afp.com appears to cover the same claim: news",
+          "source_type": "primary_news",
+          "source_trust": 0.95,
+          "relevance": 0.9775,
+          "freshness": 0.7,
+          "domain": "afp.com",
+          "claim_match_score": 0.9775,
+          "verdict_source": ""
+        },
+        {
+          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBfTUV3OWVlNjd2NXBPN2ZBSVpsNnZoUFlpMnowdzdZUnZPMENUVHY4U2NZTkdrNDNHRUpQMnJkR05yUVdMSmt4VXFjZEFmYVJ3b0RtWEtOTDdEZzJBLTE2alR3SFYwNVRIOXNPT2FrVUI2blZSR3FLN0hacHg1Zkk?oc=5",
+          "title": "Islamabad Reopens After U.S.-Iran Talks Fail to Materialize - The New York Times",
+          "stance": "support",
+          "score": 0.937,
+          "snippet": "Corroborating source for: news",
+          "passage": "nytimes.com appears to cover the same claim: news",
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "relevance": 0.937,
+          "freshness": 0.7,
+          "domain": "nytimes.com",
+          "claim_match_score": 0.937,
+          "verdict_source": ""
+        },
+        {
+          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeW5iNmNRWTBqY3J6b1AxVS1qd20wak1IYWlvVVhmbHJOWnhtYU1YaXlFc0tpOGQ4QVc2QjJidXdja2o0UHlyWVJyMU9KZUVtZVVldlhGRTNsLXR0S0c5RnI5djJ6Y1RaZk5LNWdBTV9WMXp5X3hmMjZZSnF0NHRZR1c0OHpoakdyTTU1U3BnWTJPTmlXVDBjQ3ZreTh1S2x6dDlTQUVueTB5M2Nsa2FWeFprbw?oc=5",
+          "title": "King Charles’s security for US visit under review after Washington shooting",
+          "stance": "support",
+          "score": 0.919,
+          "snippet": "Corroborating source for: news",
+          "passage": "theguardian.com appears to cover the same claim: news",
+          "source_type": "major_news",
+          "source_trust": 0.82,
+          "relevance": 0.919,
+          "freshness": 0.7,
+          "domain": "theguardian.com",
+          "claim_match_score": 0.919,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [
+        "non_article_input_url"
+      ],
+      "queries": [
+        "news",
+        "news Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "news_credibility": 7939.43,
+        "ingest": 7939.46,
+        "total": 7939.53
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 7.94
+    },
+    {
+      "id": "guardrail_reuters_home",
+      "case_type": "listing_guardrail",
+      "source_name": "Reuters homepage",
+      "collection_source": "manual_guardrail",
+      "url": "https://www.reuters.com/",
+      "text": "",
+      "title": "",
+      "expected": {
+        "allowed_labels": [
+          "unknown",
+          "low"
+        ],
+        "max_score": 0.49
+      },
+      "notes": "Homepages should not be treated as direct article evidence.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "reuters.com",
+      "source_type": "primary_news",
+      "source_trust": 0.98,
+      "verdict": "uncertain",
+      "confidence": 0.144,
+      "claim": "",
+      "summary": "News credibility is unknown (0.14). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.144,
+      "credibility_label": "unknown",
+      "source_score": 0.98,
+      "article_quality_score": 0.0,
+      "corroboration_score": 0.0,
+      "risk_score": 1.0,
+      "matched_sources": [],
+      "risk_flags": [
+        "fetch_fallback:non_article_url",
+        "listing_or_non_article_url",
+        "missing_article_text",
+        "missing_author",
+        "missing_date",
+        "missing_title",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [
+        "non_article_input_url"
+      ],
+      "queries": [],
+      "stage_timings_ms": {
+        "news_credibility": 0.06,
+        "ingest": 0.07,
+        "total": 0.08
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 0.0
+    },
+    {
+      "id": "guardrail_medium_home",
+      "case_type": "low_trust_guardrail",
+      "source_name": "Medium homepage",
+      "collection_source": "manual_guardrail",
+      "url": "https://medium.com/",
+      "text": "",
+      "title": "",
+      "expected": {
+        "allowed_labels": [
+          "unknown",
+          "low"
+        ],
+        "max_score": 0.49
+      },
+      "notes": "Low-trust/wrapper-like pages should not score high without corroboration.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "medium.com",
+      "source_type": "low_trust",
+      "source_trust": 0.24,
+      "verdict": "uncertain",
+      "confidence": 0.0,
+      "claim": "",
+      "summary": "News credibility is unknown (0.00). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.0,
+      "credibility_label": "unknown",
+      "source_score": 0.18,
+      "article_quality_score": 0.0,
+      "corroboration_score": 0.0,
+      "risk_score": 1.0,
+      "matched_sources": [],
+      "risk_flags": [
+        "fetch_fallback:non_article_url",
+        "listing_or_non_article_url",
+        "low_trust_source",
+        "missing_article_text",
+        "missing_author",
+        "missing_date",
+        "missing_title",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [
+        "non_article_input_url"
+      ],
+      "queries": [],
+      "stage_timings_ms": {
+        "news_credibility": 0.07,
+        "ingest": 0.08,
+        "total": 0.08
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 0.0
+    },
+    {
+      "id": "guardrail_youtube_video",
+      "case_type": "social_guardrail",
+      "source_name": "YouTube video",
+      "collection_source": "manual_guardrail",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "text": "",
+      "title": "",
+      "expected": {
+        "allowed_labels": [
+          "unknown",
+          "low"
+        ],
+        "max_score": 0.49
+      },
+      "notes": "Social/video URLs should not be scored as high-confidence news articles.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "youtube.com",
+      "source_type": "social",
+      "source_trust": 0.08,
+      "verdict": "uncertain",
+      "confidence": 0.078,
+      "claim": "watch",
+      "summary": "News credibility is unknown (0.08). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.078,
+      "credibility_label": "unknown",
+      "source_score": 0.08,
+      "article_quality_score": 0.18,
+      "corroboration_score": 0.48,
+      "risk_score": 1.0,
+      "matched_sources": [
+        {
+          "domain": "bbc.com",
+          "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBQZ1dGUF96RXFOdlg3MWNsa3RMYkw4amJEVUc5VjlUbHZkcmx6YldZQWE3QVRuRkhMWFB2c2hONl9nRGFuVEx3amRuMmJyQU8zaF9vNDZMaw?oc=5",
+          "title": "Watch: How gunfire sparked chaos at Trump press dinner",
+          "score": 0.937,
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "claim": "watch"
+        }
+      ],
+      "risk_flags": [
+        "fetch_fallback:non_article_url",
+        "listing_or_non_article_url",
+        "missing_article_text",
+        "missing_author",
+        "missing_date",
+        "social_source"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBQZ1dGUF96RXFOdlg3MWNsa3RMYkw4amJEVUc5VjlUbHZkcmx6YldZQWE3QVRuRkhMWFB2c2hONl9nRGFuVEx3amRuMmJyQU8zaF9vNDZMaw?oc=5",
+          "title": "Watch: How gunfire sparked chaos at Trump press dinner",
+          "stance": "support",
+          "score": 0.937,
+          "snippet": "Corroborating source for: watch",
+          "passage": "bbc.com appears to cover the same claim: watch",
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "relevance": 0.937,
+          "freshness": 0.7,
+          "domain": "bbc.com",
+          "claim_match_score": 0.937,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [
+        "non_article_input_url"
+      ],
+      "queries": [
+        "watch",
+        "watch Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "news_credibility": 7872.33,
+        "ingest": 7872.35,
+        "total": 7872.36
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 7.872
+    },
+    {
+      "id": "factcheck_politifact_false_masks",
+      "case_type": "factcheck_url",
+      "source_name": "PolitiFact fact-check",
+      "collection_source": "manual_factcheck_seed",
+      "url": "https://www.politifact.com/factchecks/2020/may/21/facebook-posts/disposable-homemade-masks-are-effective-stopping-a",
+      "text": "",
+      "title": "",
+      "expected": {
+        "allowed_verdicts": [
+          "fake"
+        ]
+      },
+      "notes": "Known explicit fact-check page should produce a hard verdict.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "politifact.com",
+      "source_type": "factcheck_org",
+      "source_trust": 0.95,
+      "verdict": "fake",
+      "confidence": 0.8426,
+      "claim": "Says a warning label on a box of disposable masks shows that they are ineffective at protecting against the spread of COVID-19",
+      "summary": "Evidence from politifact.com refutes the claim: Says a warning label on a box of disposable masks shows that they are ineffective at protecting against the spread of COVID-19",
+      "credibility_score": null,
+      "credibility_label": null,
+      "source_score": null,
+      "article_quality_score": null,
+      "corroboration_score": null,
+      "risk_score": null,
+      "matched_sources": [],
+      "risk_flags": [],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://www.politifact.com/factchecks/2020/may/21/facebook-posts/disposable-homemade-masks-are-effective-stopping-a",
+          "title": "PolitiFact | Mask box label is legitimate, but people are misinterpreting it",
+          "stance": "refute",
+          "score": 0.9717,
+          "snippet": "Says a warning label on a box of disposable masks shows that they are ineffective at protecting against the spread of COVID-19.",
+          "passage": "A photograph of a box of disposable masks shows a warning label that says the masks \"will not provide any protections against COVID-19.\" Such disclaimers don’t mean that the masks are ineffective at slowing the spread of the disease, but that they don’t protect the wearer as well as medical respirators such as the N95 recommended for use by health care professionals. Disposable and homemade cloth masks are recommende",
+          "source_type": "factcheck_org",
+          "source_trust": 0.95,
+          "relevance": 0.5333,
+          "freshness": 0.55,
+          "domain": "politifact.com",
+          "claim_match_score": 1.0,
+          "verdict_source": "politifact_ruling"
+        }
+      ],
+      "fallbacks": [],
+      "queries": [],
+      "stage_timings_ms": {
+        "ingest": 1.1,
+        "claims": 0.41,
+        "retrieval": 0.0,
+        "evidence": 0.13,
+        "decision": 0.02,
+        "total": 1.72
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 0.002
+    },
+    {
+      "id": "simple_true_arithmetic",
+      "case_type": "simple_fact",
+      "source_name": "Local simple-fact smoke",
+      "collection_source": "manual_simple_fact",
+      "url": "",
+      "text": "100 is lower than 200",
+      "title": "",
+      "expected": {
+        "allowed_verdicts": [
+          "true"
+        ]
+      },
+      "notes": "Internal simple facts remain part of best_accuracy.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "",
+      "source_type": "unknown",
+      "source_trust": 0.25,
+      "verdict": "true",
+      "confidence": 0.97,
+      "claim": "100 is lower than 200",
+      "summary": "Evidence from local_arithmetic supports the claim: 100 is lower than 200",
+      "credibility_score": null,
+      "credibility_label": null,
+      "source_score": null,
+      "article_quality_score": null,
+      "corroboration_score": null,
+      "risk_score": null,
+      "matched_sources": [],
+      "risk_flags": [],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Arithmetic",
+          "title": "Local arithmetic comparison",
+          "stance": "support",
+          "score": 0.97,
+          "snippet": "The best-accuracy pipeline evaluates simple numeric comparisons locally.",
+          "passage": "Local arithmetic check: 100 is less than 200 is true.",
+          "source_type": "local_arithmetic",
+          "source_trust": 0.98,
+          "relevance": 1.0,
+          "freshness": 1.0,
+          "domain": "local_arithmetic",
+          "claim_match_score": 1.0,
+          "verdict_source": "local_arithmetic_v1"
+        }
+      ],
+      "fallbacks": [],
+      "queries": [],
+      "stage_timings_ms": {
+        "claims": 0.03,
+        "total": 5.22
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 0.005
+    },
+    {
+      "id": "simple_false_taste",
+      "case_type": "simple_fact",
+      "source_name": "Local simple-fact smoke",
+      "collection_source": "manual_simple_fact",
+      "url": "",
+      "text": "Salt is sweet",
+      "title": "",
+      "expected": {
+        "allowed_verdicts": [
+          "fake"
+        ]
+      },
+      "notes": "Internal simple facts remain part of best_accuracy.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "",
+      "source_type": "unknown",
+      "source_trust": 0.25,
+      "verdict": "fake",
+      "confidence": 0.78,
+      "claim": "Salt is sweet",
+      "summary": "Evidence from local_common_knowledge refutes the claim: Salt is sweet",
+      "credibility_score": null,
+      "credibility_label": null,
+      "source_score": null,
+      "article_quality_score": null,
+      "corroboration_score": null,
+      "risk_score": null,
+      "matched_sources": [],
+      "risk_flags": [],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Salt",
+          "title": "Common knowledge: salt",
+          "stance": "refute",
+          "score": 0.86,
+          "snippet": "The best-accuracy pipeline uses a small local rule base for simple everyday facts.",
+          "passage": "Local common-knowledge rules mark salt as not matching: sweet.",
+          "source_type": "common_knowledge",
+          "source_trust": 0.72,
+          "relevance": 0.95,
+          "freshness": 0.55,
+          "domain": "local_common_knowledge",
+          "claim_match_score": 1.0,
+          "verdict_source": "local_common_knowledge_v1"
+        }
+      ],
+      "fallbacks": [],
+      "queries": [],
+      "stage_timings_ms": {
+        "claims": 0.04,
+        "total": 1.13
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 0.001
+    },
+    {
+      "id": "bbc_world_01",
+      "case_type": "trusted_news_article",
+      "source_name": "BBC World RSS",
+      "collection_source": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "url": "https://www.bbc.com/news/articles/c70vg7glglyo?at_medium=RSS&at_campaign=rss",
+      "text": "",
+      "title": "Canadian 'poison seller' pleads guilty to aiding suicides by selling toxic chemical online",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "bbc.com",
+      "source_type": "major_news",
+      "source_trust": 0.86,
+      "verdict": "uncertain",
+      "confidence": 0.5266,
+      "claim": "Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online",
+      "summary": "News credibility is medium (0.53). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5266,
+      "credibility_label": "medium",
+      "source_score": 0.817,
+      "article_quality_score": 0.74,
+      "corroboration_score": 0.48,
+      "risk_score": 0.23,
+      "matched_sources": [
+        {
+          "domain": "bbc.co.uk",
+          "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5MUzZfdXdtMmNpWU91a182ME9YSDZKSDFEZzV1ZnZST2RNNXMxM2J6anhHbElncy1aaTU4QTk1dExtdkxNZXowZUpPR2NjMjUxYU1TQmYzQllLSEJK?oc=5",
+          "title": "Canadian 'poison seller' pleads guilty to aiding suicides by selling toxic chemical online",
+          "score": 0.8832,
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "claim": "Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online"
+        }
+      ],
+      "risk_flags": [
+        "missing_author",
+        "missing_date"
+      ],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5MUzZfdXdtMmNpWU91a182ME9YSDZKSDFEZzV1ZnZST2RNNXMxM2J6anhHbElncy1aaTU4QTk1dExtdkxNZXowZUpPR2NjMjUxYU1TQmYzQllLSEJK?oc=5",
+          "title": "Canadian 'poison seller' pleads guilty to aiding suicides by selling toxic chemical online",
+          "stance": "support",
+          "score": 0.8832,
+          "snippet": "Corroborating source for: Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online",
+          "passage": "bbc.co.uk appears to cover the same claim: Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online",
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "relevance": 0.8832,
+          "freshness": 0.7,
+          "domain": "bbc.co.uk",
+          "claim_match_score": 0.8832,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [],
+      "queries": [
+        "Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online",
+        "Canadian 'poison seller' Kenneth Law pleads guilty to aiding suicides by selling toxic chemical online Reuters AP BBC",
+        "Canadian 'poison seller' pleads guilty to aiding suicides by selling toxic chemical online A man has pleaded guilty to 14 counts of aiding suicides in Canada after he sold toxic chemicals online",
+        "Canadian 'poison seller' pleads guilty to aiding suicides by selling toxic chemical online A man has pleaded guilty to 14 counts of aiding suicides in Canada after he sold toxic chemicals online Reuters AP BBC",
+        "Kenneth Law, 60, entered the guilty pleas relating to Canadian victims in an Ontario court on Friday, as part of a deal with prosecutors who withdrew more serious murder charges",
+        "Kenneth Law, 60, entered the guilty pleas relating to Canadian victims in an Ontario court on Friday, as part of a deal with prosecutors who withdrew more serious murder charges Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 409.72,
+        "news_credibility": 19170.45,
+        "total": 19580.19
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 19.58
+    },
+    {
+      "id": "npr_news_01",
+      "case_type": "trusted_news_article",
+      "source_name": "NPR News RSS",
+      "collection_source": "https://feeds.npr.org/1001/rss.xml",
+      "url": "https://www.npr.org/2026/05/29/g-s1-124788/asia-defense-summit-opens-amid-doubts-over-u-s-priorities",
+      "text": "",
+      "title": "Asia defense summit opens amid doubts over U.S. priorities",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "npr.org",
+      "source_type": "major_news",
+      "source_trust": 0.84,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "Asia defense summit opens amid doubts over U.S. priorities",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.798,
+      "article_quality_score": 0.92,
+      "corroboration_score": 0.0,
+      "risk_score": 0.15,
+      "matched_sources": [],
+      "risk_flags": [
+        "missing_author",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [],
+      "queries": [
+        "Asia defense summit opens amid doubts over U.S. priorities",
+        "Asia defense summit opens amid doubts over U.S. priorities Reuters AP BBC",
+        "security forum, in Singapore, Thursday, May 28, 2026",
+        "security forum, in Singapore, Thursday, May 28, 2026 Reuters AP BBC",
+        "Asia defense summit opens amid doubts over US priorities By The Associated Press A man walk near the entrance of the Shangri-La Hotel, the venue for the International Institute for Strategic Studies (IISS) Shangri-La Dialogue, Asia's annual defense and security forum, in Singapore, Thursday, May 28, 2026",
+        "Asia defense summit opens amid doubts over US priorities By The Associated Press A man walk near the entrance of the Shangri-La Hotel, the venue for the International Institute for Strategic Studies (IISS) Shangri-La Dialogue, Asia's annual defense and security forum, in Singapore, Thursday, May 28, 2026 Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 343.82,
+        "news_credibility": 21329.94,
+        "total": 21673.78
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 21.674
+    },
+    {
+      "id": "guardian_world_01",
+      "case_type": "trusted_news_article",
+      "source_name": "The Guardian World RSS",
+      "collection_source": "https://www.theguardian.com/world/rss",
+      "url": "https://www.theguardian.com/world/2026/may/29/who-chief-tedros-adhanom-ghebreyesus-drc-ebola-outbreak-epidemic",
+      "text": "",
+      "title": "WHO puts Ebola outbreak death rate at ‘huge’ 30-50% as chief arrives in DRC",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "theguardian.com",
+      "source_type": "major_news",
+      "source_trust": 0.82,
+      "verdict": "uncertain",
+      "confidence": 0.6017,
+      "claim": "WHO puts Ebola outbreak death rate at ‘huge’ 30-50% as chief arrives in DRC",
+      "summary": "News credibility is medium (0.60). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.6017,
+      "credibility_label": "medium",
+      "source_score": 0.779,
+      "article_quality_score": 1.0,
+      "corroboration_score": 0.48,
+      "risk_score": 0.0,
+      "matched_sources": [
+        {
+          "domain": "who.int",
+          "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNcXFGUlcwMUx1cVJiV0luVWxKRUVjTWtEc0xiOHFZMkFYZ0MzUFV2bFh1Y21pc3BnYkNYOUJ3NG0zRUZZZkQzX0xYSUxZdnRLT3hxT3BmdnFfaF9CcXVZZXVna2lDb2ZzSWtXckM3d3BPLTlhcjNUNk5rN3g2aFFFMnhnYkppMXRTSDRfdW9mN1F4ZjRzZU5jT2Z2MEtleEdKbGFrSTRXLTAtcC16UXRNcGNOXzdRSnZMMHBmYV9ITHJnOTgyeDhOSkpHUmdWWE80NGR5cXNB?oc=5",
+          "title": "WHO Director-General's address to Member States at the 79th World Health Assembly – 19 May 2026 - World Health Organization (WHO)",
+          "score": 0.732,
+          "source_type": "institutional",
+          "source_trust": 0.97,
+          "claim": "50%, the World Health Organization has said, as its head arrived in the country to support efforts to contain the disease"
+        }
+      ],
+      "risk_flags": [],
+      "evidence_count": 1,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNcXFGUlcwMUx1cVJiV0luVWxKRUVjTWtEc0xiOHFZMkFYZ0MzUFV2bFh1Y21pc3BnYkNYOUJ3NG0zRUZZZkQzX0xYSUxZdnRLT3hxT3BmdnFfaF9CcXVZZXVna2lDb2ZzSWtXckM3d3BPLTlhcjNUNk5rN3g2aFFFMnhnYkppMXRTSDRfdW9mN1F4ZjRzZU5jT2Z2MEtleEdKbGFrSTRXLTAtcC16UXRNcGNOXzdRSnZMMHBmYV9ITHJnOTgyeDhOSkpHUmdWWE80NGR5cXNB?oc=5",
+          "title": "WHO Director-General's address to Member States at the 79th World Health Assembly – 19 May 2026 - World Health Organization (WHO)",
+          "stance": "support",
+          "score": 0.732,
+          "snippet": "Corroborating source for: 50%, the World Health Organization has said, as its head arrived in the country to support efforts to contain the disease",
+          "passage": "who.int appears to cover the same claim: 50%, the World Health Organization has said, as its head arrived in the country to support efforts to contain the disease",
+          "source_type": "institutional",
+          "source_trust": 0.97,
+          "relevance": 0.732,
+          "freshness": 0.7,
+          "domain": "who.int",
+          "claim_match_score": 0.732,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [],
+      "queries": [
+        "WHO puts Ebola outbreak death rate at ‘huge’ 30-50% as chief arrives in DRC",
+        "WHO puts Ebola outbreak death rate at ‘huge’ 30-50% as chief arrives in DRC Reuters AP BBC",
+        "50%, the World Health Organization has said, as its head arrived in the country to support efforts to contain the disease",
+        "50%, the World Health Organization has said, as its head arrived in the country to support efforts to contain the disease Reuters AP BBC",
+        "Anaïs Legand, from the WHO’s high threat pathogens team, said the revised death rate estimate is based on confirmed cases",
+        "Anaïs Legand, from the WHO’s high threat pathogens team, said the revised death rate estimate is based on confirmed cases Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 451.64,
+        "news_credibility": 15923.65,
+        "total": 16375.31
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 16.375
+    },
+    {
+      "id": "aljazeera_all_01",
+      "case_type": "trusted_news_article",
+      "source_name": "Al Jazeera RSS",
+      "collection_source": "https://www.aljazeera.com/xml/rss/all.xml",
+      "url": "https://www.aljazeera.com/sports/2026/5/29/psg-vs-arsenal-champions-league-final-teams-start-time-lineups-kickoff?traffic_source=rss",
+      "text": "",
+      "title": "PSG vs Arsenal: Champions League final – teams, start time, lineups",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "aljazeera.com",
+      "source_type": "major_news",
+      "source_trust": 0.8,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "PSG vs Arsenal: Champions League final – teams, start time, lineups",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.76,
+      "article_quality_score": 0.82,
+      "corroboration_score": 0.0,
+      "risk_score": 0.24,
+      "matched_sources": [],
+      "risk_flags": [
+        "missing_date",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [],
+      "queries": [
+        "PSG vs Arsenal: Champions League final – teams, start time, lineups",
+        "PSG vs Arsenal: Champions League final – teams, start time, lineups Reuters AP BBC",
+        "Save Share Who: Paris Saint-Germain vs Arsenal What: UEFA Champions League final Where: Puskas Arena in Budapest, Hungary When: Saturday, May 30, at 6pm (17:00 GMT) How to follow: We’ll have all the build-up on Al Jazeera Sport from 13:00 GMT in advance of our live text commentary stream",
+        "Save Share Who: Paris Saint-Germain vs Arsenal What: UEFA Champions League final Where: Puskas Arena in Budapest, Hungary When: Saturday, May 30, at 6pm (17:00 GMT) How to follow: We’ll have all the build-up on Al Jazeera Sport from 13:00 GMT in advance of our live text commentary stream Reuters AP BBC",
+        "PSG vs Arsenal: Champions League final – teams, start time, lineups. PSG vs Arsenal: Champions League final – teams, start time, lineups PSG seek to defend the title they won for the first time, while Arsenal hope for first UEFA Champions League trophy lift",
+        "PSG vs Arsenal: Champions League final – teams, start time, lineups. PSG vs Arsenal: Champions League final – teams, start time, lineups PSG seek to defend the title they won for the first time, while Arsenal hope for first UEFA Champions League trophy lift Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 306.42,
+        "news_credibility": 22594.54,
+        "total": 22900.99
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 22.901
+    },
+    {
+      "id": "cbs_latest_01",
+      "case_type": "trusted_news_article",
+      "source_name": "CBS News latest RSS",
+      "collection_source": "https://www.cbsnews.com/latest/rss/main",
+      "url": "https://www.cbsnews.com/news/cd-account-moves-savers-make-before-june-2026-fed-meeting",
+      "text": "",
+      "title": "3 CD account moves savers should make before the June Fed meeting",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "cbsnews.com",
+      "source_type": "major_news",
+      "source_trust": 0.78,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "3 CD account moves savers should make before the June Fed meeting",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.741,
+      "article_quality_score": 0.74,
+      "corroboration_score": 0.0,
+      "risk_score": 0.31,
+      "matched_sources": [],
+      "risk_flags": [
+        "missing_author",
+        "missing_date",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [],
+      "queries": [
+        "3 CD account moves savers should make before the June Fed meeting",
+        "3 CD account moves savers should make before the June Fed meeting Reuters AP BBC",
+        "3 CD account moves savers should make before the June Fed meeting. 3 CD account moves savers should make before the June Fed meeting We may receive commissions from some links to products on this page",
+        "3 CD account moves savers should make before the June Fed meeting. 3 CD account moves savers should make before the June Fed meeting We may receive commissions from some links to products on this page Reuters AP BBC",
+        "3 CD account moves savers should make before the June Fed meeting We may receive commissions from some links to products on this page",
+        "3 CD account moves savers should make before the June Fed meeting We may receive commissions from some links to products on this page Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 519.16,
+        "news_credibility": 21018.71,
+        "total": 21537.9
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 21.538
+    },
+    {
+      "id": "nbc_news_01",
+      "case_type": "trusted_news_article",
+      "source_name": "NBC News RSS",
+      "collection_source": "https://feeds.nbcnews.com/nbcnews/public/news",
+      "url": "https://www.nbcnews.com/politics/justice-department/judge-halts-trump-anti-weaponization-fund-jan-6-prosecutor-files-suit-rcna347539",
+      "text": "",
+      "title": "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "nbcnews.com",
+      "source_type": "major_news",
+      "source_trust": 0.78,
+      "verdict": "uncertain",
+      "confidence": 0.6618,
+      "claim": "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit",
+      "summary": "News credibility is medium (0.66). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.6618,
+      "credibility_label": "medium",
+      "source_score": 0.741,
+      "article_quality_score": 0.92,
+      "corroboration_score": 0.76,
+      "risk_score": 0.07,
+      "matched_sources": [
+        {
+          "domain": "abcnews.com",
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNby1ETERDdDhFeC1uaEQzbGp1cHczZU1PT3FWVEpteldDcmxhdjRSMmJXTTBKVFV4V2RXMzJUS0U5MFFXempJMGQwbV94Zlk4UnBYYmhlQ1ZEbmxPMGd1TnN2QS1vMDVIYldtYWZ3YXNxbHFaSFRYdWd5WGM5X2VMd2M2MmJ1S3htcy1sRzcxa1FIVnhKSlpwTVlzRUliZTTSAaQBQVVfeXFMT19uQVd1Q2h3QXhiM3A4OTVpTlBVUXd3R2F0ZEh6NGV5aWtjQnRMQ1FaRmRCOHk0aXRTZHhDM1plc1g1YzBqdmFJbko1aEhLVVB6R0N1Ul8ydXlNeVNWVHd6V0Q0NVgxV3pZbk9xOXdLaVE4RWY2ZjdRNVg3enNuS3R0anZZNlhyaExBaUlIZkpwU1RMbHhGTVFhckRiMTBmc0lxcEQ?oc=5",
+          "title": "Trump's 'Anti-Weaponization Fund' faces additional lawsuits - ABC News - Breaking News, Latest News and Videos",
+          "score": 0.691,
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "claim": "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit"
+        },
+        {
+          "domain": "cnn.com",
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPaU1hTy1xZDFYQ1RLZGRrdTI1OHVDaGpCUC10dnV3SE00eGxnZkxlMXFHWktkbndFZUhNbWVEV2NyYmloTThyRFRRQ1VCdFdJZzNMTFk1OGdLYzQxa3VFTUJXbXdMVEFacjgxU0lOZEVVLXFnMHR4WWdzc0I2M3FLNmxjTW5UNGR3aUNKWlZpR2ctaXI3VmlRZVVnMi1aU0E?oc=5",
+          "title": "Federal judge halts work on Trump’s ‘anti-weaponization fund’ - CNN",
+          "score": 0.6575,
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "claim": "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family and the Trump Org"
+        }
+      ],
+      "risk_flags": [
+        "missing_author"
+      ],
+      "evidence_count": 2,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNby1ETERDdDhFeC1uaEQzbGp1cHczZU1PT3FWVEpteldDcmxhdjRSMmJXTTBKVFV4V2RXMzJUS0U5MFFXempJMGQwbV94Zlk4UnBYYmhlQ1ZEbmxPMGd1TnN2QS1vMDVIYldtYWZ3YXNxbHFaSFRYdWd5WGM5X2VMd2M2MmJ1S3htcy1sRzcxa1FIVnhKSlpwTVlzRUliZTTSAaQBQVVfeXFMT19uQVd1Q2h3QXhiM3A4OTVpTlBVUXd3R2F0ZEh6NGV5aWtjQnRMQ1FaRmRCOHk0aXRTZHhDM1plc1g1YzBqdmFJbko1aEhLVVB6R0N1Ul8ydXlNeVNWVHd6V0Q0NVgxV3pZbk9xOXdLaVE4RWY2ZjdRNVg3enNuS3R0anZZNlhyaExBaUlIZkpwU1RMbHhGTVFhckRiMTBmc0lxcEQ?oc=5",
+          "title": "Trump's 'Anti-Weaponization Fund' faces additional lawsuits - ABC News - Breaking News, Latest News and Videos",
+          "stance": "support",
+          "score": 0.691,
+          "snippet": "Corroborating source for: Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit",
+          "passage": "abcnews.com appears to cover the same claim: Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit",
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "relevance": 0.691,
+          "freshness": 0.7,
+          "domain": "abcnews.com",
+          "claim_match_score": 0.691,
+          "verdict_source": ""
+        },
+        {
+          "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPaU1hTy1xZDFYQ1RLZGRrdTI1OHVDaGpCUC10dnV3SE00eGxnZkxlMXFHWktkbndFZUhNbWVEV2NyYmloTThyRFRRQ1VCdFdJZzNMTFk1OGdLYzQxa3VFTUJXbXdMVEFacjgxU0lOZEVVLXFnMHR4WWdzc0I2M3FLNmxjTW5UNGR3aUNKWlZpR2ctaXI3VmlRZVVnMi1aU0E?oc=5",
+          "title": "Federal judge halts work on Trump’s ‘anti-weaponization fund’ - CNN",
+          "stance": "support",
+          "score": 0.6575,
+          "snippet": "Corroborating source for: Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family and the Trump Org",
+          "passage": "cnn.com appears to cover the same claim: Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family and the Trump Org",
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "relevance": 0.6575,
+          "freshness": 0.7,
+          "domain": "cnn.com",
+          "claim_match_score": 0.6575,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [],
+      "queries": [
+        "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit",
+        "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit Reuters AP BBC",
+        "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family and the Trump Org",
+        "Judge halts Trump ‘anti-weaponization’ fund after Jan. 6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family and the Trump Org Reuters AP BBC",
+        "6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family",
+        "6 prosecutor files suit A federal judge has temporarily blocked the Trump administration’s $1.8 billion “anti-weaponization fund,” created as part of an unprecedented settlement with the president , his family Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 655.65,
+        "news_credibility": 22247.99,
+        "total": 22903.66
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 22.904
+    },
+    {
+      "id": "france24_en_01",
+      "case_type": "trusted_news_article",
+      "source_name": "France24 RSS",
+      "collection_source": "https://www.france24.com/en/rss",
+      "url": "https://www.france24.com/en/europe/20260529-eu-to-unlock-16-billion-euros-for-hungary-as-magyar-pushes-ahead-with-post-orban-reforms",
+      "text": "",
+      "title": "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "france24.com",
+      "source_type": "major_news",
+      "source_trust": 0.8,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.76,
+      "article_quality_score": 0.78,
+      "corroboration_score": 0.0,
+      "risk_score": 0.23,
+      "matched_sources": [],
+      "risk_flags": [
+        "fetch_fallback:jina",
+        "missing_author",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [
+        "input_fetch:jina"
+      ],
+      "queries": [
+        "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms",
+        "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms Reuters AP BBC",
+        "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms",
+        "EU to unlock 16 billion euros for Hungary as Magyar pushes ahead with post-Orban reforms Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 910.45,
+        "news_credibility": 9785.79,
+        "total": 10696.26
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 10.696
+    },
+    {
+      "id": "abc_top_01",
+      "case_type": "trusted_news_article",
+      "source_name": "ABC News top stories RSS",
+      "collection_source": "https://abcnews.go.com/abcnews/topstories",
+      "url": "https://abcnews.com/US/judge-temporary-freezes-payments-trump-administrations-anti-weaponization/story?id=133418762",
+      "text": "",
+      "title": "Judge temporarily freezes payments from administration's 'Anti-Weaponization Fund'",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "abcnews.com",
+      "source_type": "major_news",
+      "source_trust": 0.78,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund'",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.741,
+      "article_quality_score": 0.82,
+      "corroboration_score": 0.0,
+      "risk_score": 0.24,
+      "matched_sources": [],
+      "risk_flags": [
+        "missing_date",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [],
+      "queries": [
+        "Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund'",
+        "Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund' Reuters AP BBC",
+        "Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund",
+        "Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund Reuters AP BBC",
+        "Live Video Shows Good Morning America ShopGMA Stream on Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund' The pause comes so the judge can consider arguments in a suit against the fund",
+        "Live Video Shows Good Morning America ShopGMA Stream on Judge temporarily freezes payments from Trump administration's 'Anti-Weaponization Fund' The pause comes so the judge can consider arguments in a suit against the fund Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 444.29,
+        "news_credibility": 14256.49,
+        "total": 14700.83
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 14.701
+    },
+    {
+      "id": "sky_world_01",
+      "case_type": "trusted_news_article",
+      "source_name": "Sky News world RSS",
+      "collection_source": "https://feeds.skynews.com/feeds/rss/world.xml",
+      "url": "https://news.sky.com/story/canadian-man-admits-aiding-8204suicide-by-selling-8204deadly-chemicals-online-13549071",
+      "text": "",
+      "title": "Canadian man admits aiding &#8204;suicide by selling &#8204;deadly chemicals online",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "news.sky.com",
+      "source_type": "major_news",
+      "source_trust": 0.76,
+      "verdict": "uncertain",
+      "confidence": 0.5,
+      "claim": "canadian man admits aiding 8204suicide by selling 8204deadly chemicals online",
+      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.5,
+      "credibility_label": "medium",
+      "source_score": 0.722,
+      "article_quality_score": 0.5,
+      "corroboration_score": 0.0,
+      "risk_score": 0.39,
+      "matched_sources": [],
+      "risk_flags": [
+        "fetch_fallback:jina",
+        "missing_author",
+        "missing_date",
+        "no_independent_corroboration"
+      ],
+      "evidence_count": 0,
+      "evidence": [],
+      "fallbacks": [
+        "input_fetch:jina"
+      ],
+      "queries": [
+        "canadian man admits aiding 8204suicide by selling 8204deadly chemicals online",
+        "canadian man admits aiding 8204suicide by selling 8204deadly chemicals online Reuters AP BBC",
+        "Reference #18.f1680117.1780068427.8bcbb4fd https://errors.edgesuite.net/18.f1680117.1780068427.8bcbb4fd",
+        "Reference #18.f1680117.1780068427.8bcbb4fd https://errors.edgesuite.net/18.f1680117.1780068427.8bcbb4fd Reuters AP BBC",
+        "Access Denied",
+        "Access Denied Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 1959.69,
+        "news_credibility": 12938.43,
+        "total": 14898.14
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 14.898
+    },
+    {
+      "id": "ap_top_01",
+      "case_type": "trusted_news_article",
+      "source_name": "AP News top news RSS",
+      "collection_source": "https://apnews.com/hub/ap-top-news?output=rss",
+      "url": "https://apnews.com/article/russia-putin-ukraine-war-zelenskyy-0c31bbbf0d06c457c00d046bc7ba99f7",
+      "text": "",
+      "title": "With a stalemate in Ukraine and discontent at home, Putin seems ready to escalate his war",
+      "expected": {
+        "min_label": "medium"
+      },
+      "notes": "Collected from publisher RSS feed. HTML fallback used because feed XML was unavailable or invalid.",
+      "status": "ok",
+      "error": "",
+      "passed": true,
+      "issues": [],
+      "source_domain": "apnews.com",
+      "source_type": "primary_news",
+      "source_trust": 0.96,
+      "verdict": "uncertain",
+      "confidence": 0.754,
+      "claim": "Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+      "summary": "News credibility is high (0.75). This is a credibility assessment, not a definitive true/fake verdict.",
+      "credibility_score": 0.754,
+      "credibility_label": "high",
+      "source_score": 0.96,
+      "article_quality_score": 1.0,
+      "corroboration_score": 0.76,
+      "risk_score": 0.0,
+      "matched_sources": [
+        {
+          "domain": "bbc.com",
+          "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9fVk1BSjRBX0lfN2VzSmtzdFdrdkVkWDY5elViNVNjRVU3T0Y4ZGt3WTMxT2d3UW9adk1FM3VjcU9wUDVnQVZiMXNfNjZlcDM3aklZX18zRUZ2Zw?oc=5",
+          "title": "Putin warns Russia could provide weapons to strike West",
+          "score": 0.692,
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "claim": "Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war"
+        },
+        {
+          "domain": "cnn.com",
+          "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQT21hSnlzUlNudE8zTjAzRlU5YXlqdUJXbW1zQ1lrOElKd3M3cFhGeHJUTnVYQy1YZGltaEItWWdETE81bjUtVTN0OGlLaTB3NVFDV25DNXQ2NkQxX29QVWdzLWhCTkY5TWNoX3ZkbEFyMGFfWjA0U1NvdFE3LUJyenI5cGhOc1lQV1IyeTB2eEd4Rkhl?oc=5",
+          "title": "Trump’s 50-day shift on Ukraine is a big deal — but probably not for Putin - CNN",
+          "score": 0.656,
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "claim": "Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war"
+        }
+      ],
+      "risk_flags": [],
+      "evidence_count": 2,
+      "evidence": [
+        {
+          "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9fVk1BSjRBX0lfN2VzSmtzdFdrdkVkWDY5elViNVNjRVU3T0Y4ZGt3WTMxT2d3UW9adk1FM3VjcU9wUDVnQVZiMXNfNjZlcDM3aklZX18zRUZ2Zw?oc=5",
+          "title": "Putin warns Russia could provide weapons to strike West",
+          "stance": "support",
+          "score": 0.692,
+          "snippet": "Corroborating source for: Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+          "passage": "bbc.com appears to cover the same claim: Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "relevance": 0.692,
+          "freshness": 0.7,
+          "domain": "bbc.com",
+          "claim_match_score": 0.692,
+          "verdict_source": ""
+        },
+        {
+          "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQT21hSnlzUlNudE8zTjAzRlU5YXlqdUJXbW1zQ1lrOElKd3M3cFhGeHJUTnVYQy1YZGltaEItWWdETE81bjUtVTN0OGlLaTB3NVFDV25DNXQ2NkQxX29QVWdzLWhCTkY5TWNoX3ZkbEFyMGFfWjA0U1NvdFE3LUJyenI5cGhOc1lQV1IyeTB2eEd4Rkhl?oc=5",
+          "title": "Trump’s 50-day shift on Ukraine is a big deal — but probably not for Putin - CNN",
+          "stance": "support",
+          "score": 0.656,
+          "snippet": "Corroborating source for: Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+          "passage": "cnn.com appears to cover the same claim: Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+          "source_type": "major_news",
+          "source_trust": 0.78,
+          "relevance": 0.656,
+          "freshness": 0.7,
+          "domain": "cnn.com",
+          "claim_match_score": 0.656,
+          "verdict_source": ""
+        }
+      ],
+      "fallbacks": [],
+      "queries": [
+        "Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war",
+        "Russia warns of escalation in Ukraine as Putin seeks to shift domestic views of the war Reuters AP BBC"
+      ],
+      "stage_timings_ms": {
+        "ingest": 426.38,
+        "news_credibility": 15073.09,
+        "total": 15499.49
+      },
+      "pipeline_version": "best_accuracy_v2",
+      "runtime_sec": 15.5
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{"id":"c1","text":"Reuters reported Google tested search changes in the EU amid antitrust pressure.","expected":"true"}
+{"id":"c2","text":"Reuters reported Nvidia had strong AI chip demand in 2026.","expected":"true"}
+{"id":"c3","text":"The moon is made of cheese according to all major scientific institutions.","expected":"fake"}
+{"id":"c4","text":"Pentagon requested information about exposure to AI vendors including Anthropic.","expected":"true"}
+{"id":"c5","text":"US diplomats were ordered to support strict data localization worldwide.","expected":"fake"}
+{"id":"c6","text":"Google announced it will shut down all search in Europe tomorrow.","expected":"fake"}
+{"id":"c7","text":"Reuters covered policy pressure around data sovereignty initiatives.","expected":"true"}
+{"id":"c8","text":"Nvidia never sold any AI chips in 2026.","expected":"fake"}
+{"id":"c9","text":"There is not enough public evidence to confirm every rumor on social media.","expected":"uncertain"}
+{"id":"c10","text":"An unknown blog claims secret teleportation technology is already deployed globally.","expected":"uncertain"}

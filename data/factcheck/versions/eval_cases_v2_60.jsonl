@@ -1,0 +1,60 @@
+{"id": "e1", "text": "Reuters reported Google tested search-result changes in the EU under antitrust pressure.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e1_p1", "text": "Reuters reported Google tested search-result changes in the EU under antitrust pressure.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e2", "text": "Reuters reported Nvidia saw strong demand for AI data-center chips in 2026.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e2_p1", "text": "Reuters reported Nvidia saw strong demand for AI data-center chips in 2026.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e3", "text": "Reuters reported US diplomats were directed to push back on strict data-sovereignty initiatives.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e3_p1", "text": "Reuters reported US diplomats were directed to push back on strict data-sovereignty initiatives.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e4", "text": "Pentagon asked major contractors about exposure to Anthropic services.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e4_p1", "text": "Pentagon asked major contractors about exposure to Anthropic services.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e5", "text": "Google announced it will permanently shut search in the EU tomorrow.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e5_p1", "text": "Google announced it will permanently shut search in the EU tomorrow.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e6", "text": "Nvidia has never sold AI chips to data centers.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e6_p1", "text": "Nvidia has never sold AI chips to data centers.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e7", "text": "All scientific institutions confirmed the moon is made of cheese.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e7_p1", "text": "All scientific institutions confirmed the moon is made of cheese.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e8", "text": "Reuters confirmed teleportation devices are deployed in every city.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e8_p1", "text": "Reuters confirmed teleportation devices are deployed in every city.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e9", "text": "An anonymous post claims a secret law was signed, but no sources are provided.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e9_p1", "text": "An anonymous post claims a secret law was signed, but no sources are provided.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e10", "text": "A social media rumor says all banks will close next week with no official evidence.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e10_p1", "text": "A social media rumor says all banks will close next week with no official evidence.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e11", "text": "Reuters covered policy pressure around cross-border data handling in 2026.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e11_p1", "text": "Reuters covered policy pressure around cross-border data handling in 2026.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e12", "text": "Google tested changes in search ranking visibility for rivals in Europe.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e12_p1", "text": "Google tested changes in search ranking visibility for rivals in Europe.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e13", "text": "Nvidia reported quarterly performance driven by AI-chip demand.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e13_p1", "text": "Nvidia reported quarterly performance driven by AI-chip demand.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e14", "text": "Reuters reported that no AI chips were sold globally in 2026.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e14_p1", "text": "Reuters reported that no AI chips were sold globally in 2026.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e15", "text": "Every defense contractor fully replaced human analysts with one chatbot.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e15_p1", "text": "Every defense contractor fully replaced human analysts with one chatbot.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e16", "text": "A blog claims time travel was publicly demonstrated, with no verifiable source.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e16_p1", "text": "A blog claims time travel was publicly demonstrated, with no verifiable source.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e17", "text": "US policy teams debated localization and sovereignty requirements for data platforms.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e17_p1", "text": "US policy teams debated localization and sovereignty requirements for data platforms.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e18", "text": "Reuters says Google search in EU has been permanently disabled.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e18_p1", "text": "Reuters says Google search in EU has been permanently disabled.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e19", "text": "There is mixed evidence in public sources about many fast-moving rumors.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e19_p1", "text": "There is mixed evidence in public sources about many fast-moving rumors.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e20", "text": "Reuters discussed antitrust risks related to search ranking experiments in the EU.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e20_p1", "text": "Reuters discussed antitrust risks related to search ranking experiments in the EU.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e21", "text": "Nvidia denied having any revenue from AI chips in all filings.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e21_p1", "text": "Nvidia denied having any revenue from AI chips in all filings.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e22", "text": "Unverified channel says Pentagon bought alien AI systems.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e22_p1", "text": "Unverified channel says Pentagon bought alien AI systems.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e23", "text": "Reuters mentioned geopolitical implications of model access among chip vendors.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e23_p1", "text": "Reuters mentioned geopolitical implications of model access among chip vendors.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e24", "text": "Google announced all competitor links will be banned globally.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e24_p1", "text": "Google announced all competitor links will be banned globally.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e25", "text": "The claim has no reliable source and cannot be verified yet.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e25_p1", "text": "The claim has no reliable source and cannot be verified yet.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e26", "text": "Reuters covered debates around data localization and diplomacy.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e26_p1", "text": "Reuters covered debates around data localization and diplomacy.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e27", "text": "Nvidia has zero demand for AI data-center chips according to all reports.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e27_p1", "text": "Nvidia has zero demand for AI data-center chips according to all reports.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e28", "text": "A forum says a hidden supermodel governs all elections worldwide.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e28_p1", "text": "A forum says a hidden supermodel governs all elections worldwide.", "expected": "uncertain", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e29", "text": "EU antitrust pressure influenced search product experiments according to Reuters coverage.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e29_p1", "text": "EU antitrust pressure influenced search product experiments according to Reuters coverage.", "expected": "true", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e30", "text": "All verified media confirmed that physics has been replaced by magic.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}
+{"id": "e30_p1", "text": "All verified media confirmed that physics has been replaced by magic.", "expected": "fake", "domain": "unknown", "added_in": "v2_60"}

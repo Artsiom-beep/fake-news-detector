@@ -1,0 +1,110 @@
+[
+  {
+    "id": "bbc_listing_guardrail",
+    "url": "https://www.bbc.com/news",
+    "note": "Listing pages should not be treated as trustworthy article evidence.",
+    "verdict": "uncertain",
+    "confidence": 0.4726,
+    "claim": "news",
+    "credibility": {
+      "score": 0.4726,
+      "label": "low",
+      "source_score": 0.817,
+      "article_quality_score": 0.18,
+      "corroboration_score": 0.92,
+      "risk_score": 0.87,
+      "matched_sources": [
+        {
+          "domain": "reuters.com",
+          "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPWFQ4OU5FbGVINEdlY0hjVG5EZTFEdFlYaC1jZTNDaFRuRWdScGlTQ1NFX0FHaTdYY3R1ZXlwaVViUnUxYUJZMjlXWUhYZFl6ZWR3WnVLbXZSUFVBQldFY0hnc3lUM1FGZjFXeW85dEE4SWVndm9ZZUlyVVhqeGRWWklvNzV3WHJvbkFhTGl1NUZtY2QxcGQyNmtR?oc=5",
+          "title": "Joint statement on Gaza from Reuters, AFP, The AP and BBC News",
+          "score": 0.991,
+          "source_type": "primary_news",
+          "source_trust": 0.98,
+          "claim": "news"
+        },
+        {
+          "domain": "afp.com",
+          "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPT1NxeDh0SzlzUlAxNzhGWFU1d2g5cXdoYlQybnJ5MTRKeEJjZWNBTFFLS1lpTzhiRnh6b21TVU1wc2Q2RERGMHVSeXpWVVJTUFdJWE43YTBjOUVGUUcwYko2VFhvQ1kxaWQ2a2RRTjVEMHJMaUhVSEw4MjZ2SEtDMUxTWDZrOWUyUktNd3pHdlExTEk0ZjZoZzEzMmxlZ0VuSW9jMjhCODAzZw?oc=5",
+          "title": "BBC, AFP, AP and Reuters launch film calling for Gaza access - afp.com",
+          "score": 0.9775,
+          "source_type": "primary_news",
+          "source_trust": 0.95,
+          "claim": "news"
+        },
+        {
+          "domain": "nytimes.com",
+          "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBfTUV3OWVlNjd2NXBPN2ZBSVpsNnZoUFlpMnowdzdZUnZPMENUVHY4U2NZTkdrNDNHRUpQMnJkR05yUVdMSmt4VXFjZEFmYVJ3b0RtWEtOTDdEZzJBLTE2alR3SFYwNVRIOXNPT2FrVUI2blZSR3FLN0hacHg1Zkk?oc=5",
+          "title": "Islamabad Reopens After U.S.-Iran Talks Fail to Materialize - The New York Times",
+          "score": 0.937,
+          "source_type": "major_news",
+          "source_trust": 0.86,
+          "claim": "news"
+        },
+        {
+          "domain": "theguardian.com",
+          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeW5iNmNRWTBqY3J6b1AxVS1qd20wak1IYWlvVVhmbHJOWnhtYU1YaXlFc0tpOGQ4QVc2QjJidXdja2o0UHlyWVJyMU9KZUVtZVVldlhGRTNsLXR0S0c5RnI5djJ6Y1RaZk5LNWdBTV9WMXp5X3hmMjZZSnF0NHRZR1c0OHpoakdyTTU1U3BnWTJPTmlXVDBjQ3ZreTh1S2x6dDlTQUVueTB5M2Nsa2FWeFprbw?oc=5",
+          "title": "King Charles’s security for US visit under review after Washington shooting",
+          "score": 0.919,
+          "source_type": "major_news",
+          "source_trust": 0.82,
+          "claim": "news"
+        }
+      ],
+      "risk_flags": [
+        "fetch_fallback:non_article_url",
+        "listing_or_non_article_url",
+        "missing_article_text",
+        "missing_author",
+        "missing_date"
+      ],
+      "reasons": [
+        "source=bbc.com:major_news:0.817",
+        "article_quality=0.180",
+        "corroboration=0.920:4_independent_sources",
+        "risk=0.870"
+      ]
+    },
+    "evidence_count": 4,
+    "pipeline": "best_accuracy",
+    "fallbacks": [
+      "non_article_input_url"
+    ]
+  },
+  {
+    "id": "synthetic_unknown_text",
+    "url": "",
+    "note": "Unknown text without trusted corroboration should stay low/unknown.",
+    "verdict": "uncertain",
+    "confidence": 0.024,
+    "claim": "A newly discovered city on Mars elected its first mayor today,  an anonymous viral post",
+    "credibility": {
+      "score": 0.024,
+      "label": "unknown",
+      "source_score": 0.42,
+      "article_quality_score": 0.24,
+      "corroboration_score": 0.0,
+      "risk_score": 1.0,
+      "matched_sources": [],
+      "risk_flags": [
+        "fetch_fallback:text_input",
+        "listing_or_non_article_url",
+        "missing_author",
+        "missing_date",
+        "missing_title",
+        "no_independent_corroboration",
+        "unknown_source",
+        "unknown_source_without_two_independent_matches"
+      ],
+      "reasons": [
+        "source=unknown:unknown:0.420",
+        "article_quality=0.240",
+        "corroboration=0.000:0_independent_sources",
+        "risk=1.000"
+      ]
+    },
+    "evidence_count": 0,
+    "pipeline": "best_accuracy",
+    "fallbacks": []
+  }
+]

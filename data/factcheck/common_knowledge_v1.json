@@ -1,0 +1,167 @@
+{
+  "version": "common_knowledge_v1",
+  "facts": {
+    "apple": {
+      "true_properties": ["red", "green", "edible", "eatable", "fruit", "food"],
+      "false_properties": ["blue", "purple", "poisonous", "dangerous", "superconductor"],
+      "source_url": "https://en.wikipedia.org/wiki/Apple",
+      "source_title": "Common knowledge: apple"
+    },
+    "cucumber": {
+      "true_properties": ["green", "edible", "eatable", "food", "vegetable"],
+      "false_properties": ["purple", "red", "blue", "dangerous", "poisonous"],
+      "source_url": "https://en.wikipedia.org/wiki/Cucumber",
+      "source_title": "Common knowledge: cucumber"
+    },
+    "grass": {
+      "true_properties": ["green", "plant"],
+      "false_properties": ["purple", "red", "blue", "dangerous", "poisonous", "edible", "eatable"],
+      "source_url": "https://en.wikipedia.org/wiki/Grass",
+      "source_title": "Common knowledge: grass"
+    },
+    "water": {
+      "true_properties": ["clear", "colorless", "wet", "liquid", "drinkable"],
+      "false_properties": ["red", "green", "purple", "blue", "dry", "solid", "dangerous"],
+      "source_url": "https://en.wikipedia.org/wiki/Water",
+      "source_title": "Common knowledge: water"
+    },
+    "sky": {
+      "true_properties": ["blue"],
+      "false_properties": ["green", "red", "purple"],
+      "source_url": "https://en.wikipedia.org/wiki/Sky",
+      "source_title": "Common knowledge: sky"
+    },
+    "banana": {
+      "true_properties": ["yellow", "edible", "eatable", "fruit", "food"],
+      "false_properties": ["blue", "purple", "poisonous", "dangerous"],
+      "source_url": "https://en.wikipedia.org/wiki/Banana",
+      "source_title": "Common knowledge: banana"
+    },
+    "snow": {
+      "true_properties": ["white", "cold"],
+      "false_properties": ["hot", "black", "red", "green"],
+      "source_url": "https://en.wikipedia.org/wiki/Snow",
+      "source_title": "Common knowledge: snow"
+    },
+    "fire": {
+      "true_properties": ["hot", "dangerous"],
+      "false_properties": ["cold", "wet", "safe"],
+      "source_url": "https://en.wikipedia.org/wiki/Fire",
+      "source_title": "Common knowledge: fire"
+    },
+    "ice": {
+      "true_properties": ["cold", "solid"],
+      "false_properties": ["hot", "warm", "liquid"],
+      "source_url": "https://en.wikipedia.org/wiki/Ice",
+      "source_title": "Common knowledge: ice"
+    },
+    "salt": {
+      "true_properties": ["salty", "edible", "eatable", "mineral"],
+      "false_properties": ["sweet", "sour", "spicy"],
+      "source_url": "https://en.wikipedia.org/wiki/Salt",
+      "source_title": "Common knowledge: salt"
+    },
+    "sugar": {
+      "true_properties": ["sweet", "edible", "eatable", "food"],
+      "false_properties": ["salty", "sour", "spicy", "bitter"],
+      "source_url": "https://en.wikipedia.org/wiki/Sugar",
+      "source_title": "Common knowledge: sugar"
+    },
+    "lemon": {
+      "true_properties": ["yellow", "sour", "edible", "eatable", "fruit", "food"],
+      "false_properties": ["blue", "purple", "salty", "poisonous", "dangerous"],
+      "source_url": "https://en.wikipedia.org/wiki/Lemon",
+      "source_title": "Common knowledge: lemon"
+    },
+    "milk": {
+      "true_properties": ["white", "liquid", "drinkable", "edible", "eatable", "food"],
+      "false_properties": ["black", "solid", "blue", "purple"],
+      "source_url": "https://en.wikipedia.org/wiki/Milk",
+      "source_title": "Common knowledge: milk"
+    },
+    "earth": {
+      "true_properties": ["planet", "round", "spherical", "orbits sun", "orbits the sun", "orbit sun", "orbit the sun"],
+      "false_properties": ["flat", "star", "cube"],
+      "source_url": "https://en.wikipedia.org/wiki/Earth",
+      "source_title": "Common knowledge: Earth"
+    },
+    "sun": {
+      "true_properties": ["star", "hot"],
+      "false_properties": ["cold", "planet", "orbits earth", "orbits the earth", "orbit earth", "orbit the earth"],
+      "source_url": "https://en.wikipedia.org/wiki/Sun",
+      "source_title": "Common knowledge: Sun"
+    },
+    "moon": {
+      "true_properties": ["natural satellite", "satellite", "rocky"],
+      "false_properties": ["star", "planet", "cheese", "made of cheese"],
+      "source_url": "https://en.wikipedia.org/wiki/Moon",
+      "source_title": "Common knowledge: Moon"
+    },
+    "cat": {
+      "true_properties": ["animal", "mammal", "pet"],
+      "false_properties": ["plant", "vegetable", "mineral"],
+      "source_url": "https://en.wikipedia.org/wiki/Cat",
+      "source_title": "Common knowledge: cat"
+    },
+    "dog": {
+      "true_properties": ["animal", "mammal", "pet"],
+      "false_properties": ["plant", "vegetable", "mineral"],
+      "source_url": "https://en.wikipedia.org/wiki/Dog",
+      "source_title": "Common knowledge: dog"
+    },
+    "elephant": {
+      "true_properties": ["animal", "mammal", "large", "big"],
+      "false_properties": ["insect", "small", "plant", "vegetable", "mineral"],
+      "source_url": "https://en.wikipedia.org/wiki/Elephant",
+      "source_title": "Common knowledge: elephant"
+    },
+    "coffee": {
+      "true_properties": ["drink", "beverage", "bitter", "liquid"],
+      "false_properties": ["blue", "solid", "sweet"],
+      "source_url": "https://en.wikipedia.org/wiki/Coffee",
+      "source_title": "Common knowledge: coffee"
+    },
+    "rock": {
+      "true_properties": ["solid", "mineral"],
+      "false_properties": ["liquid", "gas", "edible", "eatable"],
+      "source_url": "https://en.wikipedia.org/wiki/Rock_(geology)",
+      "source_title": "Common knowledge: rock"
+    },
+    "capital of france": {
+      "true_properties": ["paris"],
+      "false_properties": ["berlin", "london", "rome", "madrid"],
+      "source_url": "https://en.wikipedia.org/wiki/Paris",
+      "source_title": "Common knowledge: capital of France"
+    },
+    "capital of germany": {
+      "true_properties": ["berlin"],
+      "false_properties": ["paris", "london", "rome", "madrid"],
+      "source_url": "https://en.wikipedia.org/wiki/Berlin",
+      "source_title": "Common knowledge: capital of Germany"
+    },
+    "capital of the united kingdom": {
+      "true_properties": ["london"],
+      "false_properties": ["paris", "berlin", "rome", "madrid"],
+      "source_url": "https://en.wikipedia.org/wiki/London",
+      "source_title": "Common knowledge: capital of the United Kingdom"
+    },
+    "capital of united kingdom": {
+      "true_properties": ["london"],
+      "false_properties": ["paris", "berlin", "rome", "madrid"],
+      "source_url": "https://en.wikipedia.org/wiki/London",
+      "source_title": "Common knowledge: capital of the United Kingdom"
+    },
+    "capital of the united states": {
+      "true_properties": ["washington dc", "washington d c", "washington"],
+      "false_properties": ["new york", "los angeles", "chicago", "philadelphia"],
+      "source_url": "https://en.wikipedia.org/wiki/Washington,_D.C.",
+      "source_title": "Common knowledge: capital of the United States"
+    },
+    "capital of united states": {
+      "true_properties": ["washington dc", "washington d c", "washington"],
+      "false_properties": ["new york", "los angeles", "chicago", "philadelphia"],
+      "source_url": "https://en.wikipedia.org/wiki/Washington,_D.C.",
+      "source_title": "Common knowledge: capital of the United States"
+    }
+  }
+}

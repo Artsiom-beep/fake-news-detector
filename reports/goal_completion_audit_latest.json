@@ -1,0 +1,218 @@
+{
+  "generated_at": "2026-05-30T15:39:46.6359393+02:00",
+  "complete": false,
+  "estimated_completion_percent": 92,
+  "estimated_remaining_percent": 8,
+  "estimate_note": "Weighted project estimate; final completion still requires every requirement to be true.",
+  "requirements": [
+    {
+      "id": "refactor",
+      "title": "Canonical refactor and legacy isolation",
+      "ok": true,
+      "evidence": [
+        "Canonical engine: src/factcheck/service.py",
+        "API/UI/mobile use canonical fact-check paths",
+        "Legacy prototypes live under archive/",
+        "Source ZIP forbidden generated/local paths: 0"
+      ],
+      "gaps": []
+    },
+    {
+      "id": "section_accuracy",
+      "title": "Per-section product acceptance at or above 95 percent",
+      "ok": true,
+      "evidence": [
+        "Product acceptance: 93/93, pass_rate=1",
+        "Sections: facts, news, screenshots, images, api_contract"
+      ],
+      "gaps": []
+    },
+    {
+      "id": "university_report",
+      "title": "University report in LaTeX and PDF",
+      "ok": true,
+      "evidence": [
+        "LaTeX: docs/report/verity_lens_report.tex",
+        "PDF: docs/report/verity_lens_report.pdf",
+        "Release gate University report PDF step passed: True"
+      ],
+      "gaps": []
+    },
+    {
+      "id": "pc_product",
+      "title": "Working PC product package",
+      "ok": true,
+      "evidence": [
+        "Release gate OK: True",
+        "Desktop package OK: True",
+        "Desktop ZIP: dist/FakeNewsDetector-Windows-Portable.zip"
+      ],
+      "gaps": []
+    },
+    {
+      "id": "phone_local_product",
+      "title": "Working phone product for local/LAN and emulator proof",
+      "ok": true,
+      "evidence": [
+        "Phone same Wi-Fi: True",
+        "Phone install/download: True",
+        "Phone emulator smoke: True"
+      ],
+      "gaps": []
+    },
+    {
+      "id": "phone_permanent_cloud",
+      "title": "Permanent HTTPS cloud APK for phones",
+      "ok": false,
+      "evidence": [
+        "Permanent cloud phone readiness: False",
+        "Cloud APK verification OK: False",
+        "Cloud APK release mode: False",
+        "Cloud APK API OK: False",
+        "Cloud APK API permanent URL: False",
+        "Cloud APK API temporary tunnel: True",
+        "Cloud APK embedded API URL: False",
+        "Cloud APK embedded URL matches API: False",
+        "Cloud APK status file matches URL: False",
+        "Cloud APK status file matches mode: False",
+        "Cloud APK source current: False",
+        "Cloud deployment outcome: awaiting_public_https_backend",
+        "Cloud deployment verification OK: False",
+        "Cloud deployment readiness OK: False",
+        "Cloud deployment ready to publish: False"
+      ],
+      "gaps": [
+        "Deploy the Render HTTPS backend, then run scripts/finalize_cloud_phone_submission.ps1 -ApiBaseUrl https://<render-app>.onrender.com."
+      ]
+    },
+    {
+      "id": "physical_phone_proof",
+      "title": "Physical Android device smoke proof",
+      "ok": false,
+      "evidence": [
+        "Real Android device smoke: False",
+        "Device smoke requires physical device: False",
+        "Selected device id: missing",
+        "Selected device is physical: False",
+        "Device identity recorded: False",
+        "PHONE_DEVICE_SCREENSHOT.png exists: False",
+        "Screenshot SHA256 recorded: False",
+        "Screenshot SHA256 matches file: False",
+        "Screenshot valid PNG with dimensions: False"
+      ],
+      "gaps": [
+        "Connect an authorized physical Android phone by USB and run scripts/finalize_cloud_phone_submission.ps1; it invokes the release gate with -RequirePhoneDevice -RequirePhysicalPhoneDevice."
+      ]
+    },
+    {
+      "id": "submission_package",
+      "title": "Submission bundle and verifier",
+      "ok": true,
+      "evidence": [
+        "Submission verifier OK: True",
+        "Submission ZIP entries: 46",
+        "Source ZIP forbidden count: 0"
+      ],
+      "gaps": []
+    }
+  ],
+  "acceptance_sections": {
+    "facts": {
+      "total": 44,
+      "passed": 44,
+      "pass_rate": 1.0,
+      "minimum_cases": 40,
+      "ok": true
+    },
+    "news": {
+      "total": 15,
+      "passed": 15,
+      "pass_rate": 1.0,
+      "minimum_cases": 15,
+      "ok": true
+    },
+    "screenshots": {
+      "total": 12,
+      "passed": 12,
+      "pass_rate": 1.0,
+      "minimum_cases": 12,
+      "ok": true
+    },
+    "images": {
+      "total": 11,
+      "passed": 11,
+      "pass_rate": 1.0,
+      "minimum_cases": 11,
+      "ok": true
+    },
+    "api_contract": {
+      "total": 11,
+      "passed": 11,
+      "pass_rate": 1.0,
+      "minimum_cases": 11,
+      "ok": true
+    }
+  },
+  "current_external_gaps": [
+    "phone_permanent_cloud",
+    "physical_phone_proof"
+  ],
+  "artifacts": {
+    "release_gate": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\release_gate_latest.json",
+      "size_bytes": 14451,
+      "sha256": "B10C32744076521BA8C09A44961C2DF4D484D34EA31DE7791AB6FE5ED2ABD420",
+      "modified_at": "2026-05-30T15:39:02.3283131+02:00"
+    },
+    "product_acceptance": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\reports\\product_acceptance_latest.json",
+      "size_bytes": 37767,
+      "sha256": "73FA57376FCDB890B102D9AA424276CD25D267D3402BDC2F5804E4B4C4F9163A",
+      "modified_at": "2026-05-30T15:37:28.2318045+02:00"
+    },
+    "submission_verification": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\SUBMISSION_BUNDLE_VERIFICATION.json",
+      "size_bytes": 1465,
+      "sha256": "3FBDBA27CB999D4545143EA0826444849BDD9241136AFC7D0EB6465D6E73D60E",
+      "modified_at": "2026-05-30T15:39:42.4808170+02:00"
+    },
+    "submission_zip": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\submission\\VerityLens-submission.zip",
+      "size_bytes": 161721573,
+      "sha256": "AE20B5015B127603BF5EF66708D37BA0F4B713CE159CFF09BC98E9B4CB5C1AF6",
+      "modified_at": "2026-05-30T15:39:34.0081013+02:00"
+    },
+    "report_pdf": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\docs\\report\\verity_lens_report.pdf",
+      "size_bytes": 71636,
+      "sha256": "FE572F7C0073DC7EB56CBA12BA0E9222AF61971B030C6789FCC1CCFA387A38FE",
+      "modified_at": "2026-05-30T15:37:30.8254545+02:00"
+    },
+    "desktop_zip": {
+      "exists": true,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\dist\\FakeNewsDetector-Windows-Portable.zip",
+      "size_bytes": 110789654,
+      "sha256": "750C5A9A07977E4FAB32FC4AD4B238964D2ECF9C49EFE5CAC61EC00B1D93A83E",
+      "modified_at": "2026-05-29T16:31:21.6630922+02:00"
+    },
+    "cloud_apk": {
+      "exists": false,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\VerityLens-cloud.apk",
+      "size_bytes": 0,
+      "sha256": "",
+      "modified_at": null
+    },
+    "device_screenshot": {
+      "exists": false,
+      "path": "C:\\Users\\marke\\University\\project\\fake-news-detector_transfer_bundle\\fake-news-detector\\outputs\\phone_download\\PHONE_DEVICE_SCREENSHOT.png",
+      "size_bytes": 0,
+      "sha256": "",
+      "modified_at": null
+    }
+  }
+}

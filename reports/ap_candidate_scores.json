@@ -1,0 +1,219 @@
+[
+  {
+    "i": 1,
+    "url": "https://apnews.com/article/white-house-correspondents-dinner-trump-first-amendment-a0a2446832e8596e66c6fccb8426c8aa",
+    "score": 0.3895,
+    "label": "low",
+    "claim": "Trump unharmed after shooting incident at White House correspondents' dinner | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "missing_date",
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.31
+  },
+  {
+    "i": 2,
+    "url": "https://apnews.com/article/marathon-record-sawe-london-under-two-hours-8481a99809f19e0dd2cafca36bd3676a",
+    "score": 0.4495,
+    "label": "low",
+    "claim": "Sabastian Sawe wins London Marathon in world-record time, first to finish under two hours | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.44
+  },
+  {
+    "i": 3,
+    "url": "https://apnews.com/article/hospital-shooting-chicago-police-9a41435244a3a5d119a37eb667cc576a",
+    "score": 0.4495,
+    "label": "low",
+    "claim": "Police officer killed, another injured in Chicago hospital shooting | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.24
+  },
+  {
+    "i": 4,
+    "url": "https://apnews.com/article/white-house-correspondents-dinner-trump-gunman-3cd1911ecc8a4f7d208ba5eb071fc715",
+    "score": 0.656,
+    "label": "medium",
+    "claim": "Media dinner shooting suspect wrote about targeting of administration officials, Trump says | AP News",
+    "matched": 1,
+    "risk_flags": [],
+    "seconds": 1.2
+  },
+  {
+    "i": 5,
+    "url": "https://apnews.com/article/trump-assassination-attempts-correspondents-dinner-butler-unity-2bc794eb5d4561e6185b1642073b00d7",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Trump again calls for unity. But for how long? | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.74
+  },
+  {
+    "i": 6,
+    "url": "https://apnews.com/article/trump-correspondents-dinner-shooter-cole-tomas-allen-ea98b14e839217985bd7cf5ab169fb65",
+    "score": 0.3895,
+    "label": "low",
+    "claim": "Accused correspondents’ dinner attacker is tutor from California | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "missing_date",
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.32
+  },
+  {
+    "i": 7,
+    "url": "https://apnews.com/article/trump-maduro-venezuela-presidential-palace-blowtorches-7969152ae48510003fe9cbde92f3c102",
+    "score": 0.754,
+    "label": "high",
+    "claim": "How the US captured Venezuelan leader Nicolás Maduro | AP News",
+    "matched": 2,
+    "risk_flags": [],
+    "seconds": 2.17
+  },
+  {
+    "i": 8,
+    "url": "https://apnews.com/article/venezuela-trump-maduro-military-rodriguez-lead-c0bd39f98a79c18c5501bac939c640fe",
+    "score": 0.656,
+    "label": "medium",
+    "claim": "Venezuelans wonder who's in charge after Maduro's ouster | AP News",
+    "matched": 1,
+    "risk_flags": [],
+    "seconds": 2.35
+  },
+  {
+    "i": 9,
+    "url": "https://apnews.com/article/legal-questions-maduro-trump-venezuela-capture-congress-7c686106ae7ffc759e5a1726e1b85576",
+    "score": 0.476,
+    "label": "low",
+    "claim": "US capture of Maduro raises new legal questions | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.91
+  },
+  {
+    "i": 10,
+    "url": "https://apnews.com/article/white-house-correspondents-dinner-security-cedaf1518be3883d26fb054624932193",
+    "score": 0.656,
+    "label": "medium",
+    "claim": "What we know about security measures at the correspondents' dinner | AP News",
+    "matched": 1,
+    "risk_flags": [],
+    "seconds": 1.75
+  },
+  {
+    "i": 11,
+    "url": "https://apnews.com/article/trump-maduro-venezuela-b6e272ee8e23636a1ab9618d8257ae59",
+    "score": 0.476,
+    "label": "low",
+    "claim": "With capture of Maduro, Trump treads into uncharted territory | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 2.0
+  },
+  {
+    "i": 12,
+    "url": "https://apnews.com/article/us-iran-war-hormuz-israel-pakistan-ceasefire-april-26-2026-9f7bcaf20c42b56d3dba4b504936f7ee",
+    "score": 0.3895,
+    "label": "low",
+    "claim": "Iran's foreign minister returns to Pakistan | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "missing_date",
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.73
+  },
+  {
+    "i": 13,
+    "url": "https://apnews.com/article/mexico-cia-agents-crash-authorized-us-d3c3cb0e82103e45751baa9df8f5cd90",
+    "score": 0.4495,
+    "label": "low",
+    "claim": "Mexico says 2 US federal agents killed not authorized to participate in any operation | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.17
+  },
+  {
+    "i": 14,
+    "url": "https://apnews.com/article/missing-graduate-students-florida-bangladesh-983f85642596c8ef9db9bfd76dd79669",
+    "score": 0.656,
+    "label": "medium",
+    "claim": "USF students missing: Roommate faces murder charges after remains found | AP News",
+    "matched": 1,
+    "risk_flags": [],
+    "seconds": 1.68
+  },
+  {
+    "i": 15,
+    "url": "https://apnews.com/article/timberwolves-edwards-divincenzo-injured-2798ab5abeafad6d8c5570b8012f5080",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Wolves lose Edwards and DiVincenzo with leg injuries in Game 4 | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.78
+  },
+  {
+    "i": 16,
+    "url": "https://apnews.com/article/boston-red-sox-alex-cora-fired-e696389ed81227796f7deaa6c24ce4bb",
+    "score": 0.476,
+    "label": "low",
+    "claim": "Boston Red Sox fire manager Alex Cora | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.93
+  },
+  {
+    "i": 17,
+    "url": "https://apnews.com/article/economy-inflation-retail-trump-unemployment-mortgage-e79e53a09dfe8668fbd5c3a2947ab89a",
+    "score": 0.3895,
+    "label": "low",
+    "claim": "America In Focus: March retail sales rise, Trump's approval rating on economy falls | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "missing_author",
+      "missing_date",
+      "no_independent_corroboration"
+    ],
+    "seconds": 0.83
+  },
+  {
+    "i": 18,
+    "url": "https://apnews.com/article/adventure-car-africa-record-reliant-robin-0328f6a9dbcb407d539fe7aabf23a915",
+    "score": 0.476,
+    "label": "low",
+    "claim": "2 adventurers take 'the most unsuitable car' on a 14,000-mile journey | AP News",
+    "matched": 0,
+    "risk_flags": [
+      "no_independent_corroboration"
+    ],
+    "seconds": 1.0
+  }
+]

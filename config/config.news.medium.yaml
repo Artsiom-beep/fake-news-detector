@@ -1,0 +1,30 @@
+seed: 42
+device: cpu
+
+paths:
+  train_csv: data/news/train.csv
+  val_csv: data/news/val.csv
+  test_csv: data/news/test.csv
+
+model:
+  text_model_name: distilbert-base-uncased
+  max_text_len: 128
+  image_size: 224
+  video_frames: 8
+  fusion_hidden: 256
+  dropout: 0.2
+  text_only: true
+  train_max_samples: 6000
+  val_max_samples: 1200
+  test_max_samples: 1200
+
+train:
+  batch_size: 16
+  epochs: 2
+  lr: 2e-4
+  weight_decay: 1e-4
+  num_workers: 0
+  patience: 2
+  save_path: outputs/model_news_medium.pt
+  metrics_json: outputs/metrics_news_medium.json
+  confusion_csv: outputs/confusion_matrix_news_medium.csv

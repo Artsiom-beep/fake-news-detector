@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: fake-news-detector-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: FACTCHECK_CORS_ORIGINS
+        value: "*"
+      - key: FACTCHECK_AI_IMAGE_MODEL
+        value: metadata_only
+      - key: FACTCHECK_MAX_SEARCH_RESULTS
+        value: "6"
+      - key: FACTCHECK_MAX_DOCUMENTS
+        value: "6"
+      - key: FACTCHECK_MAX_EVIDENCE
+        value: "5"

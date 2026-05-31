@@ -1,0 +1,53 @@
+{
+  "dataset_name": "AVeriTeC",
+  "split": "dev",
+  "dataset_page": "https://huggingface.co/chenxwh/AVeriTeC",
+  "paper_url": "https://arxiv.org/abs/2305.13117",
+  "raw_dev_url": "https://huggingface.co/chenxwh/AVeriTeC/resolve/main/data/dev.json",
+  "label_mapping": {
+    "Supported": "true",
+    "Refuted": "fake",
+    "Not Enough Evidence": "uncertain",
+    "Conflicting Evidence/Cherrypicking": "uncertain"
+  },
+  "n": 500,
+  "by_expected": {
+    "fake": 305,
+    "true": 122,
+    "uncertain": 73
+  },
+  "by_original_label": {
+    "Refuted": 305,
+    "Supported": 122,
+    "Not Enough Evidence": 35,
+    "Conflicting Evidence/Cherrypicking": 38
+  },
+  "top_domains": {
+    "leadstories.com": 65,
+    "politifact.com": 58,
+    "africacheck.org": 38,
+    "factcheck.afp.com": 31,
+    "usatoday.com": 31,
+    "checkyourfact.com": 27,
+    "factcheck.org": 26,
+    "misbar.com": 21,
+    "aap.com.au": 18,
+    "newsmeter.in": 17,
+    "washingtonpost.com": 15,
+    "altnews.in": 15,
+    "newsmobile.in": 14,
+    "dubawa.org": 13,
+    "polygraph.info": 12,
+    "fullfact.org": 12,
+    "healthfeedback.org": 11,
+    "bbc.co.uk": 11,
+    "boomlive.in": 9,
+    "indiatoday.in": 8,
+    "factcheck.thedispatch.com": 7,
+    "covid19facts.ca": 6,
+    "vishvasnews.com": 5,
+    "thequint.com": 5,
+    "icirnigeria.org": 4
+  },
+  "cache_file": "data\\external\\averitec\\dev.json"
+}

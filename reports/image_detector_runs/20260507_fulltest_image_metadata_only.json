@@ -1,0 +1,295 @@
+{
+  "run": {
+    "run_id": "20260507_fulltest_image_metadata_only",
+    "manifest": "data\\image_eval\\v1\\manifest.jsonl",
+    "model": "disabled"
+  },
+  "metrics": {
+    "manifest_total": 13,
+    "total": 13,
+    "not_evaluated": 0,
+    "hard_predictions": 0,
+    "hard_precision": 0.0,
+    "coverage": 0.0,
+    "false_positive_real_as_ai": 0,
+    "false_negative_ai_as_real": 0,
+    "real_abstentions": 10,
+    "ai_abstentions": 3,
+    "by_expected": {
+      "ai": {
+        "total": 3,
+        "correct": 0,
+        "wrong": 0,
+        "abstained": 3
+      },
+      "real": {
+        "total": 10,
+        "correct": 0,
+        "wrong": 0,
+        "abstained": 10
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "ai_cat_portrait",
+      "expected": "ai",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.04,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "Pollinations generated image endpoint",
+      "source_url": "https://image.pollinations.ai/prompt/photorealistic%20close-up%20portrait%20of%20an%20orange%20cat%20on%20a%20clean%20white%20studio%20background%2C%20ultra%20detailed%20fur%2C%20DSLR%20photo?width=610&height=385&seed=1001&nologo=true&enhance=true",
+      "license_or_origin": "Generated locally for detector evaluation via Pollinations prompt endpoint on 2026-04-27",
+      "local_path": "data\\image_eval\\v1\\images\\ai_cat_portrait.jpg",
+      "notes": "Photorealistic animal portrait; generated test case from previous diagnostic run.",
+      "reasons": [
+        "camera_metadata_present=make",
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "ai_gray_cat_closeup",
+      "expected": "ai",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.04,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "Pollinations generated image endpoint",
+      "source_url": "https://image.pollinations.ai/prompt/photorealistic%20funny%20close-up%20portrait%20of%20a%20gray%20tabby%20cat%20looking%20into%20the%20camera%2C%20indoor%20room%2C%20shallow%20depth%20of%20field?width=610&height=385&seed=1002&nologo=true&enhance=true",
+      "license_or_origin": "Generated locally for detector evaluation via Pollinations prompt endpoint on 2026-04-27",
+      "local_path": "data\\image_eval\\v1\\images\\ai_gray_cat_closeup.jpg",
+      "notes": "Photorealistic animal close-up; generated test case from previous diagnostic run.",
+      "reasons": [
+        "camera_metadata_present=make",
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "ai_mountain_lake",
+      "expected": "ai",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.04,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "Pollinations generated image endpoint",
+      "source_url": "https://image.pollinations.ai/prompt/photorealistic%20alpine%20mountain%20lake%20at%20sunrise%2C%20wildflowers%2C%20dramatic%20sunlight%2C%20ultra%20detailed%20landscape%20photography?width=610&height=385&seed=1003&nologo=true&enhance=true",
+      "license_or_origin": "Generated locally for detector evaluation via Pollinations prompt endpoint on 2026-04-27",
+      "local_path": "data\\image_eval\\v1\\images\\ai_mountain_lake.jpg",
+      "notes": "Photorealistic landscape; generated test case from previous diagnostic run.",
+      "reasons": [
+        "camera_metadata_present=make",
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_dog",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/8wTPqxlnKM4",
+      "source_url": "https://picsum.photos/id/237/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_dog.jpg",
+      "notes": "Real animal photo; used to watch false AI accusations.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_cat_like_animal",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/U5rMrSI7Pn4",
+      "source_url": "https://picsum.photos/id/1025/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_cat_like_animal.jpg",
+      "notes": "Real animal photo previously abstained due to high model AI score; important false-positive guard.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_landscape_mountain",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/-oWyJoSqBRM",
+      "source_url": "https://picsum.photos/id/1015/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_landscape_mountain.jpg",
+      "notes": "Real mountain landscape photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_city",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/7BjmDICVloE",
+      "source_url": "https://picsum.photos/id/1011/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_city.jpg",
+      "notes": "Real city photo previously abstained due to high model AI score; important false-positive guard.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_people",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/LyeduBb2Auk",
+      "source_url": "https://picsum.photos/id/1027/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_people.jpg",
+      "notes": "Real people/scene photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_food_table",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/OJJIaFZOeX4",
+      "source_url": "https://picsum.photos/id/1080/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_food_table.jpg",
+      "notes": "Real food/table stock-like photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_nature",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/VB-w_3dnyvI",
+      "source_url": "https://picsum.photos/id/1039/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_nature.jpg",
+      "notes": "Real nature photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_building",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/mWRR1xj95hg",
+      "source_url": "https://picsum.photos/id/1043/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_building.jpg",
+      "notes": "Real building/architecture photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_vehicle",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/sseiVD2XsOk",
+      "source_url": "https://picsum.photos/id/1074/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_vehicle.jpg",
+      "notes": "Real vehicle/transport photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    },
+    {
+      "id": "real_landscape_water",
+      "expected": "real",
+      "outcome": "abstained",
+      "ai_label": "uncertain",
+      "ai_generated_score": 0.26,
+      "summary": "The app cannot determine whether this image is AI-generated with enough certainty.",
+      "source": "https://unsplash.com/photos/wpTWYBll4_w",
+      "source_url": "https://picsum.photos/id/1069/610/385",
+      "license_or_origin": "Real public sample image served by Picsum Photos with Unsplash source page",
+      "local_path": "data\\image_eval\\v1\\images\\real_landscape_water.jpg",
+      "notes": "Real water landscape photo.",
+      "reasons": [
+        "optional_ai_image_model_disabled"
+      ],
+      "warnings": [
+        "camera_metadata_missing_not_proof",
+        "ai_image_detection_not_definitive"
+      ]
+    }
+  ]
+}

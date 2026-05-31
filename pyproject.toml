@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fake-news-detector"
+version = "1.0.0"
+description = "Local-first fake news fact-check engine with CLI, REST API and Web UI."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn>=0.30.0",
+  "python-multipart>=0.0.9",
+  "requests>=2.32.5",
+  "beautifulsoup4>=4.12.0",
+  "numpy>=1.26.0,<2",
+  "PyYAML>=6.0.1",
+  "Pillow>=10.0.0",
+  "pywebview>=6.2.1",
+  "rapidocr-onnxruntime>=1.4.4",
+]
+
+[project.optional-dependencies]
+optional-ai = [
+  "torch>=2.2.0",
+  "transformers>=4.40.0",
+]
+legacy-train = [
+  "torch>=2.2.0",
+  "transformers>=4.40.0",
+  "torchvision>=0.17.0",
+  "scikit-learn>=1.4.0",
+  "pandas>=2.2.0",
+  "numpy>=1.26.0",
+  "opencv-python>=4.9.0",
+  "tqdm>=4.66.0",
+  "Pillow>=10.0.0",
+  "datasets>=2.20.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["factcheck*"]

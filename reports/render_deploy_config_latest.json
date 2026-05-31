@@ -1,0 +1,219 @@
+{
+  "generated_at": "2026-05-30T15:37:31.010679+02:00",
+  "ok": true,
+  "render": {
+    "service_name": "fake-news-detector-api",
+    "runtime": "docker",
+    "dockerfilePath": "./Dockerfile",
+    "healthCheckPath": "/health",
+    "plan": "free",
+    "env": {
+      "FACTCHECK_CORS_ORIGINS": "*",
+      "FACTCHECK_AI_IMAGE_MODEL": "metadata_only",
+      "FACTCHECK_MAX_SEARCH_RESULTS": "6",
+      "FACTCHECK_MAX_DOCUMENTS": "6",
+      "FACTCHECK_MAX_EVIDENCE": "5"
+    }
+  },
+  "dockerfile": {
+    "uses_api_app": true,
+    "uses_render_port": true,
+    "uses_api_requirements": true
+  },
+  "requirements": {
+    "packages": [
+      "fastapi",
+      "uvicorn",
+      "python-multipart",
+      "requests",
+      "beautifulsoup4",
+      "numpy",
+      "pyyaml",
+      "pillow",
+      "rapidocr-onnxruntime"
+    ],
+    "forbidden_present": []
+  },
+  "checks": [
+    {
+      "ok": true,
+      "message": "render.yaml exists"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile exists"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore exists"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt exists"
+    },
+    {
+      "ok": true,
+      "message": "render.yaml parses as YAML (ok)"
+    },
+    {
+      "ok": true,
+      "message": "render.yaml defines a web service"
+    },
+    {
+      "ok": true,
+      "message": "Render service uses docker runtime"
+    },
+    {
+      "ok": true,
+      "message": "Render service points to ./Dockerfile"
+    },
+    {
+      "ok": true,
+      "message": "Render healthCheckPath is /health"
+    },
+    {
+      "ok": true,
+      "message": "Render CORS env allows phone clients"
+    },
+    {
+      "ok": true,
+      "message": "Render AI image model is metadata_only"
+    },
+    {
+      "ok": true,
+      "message": "Render env FACTCHECK_MAX_SEARCH_RESULTS is numeric"
+    },
+    {
+      "ok": true,
+      "message": "Render env FACTCHECK_MAX_DOCUMENTS is numeric"
+    },
+    {
+      "ok": true,
+      "message": "Render env FACTCHECK_MAX_EVIDENCE is numeric"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile uses python:3.11-slim"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile installs requirements.api.txt"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile uses API-only requirements"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile copies deployment source into /app"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile exposes fallback port 8001"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile starts src.api_factcheck:app"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile binds API to 0.0.0.0"
+    },
+    {
+      "ok": true,
+      "message": "Dockerfile uses Render PORT with 8001 fallback"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes beautifulsoup4"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes fastapi"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes numpy"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes pillow"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes python-multipart"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes pyyaml"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes rapidocr-onnxruntime"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes requests"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt includes uvicorn"
+    },
+    {
+      "ok": true,
+      "message": "requirements.api.txt excludes desktop/training packages"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes .venv/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes archive/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes apps/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes build/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes dist/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes docs/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes outputs/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes reports/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes tests/"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes *.zip"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes *.apk"
+    },
+    {
+      "ok": true,
+      "message": ".dockerignore excludes *.onnx"
+    }
+  ],
+  "failures": [],
+  "warnings": [
+    "Render plan is free; first request can be slow after sleep."
+  ]
+}
