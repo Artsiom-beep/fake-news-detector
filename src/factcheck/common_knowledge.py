@@ -44,6 +44,20 @@ class MissionCrewFact:
     source_snippet: str
 
 
+@dataclass(frozen=True)
+class HealthTerminologyFact:
+    subject: str
+    aliases: frozenset[str]
+    true_properties: frozenset[str]
+    false_properties: frozenset[str]
+    source_url: str
+    source_title: str
+    source_domain: str
+    source_snippet: str
+    support_passage: str
+    refute_passage: str
+
+
 COMMON_FACTS_PATH = Path(__file__).resolve().parents[2] / "data" / "factcheck" / "common_knowledge_v1.json"
 
 CURRENT_US_PRESIDENT = CurrentOfficeFact(
@@ -231,6 +245,92 @@ MISSION_CREW_MEMBER_ALIASES = {
     "victor j glover": "victor glover",
     "jeremy r hansen": "jeremy hansen",
 }
+
+COVID_19_TERMINOLOGY = HealthTerminologyFact(
+    subject="covid-19",
+    aliases=frozenset(
+        {
+            "covid",
+            "covid 19",
+            "covid-19",
+            "covid19",
+            "coronavirus disease",
+            "coronavirus disease 2019",
+        }
+    ),
+    true_properties=frozenset(
+        {
+            "disease",
+            "infectious disease",
+            "viral disease",
+            "viral infection",
+            "virus",
+            "viral",
+            "coronavirus",
+            "caused by virus",
+            "caused by a virus",
+            "caused by the virus",
+            "caused by coronavirus",
+            "caused by a coronavirus",
+            "caused by the coronavirus",
+            "caused by sars cov 2",
+            "caused by sars-cov-2",
+            "caused by severe acute respiratory syndrome coronavirus 2",
+        }
+    ),
+    false_properties=frozenset(
+        {
+            "bacteria",
+            "bacterium",
+            "bacterial",
+            "bacterial disease",
+            "caused by bacteria",
+            "caused by a bacteria",
+            "caused by bacterium",
+            "caused by a bacterium",
+            "fungus",
+            "fungal",
+            "caused by fungus",
+            "caused by a fungus",
+        }
+    ),
+    source_url="https://www.who.int/health-topics/coronavirus",
+    source_title="WHO: Coronavirus disease (COVID-19)",
+    source_domain="who.int",
+    source_snippet="WHO describes COVID-19 as an infectious disease caused by the SARS-CoV-2 virus.",
+    support_passage=(
+        "WHO describes COVID-19 as an infectious disease caused by the SARS-CoV-2 virus. "
+        "Strictly, COVID-19 is the disease and SARS-CoV-2 is the virus; the claim is treated "
+        "as supported when the user uses 'COVID' as shorthand for the viral cause."
+    ),
+    refute_passage=(
+        "WHO describes COVID-19 as an infectious disease caused by the SARS-CoV-2 virus, "
+        "not by bacteria or fungi."
+    ),
+)
+
+SARS_COV_2_TERMINOLOGY = HealthTerminologyFact(
+    subject="sars-cov-2",
+    aliases=frozenset(
+        {
+            "sars cov 2",
+            "sars-cov-2",
+            "severe acute respiratory syndrome coronavirus 2",
+            "covid virus",
+            "covid-19 virus",
+        }
+    ),
+    true_properties=frozenset({"virus", "coronavirus", "viral", "cause covid", "causes covid", "causes covid 19"}),
+    false_properties=frozenset({"bacteria", "bacterium", "disease", "fungus", "fungal"}),
+    source_url="https://www.who.int/emergencies/diseases/novel-coronavirus-2019/technical-guidance/naming-the-coronavirus-disease-(covid-2019)-and-the-virus-that-causes-it",
+    source_title="WHO: Naming COVID-19 and SARS-CoV-2",
+    source_domain="who.int",
+    source_snippet="WHO notes that SARS-CoV-2 is the virus responsible for COVID-19.",
+    support_passage="WHO identifies SARS-CoV-2 as the virus responsible for COVID-19.",
+    refute_passage="WHO distinguishes SARS-CoV-2 as the virus, not a bacterial or fungal disease.",
+)
+
+HEALTH_TERMINOLOGY_FACTS = (COVID_19_TERMINOLOGY, SARS_COV_2_TERMINOLOGY)
 
 
 DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
@@ -829,6 +929,109 @@ def _record_trace(
         )
 
 
+def _lookup_health_terminology_fact(subject: str) -> tuple[str, HealthTerminologyFact | None]:
+    normalized = _normalize_phrase(subject)
+    for candidate in _subject_variants(normalized):
+        for fact in HEALTH_TERMINOLOGY_FACTS:
+            aliases = {fact.subject, *fact.aliases}
+            if candidate in aliases:
+                return fact.subject, fact
+    return normalized, None
+
+
+def _decide_health_terminology_statement(
+    claim: ClaimCandidate,
+    subject: str,
+    properties: list[tuple[str, bool]],
+    trace: FactCheckTrace,
+) -> ClaimDecision | None:
+    if not properties:
+        return None
+
+    subject_key, fact = _lookup_health_terminology_fact(subject)
+    if fact is None:
+        return None
+
+    supported: list[str] = []
+    refuted: list[str] = []
+    unknown: list[str] = []
+    for prop, negated in properties:
+        if _property_in(prop, fact.true_properties):
+            (refuted if negated else supported).append(prop)
+        elif _property_in(prop, fact.false_properties):
+            (supported if negated else refuted).append(prop)
+        else:
+            unknown.append(prop)
+
+    if not supported and not refuted:
+        return None
+
+    if refuted:
+        verdict = "fake"
+        confidence = 0.88 if not unknown else 0.72
+        stance = "refute"
+        support_score = 0.0
+        refute_score = 0.92
+        neutral_score = 0.0 if not unknown else 0.28
+        reason = f"health_terminology_refutes={','.join(refuted)}"
+        passage = f"{fact.refute_passage} Matched unsupported property: {', '.join(refuted)}."
+    elif unknown:
+        verdict = "uncertain"
+        confidence = 0.46
+        stance = "neutral"
+        support_score = 0.56
+        refute_score = 0.0
+        neutral_score = 0.42
+        reason = f"health_terminology_partial_unknown={','.join(unknown)}"
+        passage = (
+            f"{fact.support_passage} The official terminology supports {', '.join(supported)}, "
+            f"but does not verify: {', '.join(unknown)}."
+        )
+    else:
+        verdict = "true"
+        confidence = 0.88
+        stance = "support"
+        support_score = 0.92
+        refute_score = 0.0
+        neutral_score = 0.0
+        reason = f"health_terminology_supports={','.join(supported)}"
+        passage = fact.support_passage
+
+    evidence = EvidenceItem(
+        url=fact.source_url,
+        title=fact.source_title,
+        stance=stance,
+        score=max(support_score, refute_score, 0.5),
+        snippet=fact.source_snippet,
+        passage=passage,
+        source_type="official_health",
+        source_trust=0.97,
+        relevance=0.97,
+        freshness=0.85,
+        domain=fact.source_domain,
+        verdict_source="official_health_terminology_v1",
+        claim_match_score=0.96,
+    )
+    reasons = [
+        "strategy=official_health_terminology",
+        f"health_subject={subject_key}",
+        reason,
+    ]
+    _record_trace(claim, trace, reasons, evidence)
+    return ClaimDecision(
+        claim=claim,
+        verdict=verdict,
+        confidence=confidence,
+        support_score=support_score,
+        refute_score=refute_score,
+        neutral_score=neutral_score,
+        independent_sources=1,
+        trusted_hits=1,
+        reasons=reasons,
+        evidence=[evidence],
+    )
+
+
 def _uncertain_knowledge_decision(
     claim: ClaimCandidate,
     trace: FactCheckTrace,
@@ -1289,6 +1492,10 @@ def decide_common_knowledge(
     mission_crew_decision = _decide_mission_crew_statement(claim, subject, properties, trace)
     if mission_crew_decision is not None:
         return mission_crew_decision
+
+    health_terminology_decision = _decide_health_terminology_statement(claim, subject, properties, trace)
+    if health_terminology_decision is not None:
+        return health_terminology_decision
 
     subject, fact = _lookup_common_fact(subject)
     if fact is None:

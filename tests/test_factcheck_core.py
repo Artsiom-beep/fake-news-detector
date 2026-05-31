@@ -1667,44 +1667,42 @@ Write-Output 'apk name policy ok'
 
         text = report.read_text(encoding="utf-8")
         for required in [
-            "\\section{Wprowadzenie}",
-            "\\section{Zakres i wymagania}",
-            "\\section{Architektura systemu}",
-            "\\section{Metoda działania}",
-            "\\section{Implementacja}",
-            "\\section{Refaktoryzacja}",
-            "\\section{Wyniki testów}",
-            "\\section{Wdrożenie na PC i telefon}",
-            "\\section{Ograniczenia i ryzyka}",
+            "\\section*{Streszczenie}",
+            "\\section{Cel projektu}",
+            "\\section{Punkt wyjścia}",
+            "\\section{Co się nie udało i dlaczego zmieniono podejście}",
+            "\\section{Nowe podejście projektowe}",
+            "\\section{Architektura końcowa}",
+            "\\section{Implementacja interfejsów}",
+            "\\section{Wdrożenie chmurowe}",
+            "\\section{Testy i dowody działania}",
+            "\\section{Historia prac}",
+            "\\section{Najważniejsze decyzje projektowe}",
+            "\\section{Aktualny sposób działania}",
+            "\\section{Ograniczenia}",
+            "\\section{Możliwe dalsze prace}",
             "\\section{Wnioski}",
-            "\\begin{thebibliography}",
             "93/93 OK",
-            "116 testów OK",
-            "17/17 OK",
+            "116/116 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
             "Screenshot OCR API & 12 & 12 & 100\\%",
             "Images & 11 & 11 & 100\\%",
             "API/mobile contract & 11 & 11 & 100\\%",
             "Flutter tests & \\path{flutter test} & 11/11 OK",
-            "quality_pack_v3_live.md",
+            "Release gate & release gate & OK, 25 kroków",
+            "Final cloud/phone & finalizer cloud-phone & OK",
             "API/mobile contract",
-            "OK; 20 kroków",
-            "PHONE_APK_VERIFICATION.json",
-            "PHONE_LAN_APK_VERIFICATION.json",
-            "PHONE_EMULATOR_SMOKE.json",
-            "PHONE_DEVICE_SMOKE.json",
-            "check_final_external_prereqs.ps1",
-            "-RequireReady",
-            "USB debugging",
+            "VerityLens-cloud.apk",
+            "final_cloud_phone_submission_latest.json",
             "adb devices",
-            "-PhoneDeviceId",
-            "-RequirePhoneDevice -RequirePhysicalPhoneDevice",
-            "-RequireDevice -RequirePhysicalDevice",
-            "Weryfikator paczki oddania",
-            "240 wpisów i 0 zabronionych",
+            "Weryfikator paczki sprawdził",
+            "Interfejs ma trzy jasne funkcje: News, Facts, Images",
         ]:
             self.assertIn(required, text)
+        self.assertNotIn("\\begin{thebibliography}", text)
+        self.assertNotIn("\\section{References}", text)
+        self.assertNotIn("\\section{Bibliografia}", text)
 
         readme_text = report_readme.read_text(encoding="utf-8")
         self.assertIn("build_report.ps1", readme_text)
@@ -2931,6 +2929,27 @@ Write-Output 'apk name policy ok'
         cat_payload = run_factcheck(text="Cats are plants").to_public_dict()
         self.assertEqual(cat_payload["verdict"], "fake")
         self.assertEqual(cat_payload["evidence"][0]["source_type"], "common_knowledge")
+
+        with patch("factcheck.service.retrieve_documents") as mock_retrieve_documents:
+            covid_virus_payload = run_factcheck(text="covid is virus").to_public_dict()
+            self.assertEqual(covid_virus_payload["verdict"], "true")
+            self.assertEqual(covid_virus_payload["evidence"][0]["source_type"], "official_health")
+            self.assertEqual(covid_virus_payload["evidence"][0]["domain"], "who.int")
+            self.assertIn("COVID-19 is the disease", covid_virus_payload["evidence"][0]["passage"])
+            self.assertIn("health_terminology_supports", " ".join(covid_virus_payload["claims"][0]["reasons"]))
+
+            covid_bacteria_payload = run_factcheck(text="covid is bacteria").to_public_dict()
+            self.assertEqual(covid_bacteria_payload["verdict"], "fake")
+            self.assertEqual(covid_bacteria_payload["evidence"][0]["source_type"], "official_health")
+
+            covid_viral_cause_payload = run_factcheck(text="covid is caused by virus").to_public_dict()
+            self.assertEqual(covid_viral_cause_payload["verdict"], "true")
+            self.assertEqual(covid_viral_cause_payload["evidence"][0]["domain"], "who.int")
+
+            covid_bacterial_cause_payload = run_factcheck(text="covid is caused by bacteria").to_public_dict()
+            self.assertEqual(covid_bacterial_cause_payload["verdict"], "fake")
+            self.assertEqual(covid_bacterial_cause_payload["evidence"][0]["domain"], "who.int")
+            mock_retrieve_documents.assert_not_called()
 
     def test_best_pipeline_returns_no_exact_answer_for_local_unknown_property(self):
         payload = run_factcheck(text="Apple is expensive").to_public_dict()
