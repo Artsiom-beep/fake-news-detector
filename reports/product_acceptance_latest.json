@@ -1,6 +1,6 @@
 {
   "summary": {
-    "created_at": "2026-05-31T10:32:43+00:00",
+    "created_at": "2026-05-31T10:46:00+00:00",
     "target_pass_rate": 0.95,
     "min_cases_per_section": 5,
     "min_cases_by_section": {
@@ -520,34 +520,34 @@
       "passed": true,
       "detail": "expected credibility in ['high'], got high",
       "verdict": "uncertain",
-      "confidence": 0.72,
+      "confidence": 0.76,
       "credibility_label": "high",
-      "credibility_score": 0.72,
-      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
+      "credibility_score": 0.76,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
       "id": "news_primary_medium_without_corroboration",
       "section": "news",
       "input": "https://apnews.com/article/central-bank-publishes-rate-decision-analysis-2026",
       "passed": true,
-      "detail": "expected credibility in ['medium'], got medium",
+      "detail": "expected credibility in ['high', 'medium'], got high",
       "verdict": "uncertain",
-      "confidence": 0.64,
-      "credibility_label": "medium",
-      "credibility_score": 0.64,
-      "summary": "News credibility is medium (0.64). This is a credibility assessment, not a definitive true/fake verdict."
+      "confidence": 0.72,
+      "credibility_label": "high",
+      "credibility_score": 0.72,
+      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
       "id": "news_major_news_medium_without_corroboration",
       "section": "news",
       "input": "https://www.bbc.com/news/articles/central-bank-rate-decision-analysis",
       "passed": true,
-      "detail": "expected credibility in ['medium'], got medium",
+      "detail": "expected credibility in ['high', 'medium'], got high",
       "verdict": "uncertain",
-      "confidence": 0.5,
-      "credibility_label": "medium",
-      "credibility_score": 0.5,
-      "summary": "News credibility is medium (0.50). This is a credibility assessment, not a definitive true/fake verdict."
+      "confidence": 0.72,
+      "credibility_label": "high",
+      "credibility_score": 0.72,
+      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
       "id": "news_institutional_health_high_with_matches",
@@ -556,9 +556,9 @@
       "passed": true,
       "detail": "expected credibility in ['high'], got high",
       "verdict": "uncertain",
-      "confidence": 0.757,
+      "confidence": 0.76,
       "credibility_label": "high",
-      "credibility_score": 0.757,
+      "credibility_score": 0.76,
       "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
@@ -640,10 +640,10 @@
       "passed": true,
       "detail": "expected credibility in ['high'], got high",
       "verdict": "uncertain",
-      "confidence": 0.748,
+      "confidence": 0.76,
       "credibility_label": "high",
-      "credibility_score": 0.748,
-      "summary": "News credibility is high (0.75). This is a credibility assessment, not a definitive true/fake verdict."
+      "credibility_score": 0.76,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
       "id": "news_institutional_eac_high_without_matches",
@@ -652,10 +652,10 @@
       "passed": true,
       "detail": "expected credibility in ['high'], got high",
       "verdict": "uncertain",
-      "confidence": 0.72,
+      "confidence": 0.76,
       "credibility_label": "high",
-      "credibility_score": 0.72,
-      "summary": "News credibility is high (0.72). This is a credibility assessment, not a definitive true/fake verdict."
+      "credibility_score": 0.76,
+      "summary": "News credibility is high (0.76). This is a credibility assessment, not a definitive true/fake verdict."
     },
     {
       "id": "news_social_reddit_guardrail",

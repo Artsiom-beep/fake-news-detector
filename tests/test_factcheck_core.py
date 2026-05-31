@@ -183,6 +183,25 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertLess(listing_score, 0.4)
         self.assertIn("listing_or_non_article_url", listing_flags)
 
+    def test_news_article_quality_uses_inline_publication_date(self):
+        article_score, article_flags = _article_quality_score(
+            "https://www.bbc.com/sport/football/articles/c8094vem2e2o",
+            {
+                "title": "Champions League final: PSG join greatest of all time",
+                "published_at": "",
+                "author": "BBC Sport",
+                "fetch_source": "direct",
+            },
+            (
+                "Champions League final: PSG join greatest of all time. "
+                "Published 30 May 2026. "
+                "Paris St-Germain retained the Champions League after a penalty shootout. "
+            )
+            * 12,
+        )
+        self.assertGreaterEqual(article_score, 0.95)
+        self.assertNotIn("missing_date", article_flags)
+
     def test_news_risk_flags_unknown_and_sensational_sources(self):
         risk_score, flags = _risk_score(
             "https://example-unknown-news.test/2026/04/26/story",
@@ -266,6 +285,34 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertEqual(payload["credibility"]["score"], 0.5)
         self.assertIn("trusted_article_source_quality_floor=0.500", payload["credibility"]["reasons"])
         self.assertIn("no_independent_corroboration", payload["credibility"]["risk_flags"])
+
+    @patch("factcheck.news_credibility.search_web")
+    def test_strong_major_news_article_can_be_high_without_external_corroboration(self, mock_search):
+        article_text = (
+            "Champions League final: PSG join greatest of all time with back-to-back wins. "
+            "Published 30 May 2026. "
+            "Paris St-Germain retained the Champions League after a penalty shootout and matched a rare European achievement. "
+        ) * 8
+        fetched = {
+            "text": article_text,
+            "title": "Champions League final: PSG join 'greatest of all time' with back-to-back wins",
+            "url": "https://www.bbc.com/sport/football/articles/c8094vem2e2o",
+            "published_at": "",
+            "author": "BBC Sport",
+            "fetch_source": "direct",
+        }
+        mock_search.return_value = []
+        payload = analyze_news_credibility(
+            article_text,
+            fetched["url"],
+            fetched,
+            build_config(),
+            FactCheckTrace(mode="best_accuracy"),
+        ).to_public_dict()
+        self.assertEqual(payload["verdict"], "uncertain")
+        self.assertEqual(payload["credibility"]["label"], "high")
+        self.assertEqual(payload["credibility"]["score"], 0.72)
+        self.assertIn("strong_trusted_article_floor=0.720", payload["credibility"]["reasons"])
 
     @patch("factcheck.news_credibility.search_web")
     def test_institutional_article_without_corroboration_can_still_be_high(self, mock_search):

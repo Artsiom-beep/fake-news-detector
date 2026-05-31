@@ -325,7 +325,7 @@ def _run_news_cases() -> list[dict[str, Any]]:
                 "fetch_source": "direct",
             },
             {},
-            _check_credibility_label("medium"),
+            _check_credibility_label("medium", "high"),
         ),
         (
             "news_major_news_medium_without_corroboration",
@@ -339,7 +339,7 @@ def _run_news_cases() -> list[dict[str, Any]]:
                 "fetch_source": "direct",
             },
             {},
-            _check_credibility_label("medium"),
+            _check_credibility_label("medium", "high"),
         ),
         (
             "news_institutional_health_high_with_matches",

@@ -28,6 +28,20 @@ SENSATIONAL_MARKERS = {
     "breaking!!!",
 }
 
+PUBLICATION_DATE_PATTERN = re.compile(
+    r"\b(?:published|updated|last updated)\s+"
+    r"(?:\d{1,2}\s+)?"
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|"
+    r"aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
+    r"\s+\d{4}\b"
+    r"|"
+    r"\b(?:published|updated|last updated)\s+"
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|"
+    r"aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
+    r"\s+\d{1,2},?\s+\d{4}\b",
+    flags=re.IGNORECASE,
+)
+
 SOURCE_SUFFIXES = {
     "abc news",
     "afp",
@@ -152,6 +166,10 @@ def _source_score(url: str) -> float:
     return _clamp(profile.trust)
 
 
+def _has_inline_publication_date(article_text: str) -> bool:
+    return bool(PUBLICATION_DATE_PATTERN.search(article_text or ""))
+
+
 def _article_quality_score(url: str, fetched_article: dict[str, Any], article_text: str) -> tuple[float, list[str]]:
     risk_flags: list[str] = []
     title = fetched_article.get("title", "")
@@ -174,7 +192,7 @@ def _article_quality_score(url: str, fetched_article: dict[str, Any], article_te
         score += 0.14
     else:
         risk_flags.append("missing_article_text")
-    if published_at:
+    if published_at or _has_inline_publication_date(article_text):
         score += 0.18
     else:
         risk_flags.append("missing_date")
@@ -429,6 +447,7 @@ def analyze_news_credibility(
         "sensational_language",
     }
     trusted_article_floor_value: float | None = None
+    trusted_article_floor_reason = "trusted_article_source_quality_floor"
     if (
         profile.source_type in {"primary_news", "major_news", "institutional"}
         and is_likely_article_url(final_url or url)
@@ -443,6 +462,22 @@ def analyze_news_credibility(
         trusted_article_floor_value = floor_by_source_type[profile.source_type]
         if score < trusted_article_floor_value:
             score = trusted_article_floor_value
+        strong_article_floor_by_source_type = {
+            "institutional": 0.76,
+            "primary_news": 0.72,
+            "major_news": 0.72,
+        }
+        if (
+            source_score >= 0.76
+            and article_quality_score >= 0.90
+            and risk_score <= 0.08
+        ):
+            strong_floor = strong_article_floor_by_source_type[profile.source_type]
+            if strong_floor > trusted_article_floor_value:
+                trusted_article_floor_value = strong_floor
+                trusted_article_floor_reason = "strong_trusted_article_floor"
+                if score < trusted_article_floor_value:
+                    score = trusted_article_floor_value
     if profile.source_type == "unknown" and len(matched_sources) < 2:
         score = min(score, 0.69)
     label = _credibility_label(score)
@@ -453,7 +488,7 @@ def analyze_news_credibility(
         f"risk={risk_score:.3f}",
     ]
     if trusted_article_floor_value is not None:
-        reasons.append(f"trusted_article_source_quality_floor={trusted_article_floor_value:.3f}")
+        reasons.append(f"{trusted_article_floor_reason}={trusted_article_floor_value:.3f}")
     trace.decision_reasons.extend([f"news_credibility: {reason}" for reason in reasons])
     trace.stage_timings_ms["news_credibility"] = (time.perf_counter() - start) * 1000
 

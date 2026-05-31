@@ -1,6 +1,6 @@
 # Product Acceptance Report
 
-- Created: `2026-05-31T10:32:43+00:00`
+- Created: `2026-05-31T10:46:00+00:00`
 - Scope: facts, news credibility, screenshot OCR, AI-image risk, API/mobile contract
 - Target pass rate: `95.0%`
 - Default minimum cases per section: `5`
@@ -68,8 +68,8 @@
 | news_primary_high_with_corroboration | news | yes | expected credibility in ['high'], got high |
 | news_primary_climate_high_with_corroboration | news | yes | expected credibility in ['high'], got high |
 | news_institutional_high_without_corroboration | news | yes | expected credibility in ['high'], got high |
-| news_primary_medium_without_corroboration | news | yes | expected credibility in ['medium'], got medium |
-| news_major_news_medium_without_corroboration | news | yes | expected credibility in ['medium'], got medium |
+| news_primary_medium_without_corroboration | news | yes | expected credibility in ['high', 'medium'], got high |
+| news_major_news_medium_without_corroboration | news | yes | expected credibility in ['high', 'medium'], got high |
 | news_institutional_health_high_with_matches | news | yes | expected credibility in ['high'], got high |
 | news_major_listing_guardrail | news | yes | expected credibility in ['low', 'unknown'], got unknown |
 | news_social_guardrail | news | yes | expected credibility in ['unknown'], got unknown |
