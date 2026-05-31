@@ -6,8 +6,8 @@ param(
   [string]$Outcome = "",
 
   [string]$OutputName = "VerityLens-cloud.apk",
-  [bool]$VerificationOk = $false,
-  [bool]$ReadinessOk = $false,
+  $VerificationOk = $false,
+  $ReadinessOk = $false,
   [string]$ErrorMessage = ""
 )
 
@@ -30,6 +30,30 @@ $CloudApkBaseName = [System.IO.Path]::GetFileNameWithoutExtension($OutputName)
 $CloudSourceStampPath = Join-Path $PhoneDir "$CloudApkBaseName-flutter-source-stamp.json"
 
 . (Join-Path $PSScriptRoot "cloud_url_policy.ps1")
+
+function ConvertTo-BoolValue {
+  param($Value)
+  if ($Value -is [bool]) {
+    return $Value
+  }
+  if ($null -eq $Value) {
+    return $false
+  }
+  $Text = [string]$Value
+  if ([string]::IsNullOrWhiteSpace($Text)) {
+    return $false
+  }
+  if ($Text -match '^(?i:true|1|yes)$') {
+    return $true
+  }
+  if ($Text -match '^(?i:false|0|no)$') {
+    return $false
+  }
+  throw "Invalid boolean value: $Value"
+}
+
+$VerificationOk = ConvertTo-BoolValue $VerificationOk
+$ReadinessOk = ConvertTo-BoolValue $ReadinessOk
 
 function Normalize-ApiUrl {
   param([string]$Value)
