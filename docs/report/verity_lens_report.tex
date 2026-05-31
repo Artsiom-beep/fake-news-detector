@@ -63,8 +63,7 @@ System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy po
 Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka AI, nie absolutny dowód.
 
 Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie oraz końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots}.
-Układ raportu oparto na typowych zasadach sprawozdań projektowych: metadane, opis metody, wyniki i interpretacja, napotkane problemy oraz wnioski.
-Takie elementy pojawiają się m.in. w zaleceniach Politechniki Poznańskiej dla sprawozdań projektowych, materiałach Politechniki Warszawskiej o sprawozdaniach w LaTeX-u oraz w akademickich wymaganiach dotyczących raportów składanych w LaTeX-u \cite{put_sprawozdanie, pw_latex, ug_latex}.
+Układ raportu oparto na typowej strukturze sprawozdania projektowego: cel, zakres, metoda, implementacja, wyniki, problemy, ograniczenia i wnioski.
 
 \section{Cel projektu}
 \subsection{Cel główny}
@@ -359,7 +358,7 @@ To ograniczenie platformy hostingowej, nie błąd aplikacji.
 \section{Wdrożenie chmurowe}
 \subsection{Render}
 Backend został wdrożony jako web service na Render.
-Render buduje i uruchamia aplikację z repozytorium GitHub lub z Dockerfile, co odpowiada dokumentacji platformy dotyczącej usług webowych i Docker runtime \cite{render_docker, render_first_deploy}.
+Render buduje i uruchamia aplikację z repozytorium GitHub lub z Dockerfile, dzięki czemu telefon może korzystać ze stałego publicznego API HTTPS.
 W projekcie zastosowano lekki runtime API:
 \begin{itemize}
   \item \path{requirements.api.txt};
@@ -637,47 +636,5 @@ Backend działa pod adresem:
 \begin{center}
 \url{https://fake-news-detector-poi6.onrender.com}
 \end{center}
-
-\begin{thebibliography}{12}
-\bibitem{put_sprawozdanie}
-Politechnika Poznańska, Instytut Informatyki.
-\textit{Sprawozdanie -- wymagania dla projektu}.
-\href{https://www.cs.put.poznan.pl/mdrozdowski/dyd/ok/index.html}{strona kursu i wymagań sprawozdania}
-
-\bibitem{pw_latex}
-T. J. Kruk, Politechnika Warszawska.
-\textit{Przygotowywanie sprawozdania w systemie LaTeX}.
-\href{https://www.ia.pw.edu.pl/~tkruk/latex/}{materiały o sprawozdaniach w LaTeX-u}
-
-\bibitem{ug_latex}
-Uniwersytet Gdański.
-\textit{Matematyka obliczeniowa -- profil informatyczny: wymagania dotyczące sprawozdań w LaTeX-u}.
-\href{https://mfi.ug.edu.pl/sites/mfi.ug.edu.pl/files/_nodes/strona/45439/files/syl_matematyka_obliczeniowa_-_profil_informatyczny_2016-1522390169137.pdf}{sylabus i wymagania raportowe}
-
-\bibitem{put_hurtownie}
-Politechnika Poznańska.
-\textit{Projekt hurtowni danych -- sprawozdanie, opis problemów i rozwiązań}.
-\href{https://www.cs.put.poznan.pl/rwrembel/dws_etl_proj.html}{opis zaliczenia projektu}
-
-\bibitem{fastapi_docs}
-FastAPI.
-\textit{Features: automatic docs and OpenAPI}.
-\href{https://fastapi.tiangolo.com/features/}{oficjalna dokumentacja FastAPI}
-
-\bibitem{flutter_android}
-Flutter Documentation.
-\textit{Build and release an Android app}.
-\href{https://docs.flutter.dev/deployment/android}{oficjalna dokumentacja Flutter Android}
-
-\bibitem{render_docker}
-Render Documentation.
-\textit{Docker on Render}.
-\href{https://render.com/docs/docker}{oficjalna dokumentacja Render Docker}
-
-\bibitem{render_first_deploy}
-Render Documentation.
-\textit{Your First Render Deploy}.
-\href{https://render.com/docs/your-first-deploy}{oficjalna dokumentacja Render deploy}
-\end{thebibliography}
 
 \end{document}
