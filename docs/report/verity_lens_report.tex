@@ -43,7 +43,7 @@ Prowadzący: Jarosław Wilk
 \toprule
 Repozytorium & \href{https://github.com/Artsiom-beep/fake-news-detector.git}{Artsiom-beep/fake-news-detector} \\
 Backend publiczny & \href{https://fake-news-detector-poi6.onrender.com}{fake-news-detector-poi6.onrender.com} \\
-Ostatni commit produktu opisany w raporcie & \texttt{e92ab8e} \\
+Ostatni commit produktu opisany w raporcie & \texttt{114b2f7} \\
 Tryb produktu & PC desktop, Web UI, REST API, Android APK, Render cloud \\
 \bottomrule
 \end{tabularx}
@@ -60,10 +60,12 @@ Celem projektu było zbudowanie praktycznego systemu do weryfikacji informacji, 
 Projekt rozpoczął się jako klasyczny \textit{fake news detector}, ale w trakcie prac okazało się, że prosta klasyfikacja \texttt{fake}/\texttt{real} jest niewystarczająca i często nieuczciwa wobec użytkownika.
 Ostateczny produkt, nazwany \textit{Verity Lens}, nie próbuje zgadywać za wszelką cenę.
 System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy posiada silną podstawę: prostą stabilną wiedzę, jawny werdykt fact-checkingu albo jednoznaczne reguły.
-Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka AI, nie absolutny dowód.
+Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka na podstawie metadanych i śladów generatorów AI, nie absolutny dowód pochodzenia obrazu.
+W końcowej wersji moduł obrazów został świadomie ograniczony do analizy pliku: EXIF, nazw plików, markerów generatorów, wymiarów i słabych cech statystycznych.
+Pełnego rozpoznawania AI na podstawie samych pikseli nie udało się zrealizować w pełnym zakresie w darmowym środowisku chmurowym bez ryzyka fałszywych oskarżeń.
 W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przez lokalne reguły, oficjalną terminologię zdrowotną WHO oraz ogólne rozumowanie źródłowo-taksonomiczne oparte na streszczeniach Wikipedii.
 
-Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie oraz końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots}.
+Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie, końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots} oraz poprawę wyboru oryginalnych zdjęć z aparatu na Androidzie.
 Układ raportu oparto na typowej strukturze sprawozdania projektowego: cel, zakres, metoda, implementacja, wyniki, problemy, ograniczenia i wnioski.
 
 \section{Cel projektu}
@@ -89,7 +91,7 @@ W aktualnej wersji użytkownik widzi trzy główne moduły:
 \begin{itemize}
   \item \textbf{News} -- ocena wiarygodności artykułu lub adresu URL;
   \item \textbf{Facts} -- sprawdzanie krótkiego twierdzenia;
-  \item \textbf{Images} -- ocena ryzyka, że obraz został wygenerowany lub przetworzony przez AI.
+  \item \textbf{Images} -- analiza metadanych obrazu i ocena ryzyka, że plik zawiera ślady generatora AI albo nie pochodzi bezpośrednio z aparatu.
 \end{itemize}
 
 Funkcja OCR dla zrzutów ekranu pozostała w backendzie oraz w testach regresyjnych jako \texttt{screenshot\_ocr}, ale nie jest już osobną zakładką w interfejsie użytkownika.
@@ -169,6 +171,53 @@ Podczas prac pojawiały się okna błędu typu \textit{Unable to find Electron a
 Po analizie uznano, że nie był to błąd projektu Verity Lens, backendu, Pythona, Fluttera ani telefonu.
 Był to problem środowiska narzędziowego aplikacji Codex Desktop, prawdopodobnie związany z obsługą wewnętrznych akcji \texttt{click}/\texttt{action}.
 Nie wpłynęło to na produkt, ale wprowadzało zamieszanie podczas pracy.
+
+\subsection{Pełny detektor obrazów AI}
+Najtrudniejszym elementem okazała się funkcja rozpoznawania obrazów AI.
+Na początku naturalnym pomysłem było zrobienie prostego przycisku, który odpowiada:
+\begin{center}
+\textit{to jest obraz AI} / \textit{to nie jest obraz AI}
+\end{center}
+W praktyce taki wynik byłby zbyt mocną obietnicą.
+W pełnym zakresie wymagałby ciężkiego modelu wizualnego, dużego benchmarku, kalibracji na wielu typach obrazów oraz stabilnego środowiska obliczeniowego.
+Darmowy backend Render ma ograniczenia pamięci i czasu startu, więc uruchamianie dużych modeli typu Transformers/Torch byłoby wolne, niestabilne albo zbyt kosztowne.
+
+Próbowano przewidzieć opcjonalną ścieżkę modelową przez zmienną \path{FACTCHECK_AI_IMAGE_MODEL}.
+Po testach przyjęto jednak ostrożną zasadę: sam wynik modelu wizualnego nie powinien automatycznie oskarżać obrazu o bycie AI, jeśli nie ma dodatkowych mocnych śladów.
+W przeciwnym razie aplikacja mogłaby prawie każdy nietypowy obraz oznaczać jako \textit{Possible AI} albo zwracać myląco pewne wyniki.
+Dlatego w darmowej wersji chmurowej ustawiono tryb \texttt{metadata\_only}.
+
+Ostateczny moduł \textit{Images} nie jest więc pełnym sądowym detektorem AI.
+Jest narzędziem do analizy ryzyka na podstawie tego, co plik sam o sobie ujawnia:
+\begin{itemize}
+  \item czy w metadanych występują markery generatorów, np. Stable Diffusion, Midjourney, DALL-E, ComfyUI, Firefly;
+  \item czy nazwa pliku zawiera ślady generatora, np. \texttt{ai-generated}, \texttt{midjourney}, \texttt{dalle};
+  \item czy obecne są oryginalne metadane aparatu, np. \texttt{Make}, \texttt{Model}, \texttt{DateTimeOriginal}, \texttt{LensModel};
+  \item czy metadane zostały utracone, co może oznaczać eksport, pobranie, edycję albo przesłanie przez komunikator;
+  \item czy wymiary obrazu przypominają popularne formaty generatorów, np. kwadrat 1024x1024;
+  \item czy słabe cechy statystyczne obrazu wskazują nietypowy wzorzec.
+\end{itemize}
+
+To podejście jest mniej efektowne niż pełny detektor AI, ale jest uczciwsze.
+Gdy system znajduje metadane generatora, traktuje to jako mocną wskazówkę.
+Gdy znajduje oryginalne metadane aparatu, pokazuje \textit{Camera metadata found}, ale nadal nie twierdzi, że obraz na pewno jest autentyczny.
+Gdy metadanych brakuje, pokazuje \textit{Metadata missing}, ponieważ brak EXIF nie jest dowodem na AI.
+
+\subsection{Utrata metadanych na Androidzie}
+Podczas testów na fizycznym telefonie okazało się, że wybór obrazu przez standardową Galerię lub aplikację Zdjęcia często nie przekazuje oryginalnego pliku z aparatu.
+Telefon zwracał kopię w katalogu typu \path{/sdcard/Pictures/}, np. plik o nazwie:
+\begin{center}
+\texttt{JPEG\_20260531\_220216\_...jpg}
+\end{center}
+Taki plik miał mały rozmiar i nie zawierał oryginalnego EXIF.
+W efekcie backend poprawnie odpowiadał \textit{Metadata missing}, mimo że użytkownik naprawdę zrobił zdjęcie telefonem.
+Problem nie leżał w samym algorytmie, tylko w ścieżce wyboru pliku.
+
+Najpierw próbowano wymusić systemowy picker dokumentów Androida i dopasowywać nazwy eksportowanych kopii do oryginałów w \path{DCIM/Camera}.
+Nie było to wystarczająco stabilne, bo Android nadal potrafił otwierać menu z Galerią, Google Photos albo innym eksploratorem.
+Końcowe rozwiązanie polegało na usunięciu tego zewnętrznego wyboru z głównego scenariusza.
+Aplikacja Flutter wyświetla własny dolny panel \textit{Camera originals}, a natywna część Androida sama pobiera listę oryginalnych zdjęć z \texttt{MediaStore} i \path{DCIM/Camera}.
+Dzięki temu użytkownik wybiera plik aparatu bez przechodzenia przez aplikacje, które tworzą kopie i usuwają metadane.
 
 \subsection{Zbyt zachowawcze odpowiedzi na proste fakty}
 Jednym z praktycznych przykładów był fakt typu:
@@ -277,6 +326,31 @@ System wylicza:
 \end{itemize}
 
 Taki wynik jest uczciwszy: mówi, czy artykuł wygląda wiarygodnie, ale nie udaje pełnego dowodu logicznego.
+
+\subsection{Jak działa analiza obrazów AI}
+Moduł \textit{Images} działa inaczej niż moduły tekstowe.
+Nie sprawdza twierdzenia i nie szuka artykułów potwierdzających.
+Backend przyjmuje plik graficzny, waliduje format i rozmiar, a następnie analizuje sygnały dostępne w samym pliku.
+
+Najważniejsze etapy są następujące:
+\begin{enumerate}
+  \item Plik jest sprawdzany pod względem typu i limitu rozmiaru.
+  \item Z obrazu odczytywane są metadane: format, wymiary, pola EXIF oraz proste informacje zapisane w pliku.
+  \item System szuka markerów generatorów AI w metadanych, np. \texttt{stable diffusion}, \texttt{midjourney}, \texttt{dall-e}, \texttt{comfyui}, \texttt{firefly}.
+  \item System szuka markerów w nazwie pliku, np. \texttt{ai-generated}, \texttt{imagefx}, \texttt{stable-diffusion}.
+  \item Jeżeli są obecne oryginalne pola aparatu, np. \texttt{Make}, \texttt{Model}, \texttt{LensModel}, \texttt{DateTimeOriginal}, wynik ryzyka jest obniżany.
+  \item Jeżeli nie ma metadanych aparatu, system dodaje ostrzeżenie, ale nie traktuje tego jako dowodu AI.
+  \item Analizowane są słabe sygnały pomocnicze, np. kwadratowe rozmiary popularne w generatorach i proste cechy statystyczne.
+  \item Opcjonalny model wizualny może być podłączony przez konfigurację, ale w domyślnej chmurze jest wyłączony jako \texttt{metadata\_only}.
+\end{enumerate}
+
+Wynik \texttt{likely\_ai} pojawia się głównie wtedy, gdy znaleziono mocny marker generatora w metadanych lub nazwie pliku.
+Wynik \texttt{likely\_not\_ai} jest możliwy tylko przy bardzo mocnym sygnale realnego obrazu z opcjonalnego modelu.
+W większości niejednoznacznych przypadków system zwraca \texttt{uncertain}, a UI pokazuje etykiety typu \textit{Metadata missing}, \textit{Weak file clues}, \textit{Possible AI signals}, \textit{AI metadata found} albo \textit{Camera metadata found}.
+
+To ograniczenie jest celowe.
+Zdjęcie z aparatu może zostać edytowane, zrzut ekranu może wyglądać jak zdjęcie, a obraz AI może zostać zapisany z fałszywymi metadanymi.
+Dlatego wynik modułu obrazów należy rozumieć jako analizę śladów pliku, nie jako pełny dowód autorstwa pikseli.
 
 \section{Architektura końcowa}
 \subsection{Warstwy systemu}
@@ -387,13 +461,42 @@ Pakiet Android:
   \item główna aktywność: \texttt{app.veritylens.mobile.MainActivity};
   \item publiczny backend: \url{https://fake-news-detector-poi6.onrender.com};
   \item aktualny cloud APK po czystej przebudowie: \path{outputs/phone_download/VerityLens-cloud.apk};
-  \item APK SHA256: \texttt{51DE2478B9C34E6CFA6CBD910E135758}\\
-  \texttt{E56DC4D5F9DEF9FE2733BA7D4DB32E12}.
+  \item APK SHA256: \texttt{ED8D4747DA6F26A52278B0A7262CF9AA}\\
+  \texttt{8C3A652F0463E3EED823DC5C1A4DBB14}.
 \end{itemize}
 
 Telefon działa bez komputera, ale wymaga internetu i działającego backendu Render.
 Wersja darmowa Render może zasypiać, dlatego pierwszy request może trwać kilkadziesiąt sekund.
 To ograniczenie platformy hostingowej, nie błąd aplikacji.
+
+\subsection{Wybór oryginalnych zdjęć na Androidzie}
+Ostatnia poprawka mobilna dotyczyła modułu \textit{Images}.
+Standardowy system wyboru pliku na Androidzie okazał się niewystarczający, ponieważ Galeria i Google Photos mogły oddawać aplikacji kopię obrazu pozbawioną EXIF.
+W takiej sytuacji backend nie mógł znaleźć pól aparatu, nawet jeżeli zdjęcie rzeczywiście zostało wykonane telefonem.
+
+Finalnie dodano natywny kanał Flutter--Android:
+\begin{center}
+\texttt{app.veritylens.mobile/original\_image\_picker}
+\end{center}
+
+Najważniejsze metody:
+\begin{itemize}
+  \item \texttt{listCameraImages} -- pobiera listę ostatnich zdjęć JPEG z \texttt{MediaStore} i \path{DCIM/Camera};
+  \item \texttt{loadCameraImage} -- ładuje wybrane zdjęcie po identyfikatorze \texttt{MediaStore ID};
+  \item \texttt{pickLatestCameraImage} -- szybka ścieżka do najnowszego zdjęcia aparatu.
+\end{itemize}
+
+W interfejsie Flutter przycisk \textit{Camera originals} nie otwiera już zewnętrznego menu Androida.
+Zamiast tego pokazuje wewnętrzną siatkę zdjęć z miniaturami.
+Dzięki temu typowy scenariusz testowy działa tak:
+\begin{enumerate}
+  \item użytkownik robi zdjęcie aparatem telefonu;
+  \item w aplikacji wybiera \textit{Images};
+  \item naciska \textit{Camera originals};
+  \item wybiera zdjęcie z listy oryginałów;
+  \item naciska \textit{Check metadata};
+  \item backend widzi oryginalne EXIF i może pokazać \textit{Camera metadata found}.
+\end{enumerate}
 
 \section{Wdrożenie chmurowe}
 \subsection{Render}
@@ -425,14 +528,14 @@ Po wdrożeniu na Render telefon może wysłać żądanie z dowolnej sieci z dost
 Aktualny stan po ostatnich pełnych kontrolach:
 \begin{center}
 \footnotesize
-\begin{tabularx}{\textwidth}{p{0.28\textwidth}p{0.28\textwidth}Y}
+\begin{tabularx}{\textwidth}{p{0.24\textwidth}p{0.32\textwidth}Y}
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
 Backend unit/integration & \texttt{unittest} & 117/117 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
-Flutter tests & \path{flutter test} & 11/11 OK \\
+Flutter tests & \path{flutter test} & 13/13 OK \\
 Release gate & release gate & OK, 25 kroków w ostatnim trybie cloud/phone \\
 Final cloud/phone & finalizer cloud-phone & OK \\
 Desktop package & verifier desktopowy & OK \\
@@ -486,6 +589,11 @@ Wygenerowano paczkę:
 \path{outputs/submission/VerityLens-submission.zip}
 \end{center}
 
+Dodatkowo po ostatnich poprawkach przygotowano czysty ZIP z kodem źródłowym:
+\begin{center}
+\path{outputs/submission/VerityLens-source-code-final.zip}
+\end{center}
+
 Weryfikator paczki sprawdził:
 \begin{itemize}
   \item obecność raportów końcowych;
@@ -513,7 +621,9 @@ Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie w
 Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
 Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
-Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku, nie o absolutnym dowodzie. \\
+Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku metadanych, nie o absolutnym dowodzie pochodzenia pikseli. \\
+Images metadata & Kalibracja etykiet i komunikatów dla obrazów. & Zamiast stałego \textit{Possible AI} aplikacja rozróżnia: \textit{AI metadata found}, \textit{Camera metadata found}, \textit{Metadata missing} i \textit{Weak file clues}. \\
+Android originals & Natywny wybór oryginalnych zdjęć z aparatu. & Aplikacja omija zewnętrzną Galerię i pobiera zdjęcia z \path{DCIM/Camera} przez \texttt{MediaStore}. \\
 Web UI & Zbudowanie oddzielnych paneli produktu. & Użytkownik może pracować przez przeglądarkę. \\
 Desktop & PyInstaller + PyWebView. & Powstała paczka Windows portable. \\
 Mobile & Flutter + API client. & Powstał APK Android. \\
@@ -555,6 +665,14 @@ Ostatnia decyzja produktowa dotyczyła uproszczenia.
 Funkcja screenshot OCR działa technicznie, ale jako oddzielna zakładka była mało użyteczna dla użytkownika końcowego.
 Została więc ukryta w API i testach regresyjnych, a interfejs końcowy ma tylko trzy czytelne moduły.
 
+\subsection{Nie udawać pełnego detektora AI obrazów}
+Moduł obrazów został nazwany i zaprojektowany jako analiza metadanych.
+To świadoma decyzja.
+W projekcie nie ma pełnej gwarancji rozpoznania obrazu wygenerowanego przez AI na podstawie samych pikseli.
+Taka funkcja wymagałaby cięższego modelu, dobrego zbioru testowego, kalibracji progów oraz stabilnych zasobów obliczeniowych.
+W darmowej chmurze lepszym rozwiązaniem jest pokazać użytkownikowi konkretne ślady: metadane generatora, EXIF aparatu, brak EXIF, nietypowe wymiary i ostrzeżenia.
+Dlatego interfejs mówi \textit{Check metadata}, a nie \textit{Prove AI image}.
+
 \section{Aktualny sposób działania}
 \subsection{Na komputerze}
 Użytkownik może uruchomić:
@@ -574,6 +692,8 @@ Schemat:
 
 Jeżeli Render Free zasnął, aplikacja może przez chwilę pokazać \textit{API not reachable}.
 Po wybudzeniu serwera odświeżenie statusu powinno przywrócić połączenie.
+W module \textit{Images} główna ścieżka wyboru zdjęcia korzysta z przycisku \textit{Camera originals}.
+Ten przycisk pokazuje listę oryginalnych zdjęć z aparatu zamiast otwierać systemowe menu Galerii, które może zwracać kopie bez metadanych.
 
 \subsection{W repozytorium}
 Zmiany zostały wypchnięte na GitHub.
@@ -592,6 +712,10 @@ Commit & Znaczenie \\
 \texttt{b99006d} & Usunięcie zakładki Screenshots z UI aplikacji. \\
 \texttt{0d14cff} & Oficjalna terminologia WHO dla faktów COVID-19 i SARS-CoV-2. \\
 \texttt{e92ab8e} & Ogólne rozumowanie źródłowo-taksonomiczne dla modułu Facts. \\
+\texttt{7e4799d} & Przestawienie zakładki Images na sprawdzanie metadanych. \\
+\texttt{d68232f} & Dodanie szybkiego wyboru najnowszego zdjęcia aparatu. \\
+\texttt{572bf9e} & Próba wymuszenia systemowego pickera dokumentów dla oryginalnych plików. \\
+\texttt{114b2f7} & Finalny wewnętrzny picker oryginalnych zdjęć z \path{DCIM/Camera}. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -600,7 +724,10 @@ Commit & Znaczenie \\
 \begin{itemize}
   \item Backend w Render Free może zasypiać, więc pierwszy request może być wolny.
   \item Telefon nie działa offline, bo silnik działa w Pythonie po stronie backendu.
-  \item Ocena AI obrazu jest oceną ryzyka, nie dowodem sądowym.
+  \item Ocena AI obrazu jest oceną ryzyka metadanych, nie dowodem sądowym ani pełnym rozpoznaniem pikseli.
+  \item Brak EXIF nie oznacza automatycznie AI, ponieważ metadane mogą zostać usunięte przez edycję, eksport, komunikator, Galerię albo serwis internetowy.
+  \item Obecność EXIF aparatu nie gwarantuje pełnej autentyczności, ponieważ metadane można skopiować lub zmodyfikować.
+  \item Pełny model wizualny AI-image detection nie jest domyślnie włączony w chmurze, ponieważ byłby ciężki dla darmowego hostingu i wymagałby osobnej kalibracji jakości.
   \item OCR może się mylić przy zrzutach niskiej jakości, dlatego funkcja została wycofana z głównego UI.
   \item Obecny benchmark jest dobry jako regresja produktu, ale nie reprezentuje całego internetu.
   \item Aktualne fakty polityczne i urzędowe mogą się dezaktualizować, więc wymagają okresowej aktualizacji źródeł.
@@ -611,6 +738,9 @@ Commit & Znaczenie \\
   \item dodać ekran \textit{About / Version} w aplikacji mobilnej, aby od razu było widać commit, wersję APK i adres API;
   \item poprawić baner połączenia tak, aby przy Render Free pokazywał \textit{Waking up server} i automatycznie ponawiał próbę;
   \item rozszerzyć benchmark acceptance o większy zbiór żywych newsów i trudnych przypadków;
+  \item dodać opcjonalny płatny lub lokalny model wizualny do pełniejszej oceny obrazów AI;
+  \item rozważyć obsługę Content Credentials / C2PA, jeżeli użytkownik będzie miał obrazy z podpisanym pochodzeniem;
+  \item dodać tryb wykonania zdjęcia bezpośrednio w aplikacji, aby jeszcze mocniej kontrolować oryginalny plik i metadane;
   \item przygotować tryb demonstracyjny z zapisanymi przykładami wejściowymi;
   \item dodać historię ostatnich sprawdzeń w aplikacji mobilnej;
   \item rozważyć płatny hosting, jeżeli aplikacja ma działać szybko i stale.
@@ -624,6 +754,8 @@ Został przetestowany automatycznie i praktycznie, w tym na fizycznym telefonie.
 
 Najważniejsza lekcja projektowa brzmi: w systemach fact-checkingowych brak pewności nie jest porażką.
 Porażką byłoby udawanie pewności.
+Ta sama zasada dotyczy obrazów: projekt nie udaje, że darmowa wersja potrafi w pełni rozpoznać każdy obraz AI.
+Pokazuje konkretne ślady z pliku i jasno mówi, gdzie kończy się pewność.
 Dlatego \textit{Verity Lens} jest zaprojektowany tak, aby pomagać użytkownikowi myśleć ostrożniej, a nie zastępować myślenie czarną skrzynką.
 
 \appendix
@@ -638,6 +770,8 @@ python scripts/run_product_acceptance.py
 .\scripts\build_phone_for_cloud.ps1 `
   -ApiBaseUrl https://fake-news-detector-poi6.onrender.com `
   -Mode release
+.\scripts\make_source_bundle.ps1 `
+  -OutputPath outputs\submission\VerityLens-source-code-final.zip
 .\scripts\finalize_cloud_phone_submission.ps1 `
   -ApiBaseUrl https://fake-news-detector-poi6.onrender.com
 flutter analyze
@@ -655,6 +789,7 @@ Raport PDF & \path{docs/report/verity_lens_report.pdf} \\
 Desktop EXE & \path{dist/FakeNewsDetector/FakeNewsDetector.exe} \\
 Desktop ZIP & \path{dist/FakeNewsDetector-Windows-Portable.zip} \\
 Cloud APK & \path{outputs/phone_download/VerityLens-cloud.apk} \\
+Source code ZIP & \path{outputs/submission/VerityLens-source-code-final.zip} \\
 Submission ZIP & \path{outputs/submission/VerityLens-submission.zip} \\
 Product acceptance report & \path{reports/product_acceptance_latest.json} \\
 Release gate report & \path{reports/release_gate_latest.json} \\
