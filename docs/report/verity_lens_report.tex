@@ -43,7 +43,7 @@ Prowadzący: Jarosław Wilk
 \toprule
 Repozytorium & \href{https://github.com/Artsiom-beep/fake-news-detector.git}{Artsiom-beep/fake-news-detector} \\
 Backend publiczny & \href{https://fake-news-detector-poi6.onrender.com}{fake-news-detector-poi6.onrender.com} \\
-Ostatni commit opisany w raporcie & \texttt{b99006d} \\
+Ostatni commit produktu opisany w raporcie & \texttt{e92ab8e} \\
 Tryb produktu & PC desktop, Web UI, REST API, Android APK, Render cloud \\
 \bottomrule
 \end{tabularx}
@@ -61,6 +61,7 @@ Projekt rozpoczął się jako klasyczny \textit{fake news detector}, ale w trakc
 Ostateczny produkt, nazwany \textit{Verity Lens}, nie próbuje zgadywać za wszelką cenę.
 System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy posiada silną podstawę: prostą stabilną wiedzę, jawny werdykt fact-checkingu albo jednoznaczne reguły.
 Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka AI, nie absolutny dowód.
+W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przez lokalne reguły, oficjalną terminologię zdrowotną WHO oraz ogólne rozumowanie źródłowo-taksonomiczne oparte na streszczeniach Wikipedii.
 
 Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie oraz końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots}.
 Układ raportu oparto na typowej strukturze sprawozdania projektowego: cel, zakres, metoda, implementacja, wyniki, problemy, ograniczenia i wnioski.
@@ -75,6 +76,7 @@ Produkt miał być możliwy do pokazania w praktyce: lokalnie na PC, jako paczka
   \item uporządkować projekt po wcześniejszych eksperymentach ML i usunąć konflikt wielu wejść produktowych;
   \item stworzyć jeden kanoniczny silnik decyzyjny dla CLI, API, UI, desktopu i telefonu;
   \item rozdzielić zwykłe sprawdzanie faktów od oceny wiarygodności newsów;
+  \item poprawić inteligencję krótkich faktów bez przechodzenia w zgadywanie;
   \item uniknąć fałszywej pewności tam, gdzie brakuje źródeł;
   \item uruchomić backend lokalnie i w chmurze Render;
   \item zbudować aplikację mobilną Flutter z publicznym API;
@@ -176,6 +178,21 @@ Jednym z praktycznych przykładów był fakt typu:
 System początkowo odpowiadał zbyt ostrożnie, mimo że dla takiego stabilnego, codziennego faktu można zastosować lokalną wiedzę i prostsze reguły.
 Dodano obsługę typowych faktów materiałowych, dzięki czemu proste twierdzenia nie muszą przechodzić przez pełny ciężki pipeline źródłowy.
 
+\subsection{Zbyt literalne rozumienie krótkich faktów}
+Po wdrożeniu mobilnym wyszedł kolejny praktyczny problem: backend potrafił znaleźć właściwe streszczenie źródłowe, ale nie zawsze umiał wyciągnąć z niego konsekwencję logiczną.
+Przykładowo dla zdania \textit{covid is virus} system widział opis COVID-19, ale zwracał \texttt{uncertain}, ponieważ literalnie szukał słowa \textit{virus} jako dokładnej właściwości choroby.
+Podobnie zdania typu \textit{Mars is a star}, \textit{Whales are fish} albo \textit{Paris is the capital of Germany} były wcześniej zbyt często klasyfikowane jako niepewne.
+
+Rozwiązaniem nie było dodawanie pojedynczych wyjątków dla każdego pytania.
+Dodano ogólną warstwę rozumowania źródłowo-taksonomicznego:
+\begin{itemize}
+  \item oficjalną regułę WHO dla relacji COVID-19 i SARS-CoV-2;
+  \item rozpoznawanie klas niezgodnych, np. \textit{planet} kontra \textit{star}, \textit{mammal} kontra \textit{fish}, \textit{arachnid} kontra \textit{insect};
+  \item prostą hierarchię klas, np. \textit{arachnid} oznacza także \textit{animal};
+  \item relację \textit{capital of X}, dzięki której system może odróżnić Francję od Niemiec;
+  \item lepszą obsługę liczby mnogiej i wariantów słów, np. \textit{gas}/\textit{gases}, \textit{virus}/\textit{viruses}.
+\end{itemize}
+
 \subsection{Ocena newsów z dużych źródeł}
 Dla zwykłych artykułów BBC lub podobnych źródeł system początkowo bywał zbyt nieśmiały.
 Problem polegał na tym, że brak wielu niezależnych potwierdzeń nie powinien automatycznie obniżać wiarygodnego artykułu do słabej oceny.
@@ -200,7 +217,7 @@ Najważniejszą zmianą architektoniczną było utworzenie jednej ścieżki prod
 $\Downarrow$\\
 \texttt{src.factcheck.service}\\
 $\Downarrow$\\
-\texttt{retrieval + common knowledge + explicit fact-check + news credibility + image analysis}\\
+\texttt{retrieval + common knowledge + knowledge sources + explicit fact-check + news credibility + image analysis}\\
 $\Downarrow$\\
 \texttt{jeden publiczny kontrakt JSON}
 \end{minipage}
@@ -225,6 +242,28 @@ Dlatego \textit{Verity Lens} ma trzy poziomy odpowiedzi:
   \item \texttt{fake} -- mocne obalenie lub jawny werdykt fact-checkingu;
   \item \texttt{uncertain} -- brak wystarczającego dowodu.
 \end{itemize}
+
+\subsection{Rozumowanie źródłowo-taksonomiczne}
+Finalny moduł \textit{Facts} nie jest już tylko listą ręcznie wpisanych przykładów.
+Jeżeli lokalna wiedza nie obejmuje danego tematu, backend pobiera streszczenie źródłowe i próbuje ocenić właściwość twierdzenia.
+Mechanizm rozpoznaje bezpośrednie wsparcie, bezpośrednie zaprzeczenia, relację stolicy oraz konflikt klas.
+Dzięki temu przykłady testowane po ostatniej poprawce działają następująco:
+\begin{center}
+\footnotesize
+\begin{tabularx}{0.94\textwidth}{p{0.36\textwidth}p{0.16\textwidth}Y}
+\toprule
+Twierdzenie & Wynik & Uzasadnienie \\
+\midrule
+\textit{Mars is a star} & \texttt{fake} & streszczenie klasyfikuje Marsa jako planetę, a nie gwiazdę \\
+\textit{Whales are fish} & \texttt{fake} & streszczenie klasyfikuje wieloryby jako ssaki \\
+\textit{Spiders are animals} & \texttt{true} & pająki są pajęczakami, a pajęczaki należą do zwierząt \\
+\textit{Paris is the capital of Germany} & \texttt{fake} & streszczenie wskazuje Paryż jako stolicę Francji \\
+\textit{covid is bacteria} & \texttt{fake} & WHO opisuje COVID-19 jako chorobę spowodowaną wirusem SARS-CoV-2 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Granica pozostaje ostrożna: jeśli streszczenie nie daje jasnego wsparcia ani konfliktu, system nadal zwraca \texttt{uncertain}.
 
 \subsection{Oddzielenie news credibility od fact-checkingu}
 Artykuł informacyjny nie jest tym samym co twierdzenie typu ``Słońce jest gwiazdą''.
@@ -251,6 +290,7 @@ Core engine & \path{src/factcheck/service.py} & Orkiestracja głównego pipeline
 Decision layer & \path{src/factcheck/decision.py} & Decyzja \texttt{true}/\texttt{fake}/\texttt{uncertain}. \\
 Retrieval & \path{src/factcheck/retrieval.py} & Pobieranie i dobór materiału źródłowego. \\
 Common knowledge & \path{src/factcheck/common_knowledge.py} & Proste fakty, reguły i lokalna wiedza. \\
+Knowledge sources & \path{src/factcheck/knowledge_sources.py} & Wikipedia summary, klasy taksonomiczne, relacje stolic i oficjalna wiedza źródłowa. \\
 News credibility & \path{src/factcheck/news_credibility.py} & Punktacja artykułów informacyjnych. \\
 Image/OCR & \path{src/factcheck/image_analysis.py} & OCR i ocena ryzyka obrazu AI. \\
 REST API & \path{src/api_factcheck.py} & Publiczne endpointy dla Web UI i Fluttera. \\
@@ -389,7 +429,7 @@ Aktualny stan po ostatnich pełnych kontrolach:
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend unit/integration & \texttt{unittest} & 116/116 OK \\
+Backend unit/integration & \texttt{unittest} & 117/117 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
 Flutter tests & \path{flutter test} & 11/11 OK \\
@@ -471,6 +511,7 @@ Analiza projektu & Przegląd istniejących plików, modeli i wejść API. & Wykr
 Refaktoryzacja & Utworzenie kanonicznego pipeline'u i archiwizacja legacy. & Jeden silnik dla API, UI, desktopu i telefonu. \\
 Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie wymusza fałszywej pewności. \\
 Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
+Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
 Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku, nie o absolutnym dowodzie. \\
 Web UI & Zbudowanie oddzielnych paneli produktu. & Użytkownik może pracować przez przeglądarkę. \\
@@ -549,6 +590,8 @@ Commit & Znaczenie \\
 \texttt{ade5984} & Kalibracja wiarygodności newsów. \\
 \texttt{892555a} & Odświeżenie dowodów po kalibracji newsów. \\
 \texttt{b99006d} & Usunięcie zakładki Screenshots z UI aplikacji. \\
+\texttt{0d14cff} & Oficjalna terminologia WHO dla faktów COVID-19 i SARS-CoV-2. \\
+\texttt{e92ab8e} & Ogólne rozumowanie źródłowo-taksonomiczne dla modułu Facts. \\
 \bottomrule
 \end{tabularx}
 \end{center}
