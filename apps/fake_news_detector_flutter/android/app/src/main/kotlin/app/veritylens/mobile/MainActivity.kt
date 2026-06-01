@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Size
@@ -159,6 +160,10 @@ class MainActivity : FlutterActivity() {
             type = "*/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             putExtra("android.content.extra.SHOW_ADVANCED", true)
+            putExtra(
+                DocumentsContract.EXTRA_INITIAL_URI,
+                DocumentsContract.buildRootUri("com.android.externalstorage.documents", "primary")
+            )
             if (forceDocumentsUi) {
                 setPackage("com.google.android.documentsui")
             }
