@@ -528,6 +528,7 @@ Z paczki chmurowej wykluczono:
 \end{itemize}
 Do runtime'u API dodano natomiast zależności \texttt{torch} i \texttt{transformers}, ponieważ moduł \textit{Facts} używa lekkiego modelu NLI do semantycznego porównania twierdzenia z dowodem.
 Model jest ładowany leniwie: backend startuje normalnie, a model pobiera się dopiero przy pierwszym użyciu modułu faktów wymagającego NLI.
+Żeby darmowy Render nie wykonywał zbyt wielu drogich inferencji, liczba wywołań NLI i liczba analizowanych fragmentów dokumentu są ograniczone przez \path{FACTCHECK_MAX_NLI_CALLS} oraz \path{FACTCHECK_MAX_PASSAGES_PER_DOCUMENT}.
 
 \subsection{Dlaczego chmura była potrzebna}
 Telefon z aplikacją Flutter nie powinien wymagać komputera użytkownika.
@@ -544,7 +545,7 @@ Aktualny stan po ostatnich pełnych kontrolach:
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend unit/integration & \texttt{unittest} & 120/120 OK \\
+Backend unit/integration & \texttt{unittest} & 121/121 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
 Flutter tests & \path{flutter test} & 13/13 OK \\
@@ -749,7 +750,7 @@ Commit & Znaczenie \\
   \item Obecność EXIF aparatu nie gwarantuje pełnej autentyczności, ponieważ metadane można skopiować lub zmodyfikować.
   \item Pełny model wizualny AI-image detection nie jest domyślnie włączony w chmurze, ponieważ byłby ciężki dla darmowego hostingu i wymagałby osobnej kalibracji jakości.
   \item Model NLI poprawia rozumienie faktów, ale nie zastępuje źródeł i nie daje gwarancji poprawności dla każdego zdania.
-  \item Pierwsze użycie modułu faktów po uśpieniu lub wdrożeniu Render może być wolniejsze, ponieważ model NLI jest ładowany leniwie.
+  \item Pierwsze użycie modułu faktów po uśpieniu lub wdrożeniu Render może być wolniejsze, ponieważ model NLI jest ładowany leniwie; liczba wywołań modelu jest ograniczona budżetem, aby nie przeciążyć darmowego backendu.
   \item OCR może się mylić przy zrzutach niskiej jakości, dlatego funkcja została wycofana z głównego UI.
   \item Obecny benchmark jest dobry jako regresja produktu, ale nie reprezentuje całego internetu.
   \item Aktualne fakty polityczne i urzędowe mogą się dezaktualizować, więc wymagają okresowej aktualizacji źródeł.

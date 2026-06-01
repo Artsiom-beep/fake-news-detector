@@ -758,6 +758,8 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertIn("FACTCHECK_NLI_MODEL", render_yaml)
         self.assertIn("typeform/mobilebert-uncased-mnli", render_yaml)
         self.assertIn("FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli", dockerfile)
+        self.assertIn("FACTCHECK_MAX_NLI_CALLS", render_yaml)
+        self.assertIn("FACTCHECK_MAX_PASSAGES_PER_DOCUMENT", render_yaml)
         self.assertIn("torch==2.2.0+cpu", api_requirements)
         self.assertIn("transformers==4.40.0", api_requirements)
         self.assertIn("metadata_only", render_yaml)
@@ -1689,7 +1691,7 @@ Write-Output 'apk name policy ok'
             "\\section{Możliwe dalsze prace}",
             "\\section{Wnioski}",
             "93/93 OK",
-            "120/120 OK",
+            "121/121 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
             "Screenshot OCR API & 12 & 12 & 100\\%",
@@ -2176,6 +2178,17 @@ Write-Output 'apk name policy ok'
         self.assertEqual(result["label"], "supported")
         self.assertEqual(result["score"], 0.91)
         self.assertEqual(result["method"], "model:typeform/mobilebert-uncased-mnli")
+
+    @patch.dict(os.environ, {"FACTCHECK_NLI_MODEL": "typeform/mobilebert-uncased-mnli"})
+    @patch("nli._load_pipeline")
+    def test_nli_can_be_forced_to_lexical_for_budget_control(self, mock_load_pipeline):
+        result = nli_module.classify_claim_vs_evidence(
+            "The vaccine reduced hospitalizations.",
+            "A clinical study found the vaccine reduced hospitalizations.",
+            use_model=False,
+        )
+        mock_load_pipeline.assert_not_called()
+        self.assertEqual(result["method"], "lexical_fallback")
 
     @patch.dict(os.environ, {"FACTCHECK_NLI_MODEL": "typeform/mobilebert-uncased-mnli"})
     def test_config_reports_enabled_nli_model(self):

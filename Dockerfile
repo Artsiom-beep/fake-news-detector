@@ -3,7 +3,9 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     FACTCHECK_AI_IMAGE_MODEL=metadata_only \
-    FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli
+    FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli \
+    FACTCHECK_MAX_NLI_CALLS=6 \
+    FACTCHECK_MAX_PASSAGES_PER_DOCUMENT=3
 
 WORKDIR /app
 

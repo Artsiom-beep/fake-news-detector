@@ -12,6 +12,10 @@ services:
         value: metadata_only
       - key: FACTCHECK_NLI_MODEL
         value: typeform/mobilebert-uncased-mnli
+      - key: FACTCHECK_MAX_NLI_CALLS
+        value: "6"
+      - key: FACTCHECK_MAX_PASSAGES_PER_DOCUMENT
+        value: "3"
       - key: FACTCHECK_MAX_SEARCH_RESULTS
         value: "6"
       - key: FACTCHECK_MAX_DOCUMENTS

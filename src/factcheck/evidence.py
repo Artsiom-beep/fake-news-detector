@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime
 from typing import List
@@ -152,6 +153,15 @@ def score_evidence_for_claim(
 ) -> List[EvidenceItem]:
     evidence_items: List[EvidenceItem] = []
     seen_domains = set()
+    nli_budget = max(0, int(os.getenv("FACTCHECK_MAX_NLI_CALLS", "6")))
+    max_passages_per_document = max(1, int(os.getenv("FACTCHECK_MAX_PASSAGES_PER_DOCUMENT", "3")))
+
+    def classify_with_budget(evidence_text: str) -> dict:
+        nonlocal nli_budget
+        use_model = nli_budget > 0
+        if use_model:
+            nli_budget -= 1
+        return classify_claim_vs_evidence(claim.normalized_text, evidence_text, use_model=use_model)
 
     for document in documents:
         if config.mode == "factcheck_only" and not document.explicit_verdict:
@@ -160,12 +170,16 @@ def score_evidence_for_claim(
             passages = [document.ruling_text]
         else:
             passages = _split_passages(document.content) or [document.snippet or document.content[:300]]
+        passage_candidates = [
+            (relevance, passage)
+            for passage in passages
+            if (relevance := _relevance_score(claim, document, passage)) >= 0.12
+        ]
+        passage_candidates.sort(key=lambda item: item[0], reverse=True)
+        passage_candidates = passage_candidates[:max_passages_per_document]
         best_item: EvidenceItem | None = None
 
-        for passage in passages:
-            relevance = _relevance_score(claim, document, passage)
-            if relevance < 0.12:
-                continue
+        for relevance, passage in passage_candidates:
             explicit_stance = _map_explicit_verdict(document.explicit_verdict)
             stance_method = "explicit_verdict" if explicit_stance else ""
             if explicit_stance:
@@ -188,7 +202,7 @@ def score_evidence_for_claim(
                         + 0.08 * alignment_score,
                     )
             else:
-                nli = classify_claim_vs_evidence(claim.normalized_text, passage[:1400])
+                nli = classify_with_budget(passage[:1400])
                 stance = _map_nli_label(nli.get("label", "neutral"))
                 stance_strength = float(nli.get("score", 0.0))
                 stance_method = str(nli.get("method", "nli") or "nli")
@@ -200,7 +214,7 @@ def score_evidence_for_claim(
                 ):
                     meaningful_numbers = [number for number in claim.numbers if number not in {"19"}]
                     has_structured_cues = bool(claim.entities or claim.dates or meaningful_numbers)
-                    title_nli = classify_claim_vs_evidence(claim.normalized_text, document.title[:320])
+                    title_nli = classify_with_budget(document.title[:320])
                     title_stance = _map_nli_label(title_nli.get("label", "neutral"))
                     title_coverage = _token_overlap(claim.normalized_text, document.title)
                     if not has_structured_cues and title_coverage < 0.75:

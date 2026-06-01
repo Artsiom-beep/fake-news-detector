@@ -108,11 +108,11 @@ def set_fast_mode(enabled: bool = True):
     _USE_LEXICAL_ONLY = enabled
 
 
-def classify_claim_vs_evidence(claim: str, evidence_text: str) -> Dict:
+def classify_claim_vs_evidence(claim: str, evidence_text: str, use_model: bool = True) -> Dict:
     if not evidence_text:
         return {"label": "neutral", "score": 0.0, "method": "empty_evidence"}
 
-    if _USE_LEXICAL_ONLY:
+    if _USE_LEXICAL_ONLY or not use_model:
         return _lexical_fallback(claim, evidence_text)
 
     nli = _load_pipeline()
