@@ -14,7 +14,7 @@ MODEL_VERSIONS: Dict[str, str] = {
     "retrieval_ranker": "deterministic_lexical_v1",
     "summary_policy": "template_v1",
     "claim_prior": "disabled_in_best_accuracy",
-    "common_knowledge": "local_rules_v2+wikipedia_summary_v2+categories+safe_abstention_v1",
+    "common_knowledge": "local_rules_v2+wikipedia_summary_v2+wikidata_taxonomy_v1+safe_abstention_v1",
     "translation": "deterministic_multilingual_glossary_v1",
     "news_credibility": "source_quality_corroboration_v2",
     "screenshot_ocr": "rapidocr_onnxruntime_v1",

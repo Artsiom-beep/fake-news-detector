@@ -3241,6 +3241,41 @@ Write-Output 'apk name policy ok'
                 self.assertEqual(payload["evidence"][0]["source_type"], expected_source_type)
                 self.assertIn(expected_reason, " ".join(payload["claims"][0]["reasons"]))
 
+    @patch("factcheck.common_knowledge.fetch_wikidata_taxonomy_summary")
+    @patch("factcheck.common_knowledge.fetch_wikipedia_summary")
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_uses_wikidata_when_wikipedia_is_not_exact(
+        self,
+        mock_retrieve_documents,
+        mock_summary,
+        mock_wikidata,
+    ):
+        mock_summary.return_value = SimpleNamespace(
+            title="Kangaroo",
+            extract="Kangaroo is a common name for members of the family Macropodidae.",
+            url="https://en.wikipedia.org/wiki/Kangaroo",
+            source="wikipedia_summary_v1",
+            categories=(),
+        )
+        mock_wikidata.return_value = SimpleNamespace(
+            title="kangaroo",
+            extract="Wikidata class graph for kangaroo: kangaroo, marsupial, mammal, animal.",
+            url="https://www.wikidata.org/wiki/Q5070208",
+            source="wikidata_taxonomy_v1",
+            categories=("kangaroo", "marsupial", "mammal", "animal"),
+        )
+
+        mammal_payload = run_factcheck(text="Kangaroos are mammals").to_public_dict()
+        self.assertEqual(mammal_payload["verdict"], "true")
+        self.assertEqual(mammal_payload["evidence"][0]["domain"], "wikidata.org")
+        self.assertIn("wikidata_taxonomy_supports", " ".join(mammal_payload["claims"][0]["reasons"]))
+
+        insect_payload = run_factcheck(text="Kangaroos are insects").to_public_dict()
+        self.assertEqual(insect_payload["verdict"], "fake")
+        self.assertEqual(insect_payload["evidence"][0]["domain"], "wikidata.org")
+        self.assertIn("wikidata_taxonomy_refutes", " ".join(insect_payload["claims"][0]["reasons"]))
+        mock_retrieve_documents.assert_not_called()
+
     def test_best_pipeline_handles_false_numeric_comparison(self):
         payload = run_factcheck(text="15 is greater than 20").to_public_dict()
         self.assertEqual(payload["verdict"], "fake")

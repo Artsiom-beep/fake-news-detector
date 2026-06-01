@@ -7,7 +7,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-from .knowledge_sources import evaluate_summary_property, fetch_wikipedia_summary
+from .knowledge_sources import evaluate_summary_property, fetch_wikidata_taxonomy_summary, fetch_wikipedia_summary
 from .schemas import ClaimCandidate, ClaimDecision, EvidenceItem, FactCheckTrace
 
 
@@ -1867,23 +1867,38 @@ def _contains_relation_property(properties: list[tuple[str, bool]]) -> bool:
     return any(prop.split(" ", 1)[0] in RELATION_VERBS for prop, _ in properties)
 
 
-def _decide_source_backed_statement(
+def _knowledge_source_key(summary: object) -> str:
+    source = str(getattr(summary, "source", ""))
+    return "wikidata_taxonomy" if source.startswith("wikidata") else "wikipedia_summary"
+
+
+def _knowledge_source_label(summary: object) -> str:
+    return "Wikidata taxonomy" if _knowledge_source_key(summary) == "wikidata_taxonomy" else "Wikipedia summary"
+
+
+def _knowledge_source_domain(summary: object) -> str:
+    return "wikidata.org" if _knowledge_source_key(summary) == "wikidata_taxonomy" else "wikipedia.org"
+
+
+def _knowledge_source_trust(summary: object) -> float:
+    return 0.8 if _knowledge_source_key(summary) == "wikidata_taxonomy" else 0.82
+
+
+def _evaluate_source_backed_summary(
     claim: ClaimCandidate,
     subject: str,
     properties: list[tuple[str, bool]],
     trace: FactCheckTrace,
-) -> ClaimDecision | None:
-    summary = fetch_wikipedia_summary(subject)
-    if summary is None:
-        return _uncertain_knowledge_decision(
-            claim=claim,
-            trace=trace,
-            subject=subject,
-            reason="knowledge_source_unavailable=wikipedia_summary",
-            evidence=None,
-            confidence=0.26,
-        )
-
+    summary: object,
+) -> tuple[ClaimDecision | None, ClaimDecision | None]:
+    source_key = _knowledge_source_key(summary)
+    source_label = _knowledge_source_label(summary)
+    source_domain = _knowledge_source_domain(summary)
+    source_trust = _knowledge_source_trust(summary)
+    summary_title = str(getattr(summary, "title", subject) or subject)
+    summary_extract = str(getattr(summary, "extract", "") or "")
+    summary_url = str(getattr(summary, "url", "") or "")
+    summary_source = str(getattr(summary, "source", source_key) or source_key)
     supported: list[str] = []
     unknown: list[str] = []
     refuted_by_negation: list[str] = []
@@ -1918,31 +1933,32 @@ def _decide_source_backed_statement(
     if not supported and not refuted_by_negation and not refuted_by_source:
         prop_text = ", ".join(prop for prop, _ in properties)
         evidence = EvidenceItem(
-            url=summary.url,
-            title=f"Wikipedia summary: {summary.title}",
+            url=summary_url,
+            title=f"{source_label}: {summary_title}",
             stance="neutral",
             score=0.42,
-            snippet=summary.extract[:320],
+            snippet=summary_extract[:320],
             passage=(
-                f"Wikipedia summary for {summary.title} was checked, but it does not give an exact "
+                f"{source_label} for {summary_title} was checked, but it does not give an exact "
                 f"answer for: {prop_text}."
             ),
             source_type="knowledge_source",
-            source_trust=0.82,
+            source_trust=source_trust,
             relevance=0.62,
             freshness=0.65,
-            domain="wikipedia.org",
-            verdict_source=summary.source,
+            domain=source_domain,
+            verdict_source=summary_source,
             claim_match_score=0.48,
         )
-        return _uncertain_knowledge_decision(
+        neutral_decision = _uncertain_knowledge_decision(
             claim=claim,
             trace=trace,
             subject=subject,
-            reason=f"wikipedia_summary_no_exact_answer={prop_text}",
+            reason=f"{source_key}_no_exact_answer={prop_text}",
             evidence=evidence,
             confidence=0.34,
         )
+        return None, neutral_decision
 
     if refuted_by_negation:
         verdict = "fake"
@@ -1950,10 +1966,10 @@ def _decide_source_backed_statement(
         stance = "refute"
         support_score = 0.0
         refute_score = 0.78
-        reason = f"wikipedia_summary_refutes_negation={','.join(refuted_by_negation)};signals={','.join(refute_signal_reasons)}"
+        reason = f"{source_key}_refutes_negation={','.join(refuted_by_negation)};signals={','.join(refute_signal_reasons)}"
         detail_text = " ".join(refute_details)
         passage = (
-            f"Wikipedia summary for {summary.title} supports {', '.join(refuted_by_negation)}, "
+            f"{source_label} for {summary_title} supports {', '.join(refuted_by_negation)}, "
             f"contrary to the negated claim. {detail_text}"
         ).strip()
     elif refuted_by_source:
@@ -1962,40 +1978,40 @@ def _decide_source_backed_statement(
         stance = "refute"
         support_score = 0.0
         refute_score = 0.8
-        reason = f"wikipedia_summary_refutes={','.join(refuted_by_source)};signals={','.join(refute_signal_reasons)}"
+        reason = f"{source_key}_refutes={','.join(refuted_by_source)};signals={','.join(refute_signal_reasons)}"
         detail_text = " ".join(refute_details)
-        passage = f"Wikipedia summary for {summary.title} conflicts with {', '.join(refuted_by_source)}. {detail_text}".strip()
+        passage = f"{source_label} for {summary_title} conflicts with {', '.join(refuted_by_source)}. {detail_text}".strip()
     elif unknown:
         verdict = "uncertain"
         confidence = 0.38
         stance = "neutral"
         support_score = 0.45
         refute_score = 0.0
-        reason = f"wikipedia_summary_partial_support={','.join(supported)};unknown={','.join(unknown)}"
-        passage = f"Wikipedia summary for {summary.title} supports {', '.join(supported)}, but does not clearly cover {', '.join(unknown)}."
+        reason = f"{source_key}_partial_support={','.join(supported)};unknown={','.join(unknown)}"
+        passage = f"{source_label} for {summary_title} supports {', '.join(supported)}, but does not clearly cover {', '.join(unknown)}."
     else:
         verdict = "true"
         confidence = 0.74
         stance = "support"
         support_score = 0.78
         refute_score = 0.0
-        reason = f"wikipedia_summary_supports={','.join(supported)};signals={','.join(support_signal_reasons)}"
+        reason = f"{source_key}_supports={','.join(supported)};signals={','.join(support_signal_reasons)}"
         detail_text = " ".join(support_details)
-        passage = f"Wikipedia summary for {summary.title} supports: {', '.join(supported)}. {detail_text}".strip()
+        passage = f"{source_label} for {summary_title} supports: {', '.join(supported)}. {detail_text}".strip()
 
     evidence = EvidenceItem(
-        url=summary.url,
-        title=f"Wikipedia summary: {summary.title}",
+        url=summary_url,
+        title=f"{source_label}: {summary_title}",
         stance=stance,
         score=max(support_score, refute_score, 0.45),
-        snippet=summary.extract[:320],
+        snippet=summary_extract[:320],
         passage=passage,
         source_type="knowledge_source",
-        source_trust=0.82,
+        source_trust=source_trust,
         relevance=0.86,
         freshness=0.65,
-        domain="wikipedia.org",
-        verdict_source=summary.source,
+        domain=source_domain,
+        verdict_source=summary_source,
         claim_match_score=0.78,
     )
     reasons = [
@@ -2015,6 +2031,41 @@ def _decide_source_backed_statement(
         trusted_hits=1,
         reasons=reasons,
         evidence=[evidence],
+    ), None
+
+
+def _decide_source_backed_statement(
+    claim: ClaimCandidate,
+    subject: str,
+    properties: list[tuple[str, bool]],
+    trace: FactCheckTrace,
+) -> ClaimDecision | None:
+    neutral_decision: ClaimDecision | None = None
+    wikipedia_summary = fetch_wikipedia_summary(subject)
+    if wikipedia_summary is not None:
+        decision, source_neutral = _evaluate_source_backed_summary(claim, subject, properties, trace, wikipedia_summary)
+        if decision is not None:
+            return decision
+        neutral_decision = source_neutral
+
+    wikidata_summary = fetch_wikidata_taxonomy_summary(subject, (prop for prop, _ in properties))
+    if wikidata_summary is not None:
+        decision, source_neutral = _evaluate_source_backed_summary(claim, subject, properties, trace, wikidata_summary)
+        if decision is not None:
+            return decision
+        if neutral_decision is None:
+            neutral_decision = source_neutral
+
+    if neutral_decision is not None:
+        return neutral_decision
+
+    return _uncertain_knowledge_decision(
+        claim=claim,
+        trace=trace,
+        subject=subject,
+        reason="knowledge_source_unavailable=wikipedia_summary,wikidata_taxonomy",
+        evidence=None,
+        confidence=0.26,
     )
 
 

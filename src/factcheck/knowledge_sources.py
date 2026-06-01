@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from urllib.parse import quote
 
@@ -11,7 +12,10 @@ from .cache import SQLiteCache, get_cache
 WIKIPEDIA_SUMMARY_NAMESPACE = "wikipedia_summary_v2"
 WIKIPEDIA_OPENSEARCH_NAMESPACE = "wikipedia_opensearch_v1"
 WIKIPEDIA_CATEGORIES_NAMESPACE = "wikipedia_categories_v1"
+WIKIDATA_SEARCH_NAMESPACE = "wikidata_search_v1"
+WIKIDATA_TAXONOMY_NAMESPACE = "wikidata_taxonomy_v1"
 USER_AGENT = "fake-news-detector-local-demo/1.0 (source-backed knowledge lookup)"
+WIKIDATA_RELATION_PROPERTIES = ("P31", "P279", "P171")
 
 
 @dataclass(frozen=True)
@@ -81,6 +85,53 @@ CLASS_IMPLICATIONS: dict[str, frozenset[str]] = {
     "star": frozenset({"astronomical object"}),
     "natural satellite": frozenset({"astronomical object"}),
     "galaxy": frozenset({"astronomical object"}),
+}
+
+WIKIDATA_BAD_DESCRIPTION_HINTS = frozenset(
+    {
+        "album",
+        "band",
+        "club",
+        "episode",
+        "family name",
+        "fictional character",
+        "film",
+        "given name",
+        "song",
+        "surname",
+        "television series",
+        "video game",
+    }
+)
+
+WIKIDATA_DOMAIN_HINTS_BY_CLASS: dict[str, frozenset[str]] = {
+    "animal": frozenset({"animal", "species", "taxon", "genus", "family", "order", "organism"}),
+    "mammal": frozenset({"mammal", "species", "taxon", "genus", "family", "order", "organism"}),
+    "bird": frozenset({"bird", "avian", "species", "taxon", "genus", "family", "order"}),
+    "fish": frozenset({"fish", "species", "taxon", "genus", "family", "order"}),
+    "insect": frozenset({"insect", "species", "taxon", "genus", "family", "order"}),
+    "arachnid": frozenset({"arachnid", "species", "taxon", "genus", "family", "order"}),
+    "reptile": frozenset({"reptile", "species", "taxon", "genus", "family", "order"}),
+    "amphibian": frozenset({"amphibian", "species", "taxon", "genus", "family", "order"}),
+    "plant": frozenset({"plant", "species", "taxon", "genus", "family", "order"}),
+    "fungus": frozenset({"fungus", "fungi", "species", "taxon", "genus", "family", "order"}),
+    "bacterium": frozenset({"bacterium", "bacteria", "species", "taxon", "genus", "family", "order"}),
+    "virus": frozenset({"virus", "species", "taxon"}),
+    "disease": frozenset({"disease", "illness", "medical condition"}),
+    "planet": frozenset({"planet", "astronomical object"}),
+    "star": frozenset({"star", "astronomical object"}),
+    "natural satellite": frozenset({"natural satellite", "moon", "astronomical object"}),
+    "galaxy": frozenset({"galaxy", "astronomical object"}),
+    "metal": frozenset({"metal", "chemical element", "element"}),
+    "nonmetal": frozenset({"nonmetal", "non-metal", "chemical element", "element"}),
+    "solid": frozenset({"solid", "chemical element", "state of matter"}),
+    "liquid": frozenset({"liquid", "chemical element", "state of matter"}),
+    "gas": frozenset({"gas", "chemical element", "state of matter"}),
+    "city": frozenset({"city", "town", "municipality", "settlement"}),
+    "country": frozenset({"country", "sovereign state", "nation"}),
+    "continent": frozenset({"continent"}),
+    "river": frozenset({"river", "stream"}),
+    "mountain": frozenset({"mountain", "peak"}),
 }
 
 
@@ -332,6 +383,214 @@ def fetch_wikipedia_summary(subject: str, cache: SQLiteCache | None = None) -> K
         else {},
     )
     return summary
+
+
+def _entity_text_values(entity: dict) -> tuple[str, str, tuple[str, ...]]:
+    labels = entity.get("labels") or {}
+    descriptions = entity.get("descriptions") or {}
+    aliases_payload = entity.get("aliases") or {}
+    label = ((labels.get("en") or {}).get("value") or "").strip()
+    description = ((descriptions.get("en") or {}).get("value") or "").strip()
+    aliases = tuple(
+        alias.get("value", "").strip()
+        for alias in aliases_payload.get("en", [])
+        if alias.get("value", "").strip()
+    )
+    return label, description, aliases
+
+
+def _search_wikidata_entities(query: str, cache: SQLiteCache) -> list[dict[str, str]]:
+    key = _normalize_key(query)
+    cached = cache.get(WIKIDATA_SEARCH_NAMESPACE, key)
+    if isinstance(cached, list):
+        return [item for item in cached if isinstance(item, dict)]
+    try:
+        response = requests.get(
+            "https://www.wikidata.org/w/api.php",
+            params={
+                "action": "wbsearchentities",
+                "search": query,
+                "language": "en",
+                "format": "json",
+                "limit": 5,
+            },
+            timeout=6,
+            headers={"User-Agent": USER_AGENT},
+        )
+        if response.status_code != 200:
+            return []
+        payload = response.json()
+        results = [
+            {
+                "id": str(item.get("id") or ""),
+                "label": str(item.get("label") or ""),
+                "description": str(item.get("description") or ""),
+            }
+            for item in payload.get("search", [])
+            if item.get("id")
+        ]
+        cache.set(WIKIDATA_SEARCH_NAMESPACE, key, results)
+        return results
+    except Exception:
+        return []
+
+
+def _wikidata_candidate_score(candidate: dict[str, str], subject: str, property_classes: set[str]) -> int:
+    label = _normalize_key(candidate.get("label", ""))
+    description = _normalize_key(candidate.get("description", ""))
+    subject_key = _normalize_key(subject)
+    score = 0
+    if label == subject_key:
+        score += 3
+    elif label in _phrase_variants(subject_key) or subject_key in _phrase_variants(label):
+        score += 2
+    elif subject_key and (subject_key in label or label in subject_key):
+        score += 1
+
+    domain_hints: set[str] = set()
+    for class_name in property_classes:
+        domain_hints.update(WIKIDATA_DOMAIN_HINTS_BY_CLASS.get(class_name, frozenset()))
+    if any(hint in description for hint in domain_hints):
+        score += 4
+    if property_classes & {
+        "animal",
+        "mammal",
+        "bird",
+        "fish",
+        "insect",
+        "arachnid",
+        "reptile",
+        "amphibian",
+        "plant",
+        "fungus",
+        "bacterium",
+        "virus",
+    } and any(hint in description for hint in ("species", "taxon", "genus", "family", "order", "common name")):
+        score += 3
+    if property_classes & {"metal", "nonmetal", "solid", "liquid", "gas"} and "chemical element" in description:
+        score += 4
+    if any(hint in description for hint in WIKIDATA_BAD_DESCRIPTION_HINTS):
+        score -= 5
+    return score
+
+
+def _best_wikidata_candidate(subject: str, property_classes: set[str], cache: SQLiteCache) -> dict[str, str] | None:
+    candidates = _search_wikidata_entities(subject, cache)
+    if not candidates:
+        return None
+    scored = sorted(
+        ((_wikidata_candidate_score(candidate, subject, property_classes), candidate) for candidate in candidates),
+        key=lambda item: item[0],
+        reverse=True,
+    )
+    if not scored or scored[0][0] < 1:
+        return None
+    return scored[0][1]
+
+
+def _wikidata_claim_targets(entity: dict) -> list[str]:
+    targets: list[str] = []
+    claims = entity.get("claims") or {}
+    for property_id in WIKIDATA_RELATION_PROPERTIES:
+        for claim in claims.get(property_id, [])[:12]:
+            value = ((claim.get("mainsnak") or {}).get("datavalue") or {}).get("value")
+            if isinstance(value, dict) and value.get("id"):
+                targets.append(str(value["id"]))
+    return targets
+
+
+def _fetch_wikidata_entity(qid: str) -> dict | None:
+    try:
+        response = requests.get(
+            f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json",
+            timeout=6,
+            headers={"User-Agent": USER_AGENT},
+        )
+        if response.status_code != 200:
+            return None
+        entity = (response.json().get("entities") or {}).get(qid)
+        return entity if isinstance(entity, dict) else None
+    except Exception:
+        return None
+
+
+def _build_wikidata_taxonomy_summary(qid: str, cache: SQLiteCache) -> KnowledgeSummary | None:
+    cached = cache.get(WIKIDATA_TAXONOMY_NAMESPACE, qid)
+    if isinstance(cached, dict) and cached.get("label") and cached.get("class_terms"):
+        return KnowledgeSummary(
+            title=cached.get("label", ""),
+            extract=cached.get("extract", ""),
+            url=cached.get("url", f"https://www.wikidata.org/wiki/{qid}"),
+            source="wikidata_taxonomy_v1",
+            categories=tuple(cached.get("class_terms", ())),
+        )
+
+    queue: list[tuple[str, int]] = [(qid, 0)]
+    visited: set[str] = set()
+    subject_label = ""
+    class_terms: list[str] = []
+    while queue and len(visited) < 80:
+        current_qid, depth = queue.pop(0)
+        if current_qid in visited:
+            continue
+        visited.add(current_qid)
+        entity = _fetch_wikidata_entity(current_qid)
+        if entity is None:
+            continue
+        label, description, aliases = _entity_text_values(entity)
+        if current_qid == qid:
+            subject_label = label or qid
+        values = [label, description, *aliases]
+        for value in values:
+            normalized = _normalize_key(value)
+            if normalized and normalized not in class_terms:
+                class_terms.append(normalized)
+        if depth >= 4:
+            continue
+        for target_qid in _wikidata_claim_targets(entity):
+            if target_qid not in visited:
+                queue.append((target_qid, depth + 1))
+
+    if not subject_label or len(class_terms) < 2:
+        return None
+    extract = (
+        f"Wikidata class graph for {subject_label}: "
+        f"{', '.join(class_terms[:60])}."
+    )
+    summary_payload = {
+        "label": subject_label,
+        "extract": extract,
+        "url": f"https://www.wikidata.org/wiki/{qid}",
+        "class_terms": class_terms,
+    }
+    cache.set(WIKIDATA_TAXONOMY_NAMESPACE, qid, summary_payload)
+    return KnowledgeSummary(
+        title=subject_label,
+        extract=extract,
+        url=summary_payload["url"],
+        source="wikidata_taxonomy_v1",
+        categories=tuple(class_terms),
+    )
+
+
+def fetch_wikidata_taxonomy_summary(
+    subject: str,
+    property_texts: Iterable[str],
+    cache: SQLiteCache | None = None,
+) -> KnowledgeSummary | None:
+    cache = cache or get_cache()
+    property_classes: set[str] = set()
+    for property_text in property_texts:
+        property_classes.update(_property_classes(property_text))
+    if not property_classes:
+        return None
+    candidate = _best_wikidata_candidate(subject, property_classes, cache)
+    if candidate is None:
+        return None
+    qid = candidate.get("id", "")
+    if not qid:
+        return None
+    return _build_wikidata_taxonomy_summary(qid, cache)
 
 
 def summary_supports_property(summary: KnowledgeSummary, property_text: str) -> bool:
