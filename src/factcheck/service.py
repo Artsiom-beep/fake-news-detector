@@ -45,7 +45,10 @@ def _looks_like_simple_knowledge_text(text: str) -> bool:
     )
     if re.search(rf"\b(?:{number_word})\b", low) and re.search(rf"\b{numeric_words}\b", low):
         return True
-    if re.search(r"\b(causes?|cures?|includes?|lives?|orbits?|prevents?|treats?)\b", low):
+    if re.search(
+        r"\b(causes?|contains?|cures?|eats?|grows?|has|have|includes?|lays?|lives?|needs?|orbits?|prevents?|requires?|treats?)\b",
+        low,
+    ):
         return True
     if re.match(r"^[a-z0-9][a-z0-9\s'-]{1,55}\s+(?:can|cannot|can not|can't)\s+.{2,60}$", low):
         return True
@@ -101,6 +104,58 @@ def _looks_like_simple_knowledge_text(text: str) -> bool:
     # Short "X is Y" statements are usually stable everyday facts. The
     # common-knowledge layer will still abstain if it cannot find exact support.
     return bool(re.match(r"^[a-z0-9][a-z0-9\s'-]{1,55}\s+(?:is|are|was|were)\s+.{2,60}$", low))
+
+
+def _looks_like_subjective_take(text: str) -> bool:
+    clean = canonicalize_text(text)
+    if not clean or len(clean) > 220:
+        return False
+    low = f" {clean.lower()} "
+    normalized = re.sub(r"[^\w\s'-]", " ", low)
+    normalized = re.sub(r"\s+", " ", normalized)
+    subjective_patterns = [
+        r"\bi think\b",
+        r"\bin my opinion\b",
+        r"\bimo\b",
+        r"\bprobably\b",
+        r"\bmaybe\b",
+        r"\bseems?\b",
+        r"\bshould\b",
+        r"\bmust\b",
+        r"\bbest\b",
+        r"\bworst\b",
+        r"\bfavorite\b",
+        r"\bbetter than\b",
+        r"\bworse than\b",
+        r"\bbeautiful\b",
+        r"\bugly\b",
+        r"\bdelicious\b",
+        r"\btasty\b",
+        r"\bboring\b",
+        r"\bfun\b",
+        r"\bcool\b",
+        r"\bмне кажется\b",
+        r"\bя считаю\b",
+        r"\bпо моему\b",
+        r"\bпо-моему\b",
+        r"\bдолж(?:ен|на|но|ны)\b",
+        r"\bлуч(?:ше|ший|шая|шее|шие)\b",
+        r"\bхудш(?:ий|ая|ее|ие)\b",
+        r"\bкрасив(?:ый|ая|ое|ые)\b",
+        r"\bвкусн(?:ый|ая|ое|ые)\b",
+        r"\bскучн(?:ый|ая|ое|ые)\b",
+        r"\bмоим zdaniem\b",
+        r"\buważam\b",
+        r"\bpowin(?:ien|na|no|ni|ny)\b",
+        r"\bnajlepsz(?:y|a|e|i)\b",
+        r"\bnajgorsz(?:y|a|e|i)\b",
+        r"\blepsz(?:y|a|e)\s+niż\b",
+        r"\bgorsz(?:y|a|e)\s+niż\b",
+        r"\bpiękn(?:y|a|e)\b",
+        r"\bsmaczn(?:y|a|e)\b",
+        r"\bnudn(?:y|a|e)\b",
+    ]
+    return any(re.search(pattern, normalized, flags=re.IGNORECASE) for pattern in subjective_patterns)
 
 
 def _factcheck_strategy_config(config: PipelineConfig) -> PipelineConfig:
@@ -249,13 +304,6 @@ def _run_claim_verdict_path(
         )
 
     for claim in claims:
-        if simple_knowledge_input:
-            knowledge_decision = decide_common_knowledge(claim, trace=trace)
-            if knowledge_decision is not None:
-                decisions.append(knowledge_decision)
-                continue
-            trace.fallbacks_used.append("common_knowledge_no_match")
-
         if is_low_specificity_meta_claim(claim):
             reasons = [
                 "strategy=factcheck_verdict",
@@ -278,6 +326,13 @@ def _run_claim_verdict_path(
                 )
             )
             continue
+
+        if simple_knowledge_input:
+            knowledge_decision = decide_common_knowledge(claim, trace=trace)
+            if knowledge_decision is not None:
+                decisions.append(knowledge_decision)
+                continue
+            trace.fallbacks_used.append("common_knowledge_no_match")
 
         factcheck_decision = score_and_decide(claim, factcheck_config, input_factcheck_document)
         if should_try_trusted_research(factcheck_decision):
@@ -324,6 +379,15 @@ def run_factcheck(
 
     try:
         raw_url = (url or "").strip()
+        if not raw_url and _looks_like_subjective_take(article_text):
+            trace.fallbacks_used.append("subjective_take")
+            trace.decision_reasons.append(f"{article_text}: subjective_or_normative_take")
+            return _uncertain_result(
+                "This looks like a subjective opinion or normative take, not a verifiable factual claim.",
+                trace,
+                config,
+                claim=article_text,
+            )
         if not raw_url and article_text and len(article_text) <= 220:
             translation = normalize_fact_text(article_text)
             if translation.changed:

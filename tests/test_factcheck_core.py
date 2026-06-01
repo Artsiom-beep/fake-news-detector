@@ -2972,6 +2972,67 @@ Write-Output 'apk name policy ok'
         self.assertEqual(sugar_payload["evidence"][0]["source_type"], "common_knowledge")
 
     @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_handles_expanded_common_sense_claims_locally(self, mock_retrieve_documents):
+        examples = [
+            ("Cars have wheels", "true"),
+            ("Cars have no wheels", "fake"),
+            ("Humans have wings", "fake"),
+            ("Humans do not have wings", "true"),
+            ("Spiders are insects", "fake"),
+            ("Spiders are animals", "true"),
+            ("Whales are fish", "fake"),
+            ("Penguins can fly", "fake"),
+            ("Bats are mammals", "true"),
+            ("Oxygen is a gas", "true"),
+            ("Iron is a gas", "fake"),
+            ("A week has seven days", "true"),
+            ("A year has seven days", "fake"),
+        ]
+        for text, expected_verdict in examples:
+            with self.subTest(text=text):
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], expected_verdict)
+                self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
+        mock_retrieve_documents.assert_not_called()
+
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_translates_more_common_sense_languages(self, mock_retrieve_documents):
+        examples = [
+            ("Машины имеют колеса", "true"),
+            ("Люди имеют крылья", "fake"),
+            ("Pająki są owadami", "fake"),
+            ("Samochody mają koła", "true"),
+            ("Los coches tienen ruedas", "true"),
+            ("Les humains ont des ailes", "fake"),
+            ("Autos haben Räder", "true"),
+        ]
+        for text, expected_verdict in examples:
+            with self.subTest(text=text):
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], expected_verdict)
+                self.assertIn(payload["evidence"][0]["source_type"], {"common_knowledge", "knowledge_source"})
+                self.assertTrue(
+                    any(item.startswith("translated_input:") for item in payload["trace"]["fallbacks_used"])
+                )
+        mock_retrieve_documents.assert_not_called()
+
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_abstains_on_subjective_takes(self, mock_retrieve_documents):
+        examples = [
+            "Pizza is the best food",
+            "Cats are better than dogs",
+            "Мне кажется, кофе лучше чая",
+            "Ten film jest najlepszy",
+        ]
+        for text in examples:
+            with self.subTest(text=text):
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], "uncertain")
+                self.assertEqual(payload["evidence"], [])
+                self.assertIn("subjective_take", payload["trace"]["fallbacks_used"])
+        mock_retrieve_documents.assert_not_called()
+
+    @patch("factcheck.service.retrieve_documents")
     def test_best_pipeline_uses_official_current_office_for_us_president(self, mock_retrieve_documents):
         examples = [
             "Donald Trump is president",
@@ -3126,17 +3187,24 @@ Write-Output 'apk name policy ok'
                 source="wikipedia_summary_v1",
                 categories=(),
             ),
-            "spiders": SimpleNamespace(
-                title="Spider",
-                extract="Spiders are air-breathing arthropods. They are the largest order of arachnids.",
-                url="https://en.wikipedia.org/wiki/Spider",
+            "lemurs": SimpleNamespace(
+                title="Lemur",
+                extract="Lemurs are mammals of the order Primates, divided into several families.",
+                url="https://en.wikipedia.org/wiki/Lemur",
                 source="wikipedia_summary_v1",
                 categories=(),
             ),
-            "whales": SimpleNamespace(
-                title="Whale",
-                extract="Whales are a widely distributed group of fully aquatic placental marine mammals.",
-                url="https://en.wikipedia.org/wiki/Whale",
+            "scorpions": SimpleNamespace(
+                title="Scorpion",
+                extract="Scorpions are predatory arachnids of the order Scorpiones.",
+                url="https://en.wikipedia.org/wiki/Scorpion",
+                source="wikipedia_summary_v1",
+                categories=(),
+            ),
+            "venus": SimpleNamespace(
+                title="Venus",
+                extract="Venus is the second planet from the Sun.",
+                url="https://en.wikipedia.org/wiki/Venus",
                 source="wikipedia_summary_v1",
                 categories=(),
             ),
@@ -3147,24 +3215,24 @@ Write-Output 'apk name policy ok'
                 source="wikipedia_summary_v1",
                 categories=(),
             ),
-            "oxygen": SimpleNamespace(
-                title="Oxygen",
-                extract="Oxygen is a chemical element. It is highly reactive, a nonmetal, and is used in breathing gases.",
-                url="https://en.wikipedia.org/wiki/Oxygen",
+            "neon": SimpleNamespace(
+                title="Neon",
+                extract="Neon is a chemical element, a noble gas, and a nonmetal.",
+                url="https://en.wikipedia.org/wiki/Neon",
                 source="wikipedia_summary_v1",
-                categories=("Breathing gases",),
+                categories=("Noble gases",),
             ),
         }
         mock_summary.side_effect = lambda subject: summaries.get(subject.lower())
 
         cases = [
             ("Mars is a star", "fake", "common_knowledge_refutes", "common_knowledge"),
-            ("Spiders are animals", "true", "taxonomy_supports", "knowledge_source"),
-            ("Spiders are insects", "fake", "taxonomy_refutes", "knowledge_source"),
-            ("Whales are fish", "fake", "taxonomy_refutes", "knowledge_source"),
+            ("Lemurs are animals", "true", "taxonomy_supports", "knowledge_source"),
+            ("Scorpions are insects", "fake", "taxonomy_refutes", "knowledge_source"),
+            ("Venus is a star", "fake", "taxonomy_refutes", "knowledge_source"),
             ("Paris is the capital of Germany", "fake", "reversed_capital_refutes", "common_knowledge"),
-            ("Oxygen is a gas", "true", "wikipedia_summary_supports", "knowledge_source"),
-            ("Oxygen is a metal", "fake", "taxonomy_refutes", "knowledge_source"),
+            ("Neon is a gas", "true", "wikipedia_summary_supports", "knowledge_source"),
+            ("Neon is a metal", "fake", "taxonomy_refutes", "knowledge_source"),
         ]
         for text, expected_verdict, expected_reason, expected_source_type in cases:
             with self.subTest(text=text):

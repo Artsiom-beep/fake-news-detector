@@ -353,16 +353,43 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_title="Common knowledge: grass",
     ),
     "water": KnowledgeFact(
-        true_properties=frozenset({"clear", "colorless", "wet", "liquid", "drinkable"}),
-        false_properties=frozenset({"red", "green", "purple", "blue", "dry", "solid", "dangerous"}),
+        true_properties=frozenset({"clear", "colorless", "wet", "liquid", "drinkable", "safe to drink"}),
+        false_properties=frozenset({"red", "green", "purple", "blue", "dry", "solid", "dangerous", "poisonous"}),
         source_url="https://en.wikipedia.org/wiki/Water",
         source_title="Common knowledge: water",
     ),
     "human": KnowledgeFact(
         true_properties=frozenset(
-            {"animal", "mammal", "person", "drink water", "can drink water", "needs water", "need water"}
+            {
+                "animal",
+                "mammal",
+                "person",
+                "drink water",
+                "can drink water",
+                "needs water",
+                "need water",
+                "legs",
+                "two legs",
+                "arms",
+                "breathes air",
+                "breathe air",
+                "need oxygen",
+                "needs oxygen",
+            }
         ),
-        false_properties=frozenset({"plant", "insect", "fish", "can breathe underwater", "breathe underwater"}),
+        false_properties=frozenset(
+            {
+                "plant",
+                "insect",
+                "fish",
+                "wings",
+                "has wings",
+                "can fly",
+                "fly",
+                "can breathe underwater",
+                "breathe underwater",
+            }
+        ),
         source_url="https://en.wikipedia.org/wiki/Human",
         source_title="Common knowledge: human",
     ),
@@ -380,9 +407,23 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
     ),
     "people": KnowledgeFact(
         true_properties=frozenset(
-            {"humans", "human", "drink water", "can drink water", "needs water", "need water"}
+            {
+                "humans",
+                "human",
+                "drink water",
+                "can drink water",
+                "needs water",
+                "need water",
+                "legs",
+                "two legs",
+                "arms",
+                "breathes air",
+                "breathe air",
+            }
         ),
-        false_properties=frozenset({"plants", "insects", "fish", "can breathe underwater", "breathe underwater"}),
+        false_properties=frozenset(
+            {"plants", "insects", "fish", "wings", "has wings", "can fly", "fly", "can breathe underwater", "breathe underwater"}
+        ),
         source_url="https://en.wikipedia.org/wiki/Human",
         source_title="Common knowledge: people",
     ),
@@ -476,6 +517,198 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_url="https://en.wikipedia.org/wiki/Dog",
         source_title="Common knowledge: dog",
     ),
+    "cow": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "farm animal", "eat grass", "herbivore"}),
+        false_properties=frozenset({"plant", "bird", "fish", "insect", "can fly", "fly", "wheels"}),
+        source_url="https://en.wikipedia.org/wiki/Cattle",
+        source_title="Common knowledge: cow",
+    ),
+    "horse": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "farm animal", "eat grass", "herbivore", "legs"}),
+        false_properties=frozenset({"plant", "bird", "fish", "insect", "can fly", "fly", "wheels"}),
+        source_url="https://en.wikipedia.org/wiki/Horse",
+        source_title="Common knowledge: horse",
+    ),
+    "pig": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "farm animal", "omnivore"}),
+        false_properties=frozenset({"plant", "bird", "fish", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Pig",
+        source_title="Common knowledge: pig",
+    ),
+    "chicken": KnowledgeFact(
+        true_properties=frozenset({"animal", "bird", "farm animal", "lay eggs", "eggs", "has feathers", "feathers"}),
+        false_properties=frozenset({"mammal", "fish", "plant", "insect"}),
+        source_url="https://en.wikipedia.org/wiki/Chicken",
+        source_title="Common knowledge: chicken",
+    ),
+    "duck": KnowledgeFact(
+        true_properties=frozenset({"animal", "bird", "can swim", "swim", "can fly", "fly", "lay eggs", "eggs"}),
+        false_properties=frozenset({"mammal", "fish", "plant", "insect"}),
+        source_url="https://en.wikipedia.org/wiki/Duck",
+        source_title="Common knowledge: duck",
+    ),
+    "penguin": KnowledgeFact(
+        true_properties=frozenset({"animal", "bird", "can swim", "swim", "has feathers", "feathers", "lay eggs", "eggs"}),
+        false_properties=frozenset({"mammal", "fish", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Penguin",
+        source_title="Common knowledge: penguin",
+    ),
+    "bat": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "can fly", "fly", "wings"}),
+        false_properties=frozenset({"bird", "fish", "plant", "insect"}),
+        source_url="https://en.wikipedia.org/wiki/Bat",
+        source_title="Common knowledge: bat",
+    ),
+    "whale": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "aquatic", "can swim", "swim"}),
+        false_properties=frozenset({"fish", "bird", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Whale",
+        source_title="Common knowledge: whale",
+    ),
+    "dolphin": KnowledgeFact(
+        true_properties=frozenset({"animal", "mammal", "aquatic", "can swim", "swim"}),
+        false_properties=frozenset({"fish", "bird", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Dolphin",
+        source_title="Common knowledge: dolphin",
+    ),
+    "shark": KnowledgeFact(
+        true_properties=frozenset({"animal", "fish", "aquatic", "can swim", "swim"}),
+        false_properties=frozenset({"mammal", "bird", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Shark",
+        source_title="Common knowledge: shark",
+    ),
+    "spider": KnowledgeFact(
+        true_properties=frozenset({"animal", "arachnid", "eight legs", "legs"}),
+        false_properties=frozenset({"insect", "mammal", "bird", "fish", "plant", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Spider",
+        source_title="Common knowledge: spider",
+    ),
+    "bee": KnowledgeFact(
+        true_properties=frozenset({"animal", "insect", "can fly", "fly", "has wings", "wings"}),
+        false_properties=frozenset({"mammal", "bird", "fish", "plant"}),
+        source_url="https://en.wikipedia.org/wiki/Bee",
+        source_title="Common knowledge: bee",
+    ),
+    "ant": KnowledgeFact(
+        true_properties=frozenset({"animal", "insect"}),
+        false_properties=frozenset({"mammal", "bird", "fish", "plant"}),
+        source_url="https://en.wikipedia.org/wiki/Ant",
+        source_title="Common knowledge: ant",
+    ),
+    "snake": KnowledgeFact(
+        true_properties=frozenset({"animal", "reptile"}),
+        false_properties=frozenset({"mammal", "bird", "fish", "plant", "insect", "legs", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Snake",
+        source_title="Common knowledge: snake",
+    ),
+    "turtle": KnowledgeFact(
+        true_properties=frozenset({"animal", "reptile", "shell"}),
+        false_properties=frozenset({"mammal", "bird", "fish", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Turtle",
+        source_title="Common knowledge: turtle",
+    ),
+    "plant": KnowledgeFact(
+        true_properties=frozenset({"living", "alive", "need water", "needs water", "need sunlight", "needs sunlight"}),
+        false_properties=frozenset({"animal", "mammal", "bird", "fish", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Plant",
+        source_title="Common knowledge: plant",
+    ),
+    "tree": KnowledgeFact(
+        true_properties=frozenset({"plant", "living", "alive", "has leaves", "leaves", "need water", "needs water"}),
+        false_properties=frozenset({"animal", "mammal", "bird", "fish", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Tree",
+        source_title="Common knowledge: tree",
+    ),
+    "flower": KnowledgeFact(
+        true_properties=frozenset({"plant", "living", "alive"}),
+        false_properties=frozenset({"animal", "mammal", "bird", "fish", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Flower",
+        source_title="Common knowledge: flower",
+    ),
+    "rose": KnowledgeFact(
+        true_properties=frozenset({"plant", "flower", "living", "alive"}),
+        false_properties=frozenset({"animal", "mammal", "bird", "fish", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Rose",
+        source_title="Common knowledge: rose",
+    ),
+    "car": KnowledgeFact(
+        true_properties=frozenset({"vehicle", "wheels", "has wheels", "engine", "transport"}),
+        false_properties=frozenset({"animal", "plant", "food", "can fly", "fly", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Car",
+        source_title="Common knowledge: car",
+    ),
+    "bicycle": KnowledgeFact(
+        true_properties=frozenset({"vehicle", "wheels", "two wheels", "has wheels", "transport"}),
+        false_properties=frozenset({"animal", "plant", "food", "can fly", "fly", "engine", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Bicycle",
+        source_title="Common knowledge: bicycle",
+    ),
+    "airplane": KnowledgeFact(
+        true_properties=frozenset({"vehicle", "can fly", "fly", "wings", "has wings", "transport"}),
+        false_properties=frozenset({"animal", "plant", "food", "mammal", "bird", "fish"}),
+        source_url="https://en.wikipedia.org/wiki/Airplane",
+        source_title="Common knowledge: airplane",
+    ),
+    "boat": KnowledgeFact(
+        true_properties=frozenset({"vehicle", "can float", "float", "transport"}),
+        false_properties=frozenset({"animal", "plant", "food", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Boat",
+        source_title="Common knowledge: boat",
+    ),
+    "chair": KnowledgeFact(
+        true_properties=frozenset({"furniture", "used for sitting", "seat", "legs"}),
+        false_properties=frozenset({"animal", "plant", "food", "vehicle", "can fly", "fly", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Chair",
+        source_title="Common knowledge: chair",
+    ),
+    "table": KnowledgeFact(
+        true_properties=frozenset({"furniture", "flat surface", "legs"}),
+        false_properties=frozenset({"animal", "plant", "food", "vehicle", "can fly", "fly", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Table_(furniture)",
+        source_title="Common knowledge: table",
+    ),
+    "phone": KnowledgeFact(
+        true_properties=frozenset({"device", "electronic", "used for communication"}),
+        false_properties=frozenset({"animal", "plant", "food", "mammal", "bird", "fish", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Telephone",
+        source_title="Common knowledge: phone",
+    ),
+    "computer": KnowledgeFact(
+        true_properties=frozenset({"device", "electronic", "machine"}),
+        false_properties=frozenset({"animal", "plant", "food", "mammal", "bird", "fish", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Computer",
+        source_title="Common knowledge: computer",
+    ),
+    "refrigerator": KnowledgeFact(
+        true_properties=frozenset({"appliance", "device", "cold", "used for cooling"}),
+        false_properties=frozenset({"animal", "plant", "food", "hot", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Refrigerator",
+        source_title="Common knowledge: refrigerator",
+    ),
+    "oven": KnowledgeFact(
+        true_properties=frozenset({"appliance", "device", "hot", "used for cooking"}),
+        false_properties=frozenset({"animal", "plant", "food", "cold", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Oven",
+        source_title="Common knowledge: oven",
+    ),
+    "knife": KnowledgeFact(
+        true_properties=frozenset({"tool", "sharp", "used for cutting"}),
+        false_properties=frozenset({"animal", "plant", "food", "liquid", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Knife",
+        source_title="Common knowledge: knife",
+    ),
+    "fork": KnowledgeFact(
+        true_properties=frozenset({"tool", "utensil", "used for eating"}),
+        false_properties=frozenset({"animal", "plant", "food", "liquid", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Fork",
+        source_title="Common knowledge: fork",
+    ),
+    "spoon": KnowledgeFact(
+        true_properties=frozenset({"tool", "utensil", "used for eating"}),
+        false_properties=frozenset({"animal", "plant", "food", "liquid", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Spoon",
+        source_title="Common knowledge: spoon",
+    ),
     "bird": KnowledgeFact(
         true_properties=frozenset({"animal", "can fly", "fly", "has feathers", "feathers"}),
         false_properties=frozenset({"fish", "plant", "mammal", "insect"}),
@@ -508,9 +741,75 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
     ),
     "rock": KnowledgeFact(
         true_properties=frozenset({"solid", "mineral"}),
-        false_properties=frozenset({"liquid", "gas", "edible", "eatable"}),
+        false_properties=frozenset({"liquid", "gas", "edible", "eatable", "food", "living", "alive"}),
         source_url="https://en.wikipedia.org/wiki/Rock_(geology)",
         source_title="Common knowledge: rock",
+    ),
+    "air": KnowledgeFact(
+        true_properties=frozenset({"gas", "mixture of gases", "contains oxygen", "contains nitrogen"}),
+        false_properties=frozenset({"solid", "liquid", "metal", "food", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Atmosphere_of_Earth",
+        source_title="Common knowledge: air",
+    ),
+    "oxygen": KnowledgeFact(
+        true_properties=frozenset({"gas", "element", "chemical element", "nonmetal", "supports breathing"}),
+        false_properties=frozenset({"metal", "solid", "liquid", "food", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Oxygen",
+        source_title="Common knowledge: oxygen",
+    ),
+    "helium": KnowledgeFact(
+        true_properties=frozenset({"gas", "element", "chemical element", "nonmetal", "noble gas"}),
+        false_properties=frozenset({"metal", "solid", "liquid", "food", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Helium",
+        source_title="Common knowledge: helium",
+    ),
+    "iron": KnowledgeFact(
+        true_properties=frozenset({"metal", "element", "chemical element", "solid"}),
+        false_properties=frozenset({"gas", "liquid", "food", "plant", "animal", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Iron",
+        source_title="Common knowledge: iron",
+    ),
+    "gold": KnowledgeFact(
+        true_properties=frozenset({"metal", "element", "chemical element", "solid", "yellow"}),
+        false_properties=frozenset({"gas", "liquid", "food", "plant", "animal", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Gold",
+        source_title="Common knowledge: gold",
+    ),
+    "wood": KnowledgeFact(
+        true_properties=frozenset({"solid", "material", "from trees", "flammable"}),
+        false_properties=frozenset({"liquid", "gas", "metal", "food"}),
+        source_url="https://en.wikipedia.org/wiki/Wood",
+        source_title="Common knowledge: wood",
+    ),
+    "plastic": KnowledgeFact(
+        true_properties=frozenset({"material", "solid"}),
+        false_properties=frozenset({"animal", "plant", "food", "liquid", "gas", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Plastic",
+        source_title="Common knowledge: plastic",
+    ),
+    "glass": KnowledgeFact(
+        true_properties=frozenset({"material", "solid", "transparent"}),
+        false_properties=frozenset({"animal", "plant", "food", "liquid", "gas", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Glass",
+        source_title="Common knowledge: glass",
+    ),
+    "steam": KnowledgeFact(
+        true_properties=frozenset({"gas", "water vapor", "hot"}),
+        false_properties=frozenset({"solid", "ice", "metal", "food", "living", "alive"}),
+        source_url="https://en.wikipedia.org/wiki/Steam",
+        source_title="Common knowledge: steam",
+    ),
+    "week": KnowledgeFact(
+        true_properties=frozenset({"seven days", "7 days"}),
+        false_properties=frozenset({"five days", "5 days", "ten days", "10 days"}),
+        source_url="https://en.wikipedia.org/wiki/Week",
+        source_title="Common knowledge: week",
+    ),
+    "year": KnowledgeFact(
+        true_properties=frozenset({"twelve months", "12 months", "about 365 days", "365 days"}),
+        false_properties=frozenset({"ten months", "10 months", "seven days", "7 days"}),
+        source_url="https://en.wikipedia.org/wiki/Year",
+        source_title="Common knowledge: year",
     ),
     "capital of france": KnowledgeFact(
         true_properties=frozenset({"paris"}),
@@ -589,6 +888,30 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         false_properties=frozenset({"krakow", "kraków", "gdansk", "gdańsk", "wroclaw", "wrocław"}),
         source_url="https://en.wikipedia.org/wiki/Warsaw",
         source_title="Common knowledge: capital of Poland",
+    ),
+    "capital of italy": KnowledgeFact(
+        true_properties=frozenset({"rome"}),
+        false_properties=frozenset({"milan", "venice", "paris", "madrid"}),
+        source_url="https://en.wikipedia.org/wiki/Rome",
+        source_title="Common knowledge: capital of Italy",
+    ),
+    "capital of spain": KnowledgeFact(
+        true_properties=frozenset({"madrid"}),
+        false_properties=frozenset({"barcelona", "rome", "paris", "lisbon"}),
+        source_url="https://en.wikipedia.org/wiki/Madrid",
+        source_title="Common knowledge: capital of Spain",
+    ),
+    "capital of portugal": KnowledgeFact(
+        true_properties=frozenset({"lisbon"}),
+        false_properties=frozenset({"porto", "madrid", "rome", "paris"}),
+        source_url="https://en.wikipedia.org/wiki/Lisbon",
+        source_title="Common knowledge: capital of Portugal",
+    ),
+    "capital of ukraine": KnowledgeFact(
+        true_properties=frozenset({"kyiv", "kiev"}),
+        false_properties=frozenset({"moscow", "warsaw", "minsk", "odessa"}),
+        source_url="https://en.wikipedia.org/wiki/Kyiv",
+        source_title="Common knowledge: capital of Ukraine",
     ),
 }
 
@@ -722,16 +1045,30 @@ ARITHMETIC_OPERATOR_ALIASES = {
 RELATION_VERBS = {
     "cause",
     "causes",
+    "contain",
+    "contains",
     "cure",
     "cures",
+    "eat",
+    "eats",
+    "grow",
+    "grows",
+    "has",
+    "have",
     "include",
     "includes",
+    "lay",
+    "lays",
     "live",
     "lives",
+    "need",
+    "needs",
     "orbit",
     "orbits",
     "prevent",
     "prevents",
+    "require",
+    "requires",
     "treat",
     "treats",
 }
@@ -752,6 +1089,9 @@ def _subject_variants(subject: str) -> list[str]:
     variants = [subject]
     if subject.endswith("ies") and len(subject) > 4:
         variants.append(f"{subject[:-3]}y")
+    if subject.endswith("ves") and len(subject) > 4:
+        variants.append(f"{subject[:-3]}f")
+        variants.append(f"{subject[:-3]}fe")
     if subject.endswith("s") and len(subject) > 3:
         variants.append(subject[:-1])
     return variants
@@ -1470,16 +1810,39 @@ def _split_statement(claim_text: str) -> tuple[str, list[tuple[str, bool]]] | No
             prop = _normalize_phrase(modal_match.group("object"))
             negated = modal_match.group("modal") in {"cannot", "can not", "can't"}
             return (subject, [(prop, negated)]) if subject and prop else None
+        no_have_match = re.match(
+            r"^(?P<subject>[a-z0-9 -]+?)\s+(?:do|does)\s+not\s+have\s+(?P<object>.+)$",
+            text,
+        )
+        if no_have_match:
+            subject = _normalize_phrase(no_have_match.group("subject"))
+            prop = _normalize_phrase(no_have_match.group("object"))
+            return (subject, [(prop, True)]) if subject and prop else None
         relation_match = re.match(
             r"^(?P<subject>[a-z0-9 -]+?)\s+"
-            r"(?P<verb>causes?|cures?|includes?|lives?|orbits?|prevents?|treats?)\s+"
+            r"(?P<verb>causes?|contains?|cures?|eats?|grows?|has|have|includes?|lays?|lives?|needs?|orbits?|prevents?|requires?|treats?)\s+"
             r"(?P<object>.+)$",
             text,
         )
         if relation_match:
             subject = _normalize_phrase(relation_match.group("subject"))
-            prop = _normalize_phrase(f"{relation_match.group('verb')} {relation_match.group('object')}")
-            return (subject, [(prop, False)]) if subject and prop else None
+            verb = relation_match.group("verb")
+            raw_object = relation_match.group("object")
+            negated = False
+            if raw_object.startswith("no "):
+                negated = True
+                raw_object = raw_object[3:]
+            if verb in {"has", "have"}:
+                prop = _normalize_phrase(raw_object)
+            elif verb in {"need", "needs", "require", "requires"}:
+                prop = _normalize_phrase(f"need {raw_object}")
+            elif verb in {"eat", "eats"}:
+                prop = _normalize_phrase(f"eat {raw_object}")
+            elif verb in {"lay", "lays"}:
+                prop = _normalize_phrase(f"lay {raw_object}")
+            else:
+                prop = _normalize_phrase(f"{verb} {raw_object}")
+            return (subject, [(prop, negated)]) if subject and prop else None
     if not match:
         return None
     subject = _normalize_phrase(match.group("subject"))
