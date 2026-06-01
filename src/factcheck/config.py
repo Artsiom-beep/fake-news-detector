@@ -129,7 +129,8 @@ def build_config(fast_mode: bool | None = None, mode: str | None = None) -> Pipe
     model_versions = dict(MODEL_VERSIONS)
     nli_model = os.getenv("FACTCHECK_NLI_MODEL", "").strip()
     if nli_model:
-        model_versions["stance_model"] = f"nli:{nli_model}"
+        nli_backend = os.getenv("FACTCHECK_NLI_BACKEND", "").strip()
+        model_versions["stance_model"] = f"nli:{nli_model}{':' + nli_backend if nli_backend else ''}"
     return PipelineConfig(
         mode="best_accuracy",
         fast_mode=False,

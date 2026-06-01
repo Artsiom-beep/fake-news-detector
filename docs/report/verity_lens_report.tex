@@ -245,7 +245,7 @@ Dodano ogólną warstwę rozumowania źródłowo-taksonomicznego:
 Po dalszych testach okazało się jednak, że same reguły nadal są za słabe dla wielu zwykłych twierdzeń.
 Reguła dobrze obsługuje zaplanowane klasy, ale nie rozumie każdego zdania naturalnego.
 Dlatego moduł \textit{Facts} otrzymał opcjonalną warstwę NLI (\textit{Natural Language Inference}).
-Backend może załadować model \texttt{typeform/mobilebert-uncased-mnli} przez zmienną \path{FACTCHECK_NLI_MODEL}.
+Backend może załadować model \texttt{Xenova/mobilebert-uncased-mnli} w wariancie ONNX przez zmienne \path{FACTCHECK_NLI_MODEL}, \path{FACTCHECK_NLI_BACKEND} i \path{FACTCHECK_NLI_ONNX_FILE}.
 Model nie generuje odpowiedzi jak chatbot.
 Jego zadanie jest węższe i bezpieczniejsze: ocenić, czy znaleziony fragment źródła wspiera twierdzenie, przeczy mu, czy jest neutralny.
 Taki wynik jest używany tylko wtedy, gdy źródło jest zaufane, dopasowanie do twierdzenia jest wystarczająco mocne, a nie ma istotnego kontrdowodu.
@@ -526,7 +526,7 @@ Z paczki chmurowej wykluczono:
   \item lokalne środowisko \texttt{.venv};
   \item ciężki model wizualny AI-image detection.
 \end{itemize}
-Do runtime'u API dodano natomiast zależności \texttt{torch} i \texttt{transformers}, ponieważ moduł \textit{Facts} używa lekkiego modelu NLI do semantycznego porównania twierdzenia z dowodem.
+Do runtime'u API dodano natomiast \texttt{transformers} do tokenizacji oraz wykorzystano obecny już \texttt{onnxruntime}, ponieważ moduł \textit{Facts} używa lekkiego modelu NLI do semantycznego porównania twierdzenia z dowodem bez uruchamiania PyTorch na darmowym Render.
 Model jest ładowany leniwie: backend startuje normalnie, a model pobiera się dopiero przy pierwszym użyciu modułu faktów wymagającego NLI.
 Żeby darmowy Render nie wykonywał zbyt wielu drogich inferencji, liczba wywołań NLI i liczba analizowanych fragmentów dokumentu są ograniczone przez \path{FACTCHECK_MAX_NLI_CALLS} oraz \path{FACTCHECK_MAX_PASSAGES_PER_DOCUMENT}.
 
@@ -545,7 +545,7 @@ Aktualny stan po ostatnich pełnych kontrolach:
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend unit/integration & \texttt{unittest} & 121/121 OK \\
+Backend unit/integration & \texttt{unittest} & 122/122 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
 Flutter tests & \path{flutter test} & 13/13 OK \\
@@ -633,7 +633,7 @@ Refaktoryzacja & Utworzenie kanonicznego pipeline'u i archiwizacja legacy. & Jed
 Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie wymusza fałszywej pewności. \\
 Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
 Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
-Facts NLI & Dodanie opcjonalnego modelu \texttt{typeform/mobilebert-uncased-mnli}. & System potrafi semantycznie porównać twierdzenie z dowodem i rzadziej blokuje oczywiste przypadki na poziomie \texttt{uncertain}. \\
+Facts NLI & Dodanie opcjonalnego modelu \texttt{Xenova/mobilebert-uncased-mnli} w trybie ONNX. & System potrafi semantycznie porównać twierdzenie z dowodem i rzadziej blokuje oczywiste przypadki na poziomie \texttt{uncertain}. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
 Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku metadanych, nie o absolutnym dowodzie pochodzenia pikseli. \\
 Images metadata & Kalibracja etykiet i komunikatów dla obrazów. & Zamiast stałego \textit{Possible AI} aplikacja rozróżnia: \textit{AI metadata found}, \textit{Camera metadata found}, \textit{Metadata missing} i \textit{Weak file clues}. \\

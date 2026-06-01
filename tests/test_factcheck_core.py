@@ -756,12 +756,14 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertIn("FACTCHECK_CORS_ORIGINS", render_yaml)
         self.assertIn("FACTCHECK_AI_IMAGE_MODEL", render_yaml)
         self.assertIn("FACTCHECK_NLI_MODEL", render_yaml)
-        self.assertIn("typeform/mobilebert-uncased-mnli", render_yaml)
-        self.assertIn("FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli", dockerfile)
+        self.assertIn("Xenova/mobilebert-uncased-mnli", render_yaml)
+        self.assertIn("FACTCHECK_NLI_MODEL=Xenova/mobilebert-uncased-mnli", dockerfile)
+        self.assertIn("FACTCHECK_NLI_BACKEND", render_yaml)
+        self.assertIn("onnx/model_quantized.onnx", render_yaml)
         self.assertIn("FACTCHECK_MAX_NLI_CALLS", render_yaml)
         self.assertIn("FACTCHECK_MAX_PASSAGES_PER_DOCUMENT", render_yaml)
-        self.assertIn("torch==2.2.0+cpu", api_requirements)
         self.assertIn("transformers==4.40.0", api_requirements)
+        self.assertNotIn("torch==", api_requirements)
         self.assertIn("metadata_only", render_yaml)
         self.assertIn("rapidocr-onnxruntime", api_requirements)
         self.assertNotIn("pywebview", api_requirements)
@@ -1691,7 +1693,7 @@ Write-Output 'apk name policy ok'
             "\\section{Możliwe dalsze prace}",
             "\\section{Wnioski}",
             "93/93 OK",
-            "121/121 OK",
+            "122/122 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
             "Screenshot OCR API & 12 & 12 & 100\\%",
@@ -2196,6 +2198,20 @@ Write-Output 'apk name policy ok'
         self.assertEqual(
             config.model_versions["stance_model"],
             "nli:typeform/mobilebert-uncased-mnli",
+        )
+
+    @patch.dict(
+        os.environ,
+        {
+            "FACTCHECK_NLI_MODEL": "Xenova/mobilebert-uncased-mnli",
+            "FACTCHECK_NLI_BACKEND": "onnx",
+        },
+    )
+    def test_config_reports_enabled_onnx_nli_model(self):
+        config = build_config()
+        self.assertEqual(
+            config.model_versions["stance_model"],
+            "nli:Xenova/mobilebert-uncased-mnli:onnx",
         )
 
     def test_decision_blocks_weak_hard_verdict(self):

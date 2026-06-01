@@ -2,7 +2,7 @@ import os
 from typing import Dict
 
 _nli = None
-_nli_model_name = ""
+_nli_model_key = ""
 _model_load_failed = False
 _USE_LEXICAL_ONLY = False
 
@@ -13,23 +13,90 @@ def configured_nli_model_name() -> str:
     return os.getenv("FACTCHECK_NLI_MODEL", "").strip()
 
 
+def configured_nli_backend() -> str:
+    configured = os.getenv("FACTCHECK_NLI_BACKEND", "").strip().lower()
+    if configured:
+        return configured
+    if configured_nli_model_name().lower().startswith("xenova/"):
+        return "onnx"
+    return "transformers"
+
+
+def configured_nli_onnx_file() -> str:
+    return os.getenv("FACTCHECK_NLI_ONNX_FILE", "onnx/model_quantized.onnx").strip()
+
+
+def _softmax(values):
+    import numpy as np
+
+    arr = np.asarray(values, dtype="float32")
+    arr = arr - np.max(arr)
+    exp = np.exp(arr)
+    return exp / np.sum(exp)
+
+
+def _load_onnx_classifier(model_name: str):
+    import onnxruntime as ort
+    from huggingface_hub import hf_hub_download
+    from transformers import AutoConfig, AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    config = AutoConfig.from_pretrained(model_name)
+    model_path = hf_hub_download(
+        repo_id=model_name,
+        filename=configured_nli_onnx_file(),
+    )
+    session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+    input_names = {item.name for item in session.get_inputs()}
+    id2label = {int(key): value for key, value in getattr(config, "id2label", {}).items()}
+    if not id2label:
+        id2label = {0: "ENTAILMENT", 1: "NEUTRAL", 2: "CONTRADICTION"}
+
+    def classify(inputs, **kwargs):
+        import numpy as np
+
+        encoded = tokenizer(
+            inputs["text"],
+            inputs["text_pair"],
+            return_tensors="np",
+            truncation=kwargs.get("truncation", True),
+            max_length=kwargs.get("max_length", 512),
+        )
+        ort_inputs = {
+            key: value.astype(np.int64) if getattr(value, "dtype", None) is not None and value.dtype.kind in {"i", "u"} else value
+            for key, value in encoded.items()
+            if key in input_names
+        }
+        logits = session.run(None, ort_inputs)[0][0]
+        probs = _softmax(logits)
+        index = int(probs.argmax())
+        return {"label": id2label.get(index, str(index)), "score": float(probs[index])}
+
+    return classify
+
+
 def _load_pipeline():
-    global _nli, _nli_model_name, _model_load_failed
+    global _nli, _nli_model_key, _model_load_failed
     model_name = configured_nli_model_name()
     if model_name.lower() in DISABLED_MODEL_VALUES:
         _nli = None
-        _nli_model_name = ""
+        _nli_model_key = ""
         _model_load_failed = False
         return None
-    if model_name != _nli_model_name:
+    backend = configured_nli_backend()
+    model_key = f"{backend}:{model_name}:{configured_nli_onnx_file() if backend == 'onnx' else ''}"
+    if model_key != _nli_model_key:
         _nli = None
-        _nli_model_name = model_name
+        _nli_model_key = model_key
         _model_load_failed = False
     if _nli is not None or _model_load_failed:
         return _nli
     try:
-        from transformers import pipeline
-        _nli = pipeline("text-classification", model=model_name, tokenizer=model_name)
+        if backend == "onnx":
+            _nli = _load_onnx_classifier(model_name)
+        else:
+            from transformers import pipeline
+            _nli = pipeline("text-classification", model=model_name, tokenizer=model_name)
     except Exception:
         _model_load_failed = True
         _nli = None
@@ -132,7 +199,11 @@ def classify_claim_vs_evidence(claim: str, evidence_text: str, use_model: bool =
         return {
             "label": norm,
             "score": float(out.get("score", 0.0)),
-            "method": f"model:{configured_nli_model_name()}",
+            "method": (
+                f"model:{configured_nli_model_name()}:onnx"
+                if configured_nli_backend() == "onnx"
+                else f"model:{configured_nli_model_name()}"
+            ),
         }
     except Exception:
         return _lexical_fallback(claim, evidence_text)

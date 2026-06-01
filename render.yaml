@@ -11,7 +11,11 @@ services:
       - key: FACTCHECK_AI_IMAGE_MODEL
         value: metadata_only
       - key: FACTCHECK_NLI_MODEL
-        value: typeform/mobilebert-uncased-mnli
+        value: Xenova/mobilebert-uncased-mnli
+      - key: FACTCHECK_NLI_BACKEND
+        value: onnx
+      - key: FACTCHECK_NLI_ONNX_FILE
+        value: onnx/model_quantized.onnx
       - key: FACTCHECK_MAX_NLI_CALLS
         value: "6"
       - key: FACTCHECK_MAX_PASSAGES_PER_DOCUMENT
