@@ -270,7 +270,7 @@ class _VerificationHomeState extends State<VerificationHome> {
 
   Future<void> _pickImage() async {
     final image = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-        ? await _pickImageFromCameraOriginals()
+        ? await AndroidOriginalImagePicker.pickImage()
         : await _pickImageWithFilePicker();
     if (image == null) {
       return;
@@ -280,41 +280,6 @@ class _VerificationHomeState extends State<VerificationHome> {
       _error = null;
       _image = image;
     });
-  }
-
-  Future<PickedImage?> _pickImageFromCameraOriginals() async {
-    try {
-      final items = await AndroidOriginalImagePicker.listCameraImages();
-      if (!mounted) {
-        return null;
-      }
-      if (items.isEmpty) {
-        setState(
-          () => _error = 'No camera originals found in DCIM/Camera.',
-        );
-        return null;
-      }
-
-      final selected = await showModalBottomSheet<CameraImageItem>(
-        context: context,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (context) => CameraOriginalPickerSheet(items: items),
-      );
-      if (selected == null) {
-        return null;
-      }
-      return AndroidOriginalImagePicker.loadCameraImage(selected.id);
-    } on PlatformException catch (error) {
-      if (!mounted) {
-        return null;
-      }
-      setState(
-        () =>
-            _error = error.message ?? 'Could not open original camera photos.',
-      );
-      return null;
-    }
   }
 
   Future<PickedImage?> _pickImageWithFilePicker() async {
@@ -531,7 +496,7 @@ class _VerificationHomeState extends State<VerificationHome> {
           title: 'Image metadata',
           selectedImage: _image,
           pickLabel: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-              ? 'Camera originals'
+              ? 'Choose file'
               : 'Open image file',
           actionLabel: 'Check metadata',
           onPick: _pickImage,

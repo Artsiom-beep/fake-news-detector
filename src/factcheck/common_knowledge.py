@@ -366,6 +366,18 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_url="https://en.wikipedia.org/wiki/Human",
         source_title="Common knowledge: human",
     ),
+    "frog": KnowledgeFact(
+        true_properties=frozenset({"animal", "amphibian", "can jump", "jump"}),
+        false_properties=frozenset({"bird", "mammal", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Frog",
+        source_title="Common knowledge: frog",
+    ),
+    "toad": KnowledgeFact(
+        true_properties=frozenset({"animal", "amphibian", "can jump", "jump"}),
+        false_properties=frozenset({"bird", "mammal", "plant", "insect", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Toad",
+        source_title="Common knowledge: toad",
+    ),
     "people": KnowledgeFact(
         true_properties=frozenset(
             {"humans", "human", "drink water", "can drink water", "needs water", "need water"}

@@ -2898,6 +2898,7 @@ Write-Output 'apk name policy ok'
             ("Los humanos pueden beber agua", "true"),
             ("Les chats sont des animaux", "true"),
             ("Menschen können Wasser trinken", "true"),
+            ("Жабы умеют летать", "fake"),
             ("El sol es un planeta", "fake"),
             ("La lune est faite de fromage", "fake"),
             ("Koty są roślinami", "fake"),
