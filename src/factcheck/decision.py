@@ -138,6 +138,24 @@ def decide_claim(
         and max(item.score for item in explicit_factcheck_items) >= 0.78
         and counter_score <= 0.18
     )
+    model_stance_items = [
+        item
+        for item in dominant_items
+        if item.stance_method.startswith("model:")
+        and item.stance_confidence >= 0.78
+        and item.score >= 0.76
+        and item.claim_match_score >= 0.42
+        and (
+            item.source_type in HARD_TRUSTED_TYPES
+            or (item.source_type == "major_news" and item.source_trust >= 0.84 and item.claim_match_score >= 0.55)
+        )
+    ]
+    model_stance_override = (
+        not hard_verdict_allowed
+        and bool(model_stance_items)
+        and counter_score <= 0.18
+        and neutral_score <= max(0.95, dominant_score * 1.35)
+    )
     prior_prediction = None
     low_evidence_case = not evidence or (dominant_score < 0.28 and trusted_hits == 0 and independent_sources == 0)
     weak_match_case = bool(evidence) and max_claim_match < 0.30 and dominant_score < 0.70
@@ -188,6 +206,23 @@ def decide_claim(
         reasons.append(
             "hard_verdict_policy=explicit_factcheck_override:"
             f"{strongest.domain}:{strongest.verdict_source}:{strongest.claim_match_score:.3f}"
+        )
+    elif model_stance_override:
+        strongest = max(model_stance_items, key=lambda item: (item.stance_confidence, item.score, item.claim_match_score))
+        verdict = dominant_label
+        confidence = _clamp(
+            0.50
+            + 0.12 * min(1.0, strongest.stance_confidence)
+            + 0.08 * min(1.0, strongest.score)
+            + 0.08 * min(1.0, strongest.claim_match_score)
+            + 0.04 * min(1.0, strongest.source_trust),
+            0.58,
+            0.76,
+        )
+        reasons.append(
+            "hard_verdict_policy=model_stance_override:"
+            f"{strongest.domain}:{strongest.stance_method}:{strongest.stance_confidence:.3f}:"
+            f"{strongest.claim_match_score:.3f}"
         )
     elif (
         prior_prediction is not None

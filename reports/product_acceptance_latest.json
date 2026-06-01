@@ -1,6 +1,6 @@
 {
   "summary": {
-    "created_at": "2026-05-31T17:33:45+00:00",
+    "created_at": "2026-06-01T13:52:26+00:00",
     "target_pass_rate": 0.95,
     "min_cases_per_section": 5,
     "min_cases_by_section": {
@@ -811,7 +811,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_midjourney_metadata_marker",
@@ -823,7 +823,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_dalle_metadata_marker",
@@ -835,7 +835,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_firefly_metadata_marker",
@@ -847,7 +847,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_ideogram_metadata_marker",
@@ -859,7 +859,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_plain_jpeg_no_false_ai",
@@ -871,7 +871,7 @@
       "confidence": 0.34,
       "ai_label": "uncertain",
       "ai_generated_score": 0.26,
-      "summary": "The lightweight cloud check found no strong AI markers. This does not prove that the image is real."
+      "summary": "No original camera metadata or AI-generator metadata was found. The file may have been exported, edited, downloaded, or stripped of metadata."
     },
     {
       "id": "image_square_no_metadata_no_false_ai",
@@ -883,7 +883,7 @@
       "confidence": 0.34,
       "ai_label": "uncertain",
       "ai_generated_score": 0.34,
-      "summary": "The lightweight cloud check found no strong AI markers. This does not prove that the image is real."
+      "summary": "No original camera metadata or AI-generator metadata was found. The file may have been exported, edited, downloaded, or stripped of metadata."
     },
     {
       "id": "image_camera_metadata_not_proof_of_real",
@@ -892,10 +892,10 @@
       "passed": true,
       "detail": "expected ai_label in ['likely_not_ai', 'uncertain'], got uncertain",
       "verdict": "uncertain",
-      "confidence": 0.34,
+      "confidence": 0.5,
       "ai_label": "uncertain",
       "ai_generated_score": 0.04,
-      "summary": "The lightweight cloud check found no strong AI markers. This does not prove that the image is real."
+      "summary": "Original camera metadata was found in the file. That supports a camera-photo origin, but it does not prove the image was never edited."
     },
     {
       "id": "image_leonardo_metadata_marker",
@@ -907,7 +907,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_automatic1111_metadata_marker",
@@ -919,7 +919,7 @@
       "confidence": 0.82,
       "ai_label": "likely_ai",
       "ai_generated_score": 1.0,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "image_second_plain_jpeg_no_false_ai",
@@ -931,7 +931,7 @@
       "confidence": 0.34,
       "ai_label": "uncertain",
       "ai_generated_score": 0.26,
-      "summary": "The lightweight cloud check found no strong AI markers. This does not prove that the image is real."
+      "summary": "No original camera metadata or AI-generator metadata was found. The file may have been exported, edited, downloaded, or stripped of metadata."
     },
     {
       "id": "api_health_ok",
@@ -999,7 +999,7 @@
       "detail": "status_code=200; expected ai_label in ['likely_ai'], got likely_ai",
       "verdict": "uncertain",
       "confidence": 0.82,
-      "summary": "The image has strong AI-generation signals. Treat it as likely AI-generated unless an original source proves otherwise."
+      "summary": "AI-generator metadata was found in the image file. This is a strong metadata clue, although metadata can be edited."
     },
     {
       "id": "api_factcheck_empty_rejected",

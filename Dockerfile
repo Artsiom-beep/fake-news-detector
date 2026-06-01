@@ -2,7 +2,8 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    FACTCHECK_AI_IMAGE_MODEL=metadata_only
+    FACTCHECK_AI_IMAGE_MODEL=metadata_only \
+    FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli
 
 WORKDIR /app
 

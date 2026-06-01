@@ -45,6 +45,7 @@ from factcheck.retrieval import build_queries
 from factcheck.schemas import ClaimCandidate, ClaimDecision, EvidenceItem, FactCheckTrace, RetrievedDocument
 from factcheck.service import run_factcheck
 from factcheck.source_registry import classify_source
+import nli as nli_module
 from nli import classify_claim_vs_evidence, set_fast_mode
 from src.api_factcheck import app as api_app
 from src.desktop_app import (
@@ -754,6 +755,11 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertIn("apps/", dockerignore)
         self.assertIn("FACTCHECK_CORS_ORIGINS", render_yaml)
         self.assertIn("FACTCHECK_AI_IMAGE_MODEL", render_yaml)
+        self.assertIn("FACTCHECK_NLI_MODEL", render_yaml)
+        self.assertIn("typeform/mobilebert-uncased-mnli", render_yaml)
+        self.assertIn("FACTCHECK_NLI_MODEL=typeform/mobilebert-uncased-mnli", dockerfile)
+        self.assertIn("torch==2.2.0+cpu", api_requirements)
+        self.assertIn("transformers==4.40.0", api_requirements)
         self.assertIn("metadata_only", render_yaml)
         self.assertIn("rapidocr-onnxruntime", api_requirements)
         self.assertNotIn("pywebview", api_requirements)
@@ -1683,13 +1689,13 @@ Write-Output 'apk name policy ok'
             "\\section{Możliwe dalsze prace}",
             "\\section{Wnioski}",
             "93/93 OK",
-            "117/117 OK",
+            "120/120 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
             "Screenshot OCR API & 12 & 12 & 100\\%",
             "Images & 11 & 11 & 100\\%",
             "API/mobile contract & 11 & 11 & 100\\%",
-            "Flutter tests & \\path{flutter test} & 11/11 OK",
+            "Flutter tests & \\path{flutter test} & 13/13 OK",
             "Release gate & release gate & OK, 25 kroków",
             "Final cloud/phone & finalizer cloud-phone & OK",
             "API/mobile contract",
@@ -2150,6 +2156,34 @@ Write-Output 'apk name policy ok'
             "Reuters reported strong demand for Nvidia AI data-center chips and revenue tied to AI infrastructure growth.",
         )
         self.assertEqual(result["label"], "refuted")
+        set_fast_mode(False)
+
+    @patch.dict(os.environ, {"FACTCHECK_NLI_MODEL": "typeform/mobilebert-uncased-mnli"})
+    @patch("nli._load_pipeline")
+    def test_nli_uses_configured_transformer_model_when_available(self, mock_load_pipeline):
+        def fake_pipeline(inputs, **kwargs):
+            self.assertEqual(inputs["text"], "A clinical study found the vaccine reduced hospitalizations.")
+            self.assertEqual(inputs["text_pair"], "The vaccine reduced hospitalizations.")
+            self.assertTrue(kwargs["truncation"])
+            self.assertEqual(kwargs["max_length"], 512)
+            return {"label": "ENTAILMENT", "score": 0.91}
+
+        mock_load_pipeline.return_value = fake_pipeline
+        result = nli_module.classify_claim_vs_evidence(
+            "The vaccine reduced hospitalizations.",
+            "A clinical study found the vaccine reduced hospitalizations.",
+        )
+        self.assertEqual(result["label"], "supported")
+        self.assertEqual(result["score"], 0.91)
+        self.assertEqual(result["method"], "model:typeform/mobilebert-uncased-mnli")
+
+    @patch.dict(os.environ, {"FACTCHECK_NLI_MODEL": "typeform/mobilebert-uncased-mnli"})
+    def test_config_reports_enabled_nli_model(self):
+        config = build_config()
+        self.assertEqual(
+            config.model_versions["stance_model"],
+            "nli:typeform/mobilebert-uncased-mnli",
+        )
 
     def test_decision_blocks_weak_hard_verdict(self):
         claim = ClaimCandidate(raw_text="A claim", normalized_text="A claim", score=3.0)
@@ -2172,6 +2206,36 @@ Write-Output 'apk name policy ok'
         ]
         decision = decide_claim(claim, evidence, trace, config)
         self.assertEqual(decision.verdict, "uncertain")
+
+    def test_decision_allows_strong_nli_model_stance_from_trusted_source(self):
+        claim = ClaimCandidate(
+            raw_text="Nvidia has strong demand for AI data-center chips.",
+            normalized_text="Nvidia has strong demand for AI data-center chips.",
+            score=3.0,
+        )
+        trace = FactCheckTrace()
+        config = _internal_research_config()
+        evidence = [
+            EvidenceItem(
+                url="https://www.reuters.com/a",
+                title="Reuters",
+                stance="support",
+                score=0.82,
+                snippet="",
+                passage="Reuters reported strong demand for Nvidia AI data-center chips.",
+                source_type="primary_news",
+                source_trust=0.98,
+                relevance=0.81,
+                freshness=0.9,
+                domain="reuters.com",
+                claim_match_score=0.68,
+                stance_confidence=0.91,
+                stance_method="model:typeform/mobilebert-uncased-mnli",
+            )
+        ]
+        decision = decide_claim(claim, evidence, trace, config)
+        self.assertEqual(decision.verdict, "true")
+        self.assertIn("model_stance_override", " ".join(decision.reasons))
 
     def test_decision_allows_explicit_factcheck_override(self):
         claim = ClaimCandidate(raw_text="A claim", normalized_text="A claim", score=3.0)

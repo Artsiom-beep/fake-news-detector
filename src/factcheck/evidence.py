@@ -167,6 +167,7 @@ def score_evidence_for_claim(
             if relevance < 0.12:
                 continue
             explicit_stance = _map_explicit_verdict(document.explicit_verdict)
+            stance_method = "explicit_verdict" if explicit_stance else ""
             if explicit_stance:
                 stance, alignment_score = _resolve_explicit_stance(
                     claim,
@@ -190,6 +191,7 @@ def score_evidence_for_claim(
                 nli = classify_claim_vs_evidence(claim.normalized_text, passage[:1400])
                 stance = _map_nli_label(nli.get("label", "neutral"))
                 stance_strength = float(nli.get("score", 0.0))
+                stance_method = str(nli.get("method", "nli") or "nli")
                 if (
                     stance != "neutral"
                     and not document.is_factcheck_article
@@ -206,6 +208,7 @@ def score_evidence_for_claim(
                     if title_stance == "neutral" and document.claim_match_score < 0.78:
                         stance = "neutral"
                         stance_strength = min(0.7, max(0.42, stance_strength * 0.6))
+                        stance_method = f"{stance_method}+title_guard"
 
             freshness = _freshness_score(claim, document)
             independence_bonus = 1.0 if document.domain not in seen_domains else 0.4
@@ -236,6 +239,8 @@ def score_evidence_for_claim(
                 explicit_verdict=document.explicit_verdict,
                 verdict_source=document.verdict_source,
                 claim_match_score=document.claim_match_score,
+                stance_confidence=stance_strength,
+                stance_method=stance_method,
             )
             if best_item is None or candidate.score > best_item.score:
                 best_item = candidate
@@ -270,6 +275,8 @@ def score_evidence_for_claim(
                 "title": item.title,
                 "stance": item.stance,
                 "score": round(item.score, 4),
+                "stance_confidence": round(item.stance_confidence, 4),
+                "stance_method": item.stance_method,
                 "passage": item.passage,
             }
             for item in diverse_ranked

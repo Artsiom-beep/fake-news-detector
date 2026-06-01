@@ -93,6 +93,8 @@ class EvidenceItem:
     explicit_verdict: str = ""
     verdict_source: str = ""
     claim_match_score: float = 0.0
+    stance_confidence: float = 0.0
+    stance_method: str = ""
 
     def to_public_dict(self) -> Dict[str, Any]:
         return {
@@ -109,6 +111,8 @@ class EvidenceItem:
             "domain": self.domain,
             "claim_match_score": _round(self.claim_match_score),
             "verdict_source": self.verdict_source,
+            "stance_confidence": _round(self.stance_confidence),
+            "stance_method": self.stance_method,
         }
 
 

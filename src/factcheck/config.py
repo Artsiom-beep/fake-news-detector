@@ -10,7 +10,7 @@ from .schemas import ConfigSnapshot
 PIPELINE_VERSION = "best_accuracy_v2"
 
 MODEL_VERSIONS: Dict[str, str] = {
-    "stance_model": "disabled_in_best_accuracy",
+    "stance_model": "optional_nli_model_v1",
     "retrieval_ranker": "deterministic_lexical_v1",
     "summary_policy": "template_v1",
     "claim_prior": "disabled_in_best_accuracy",
@@ -126,6 +126,10 @@ def build_config(fast_mode: bool | None = None, mode: str | None = None) -> Pipe
     max_search_results = int(os.getenv("FACTCHECK_MAX_SEARCH_RESULTS", "8"))
     max_documents = int(os.getenv("FACTCHECK_MAX_DOCUMENTS", "8"))
     max_evidence = int(os.getenv("FACTCHECK_MAX_EVIDENCE", "6"))
+    model_versions = dict(MODEL_VERSIONS)
+    nli_model = os.getenv("FACTCHECK_NLI_MODEL", "").strip()
+    if nli_model:
+        model_versions["stance_model"] = f"nli:{nli_model}"
     return PipelineConfig(
         mode="best_accuracy",
         fast_mode=False,
@@ -141,5 +145,5 @@ def build_config(fast_mode: bool | None = None, mode: str | None = None) -> Pipe
         prior_margin_threshold=float(os.getenv("FACTCHECK_PRIOR_MARGIN_THRESHOLD", "0.10")),
         allow_prior_fallback=os.getenv("FACTCHECK_ALLOW_PRIOR_FALLBACK", "1") not in {"0", "false", "False"},
         targeted_domains=list(RESEARCH_DOMAINS),
-        model_versions=dict(MODEL_VERSIONS),
+        model_versions=model_versions,
     )

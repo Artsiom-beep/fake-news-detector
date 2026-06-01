@@ -63,7 +63,7 @@ System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy po
 Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka na podstawie metadanych i śladów generatorów AI, nie absolutny dowód pochodzenia obrazu.
 W końcowej wersji moduł obrazów został świadomie ograniczony do analizy pliku: EXIF, nazw plików, markerów generatorów, wymiarów i słabych cech statystycznych.
 Pełnego rozpoznawania AI na podstawie samych pikseli nie udało się zrealizować w pełnym zakresie w darmowym środowisku chmurowym bez ryzyka fałszywych oskarżeń.
-W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przez lokalne reguły, oficjalną terminologię zdrowotną WHO oraz ogólne rozumowanie źródłowo-taksonomiczne oparte na streszczeniach Wikipedii.
+W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przez lokalne reguły, oficjalną terminologię zdrowotną WHO, ogólne rozumowanie źródłowo-taksonomiczne oparte na streszczeniach Wikipedii oraz opcjonalną warstwę NLI, która semantycznie porównuje twierdzenie z fragmentem dowodu.
 
 Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie, końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots} oraz poprawę wyboru oryginalnych zdjęć z aparatu na Androidzie.
 Układ raportu oparto na typowej strukturze sprawozdania projektowego: cel, zakres, metoda, implementacja, wyniki, problemy, ograniczenia i wnioski.
@@ -242,6 +242,15 @@ Dodano ogólną warstwę rozumowania źródłowo-taksonomicznego:
   \item lepszą obsługę liczby mnogiej i wariantów słów, np. \textit{gas}/\textit{gases}, \textit{virus}/\textit{viruses}.
 \end{itemize}
 
+Po dalszych testach okazało się jednak, że same reguły nadal są za słabe dla wielu zwykłych twierdzeń.
+Reguła dobrze obsługuje zaplanowane klasy, ale nie rozumie każdego zdania naturalnego.
+Dlatego moduł \textit{Facts} otrzymał opcjonalną warstwę NLI (\textit{Natural Language Inference}).
+Backend może załadować model \texttt{typeform/mobilebert-uncased-mnli} przez zmienną \path{FACTCHECK_NLI_MODEL}.
+Model nie generuje odpowiedzi jak chatbot.
+Jego zadanie jest węższe i bezpieczniejsze: ocenić, czy znaleziony fragment źródła wspiera twierdzenie, przeczy mu, czy jest neutralny.
+Taki wynik jest używany tylko wtedy, gdy źródło jest zaufane, dopasowanie do twierdzenia jest wystarczająco mocne, a nie ma istotnego kontrdowodu.
+W przeciwnym razie system nadal zwraca \texttt{uncertain}.
+
 \subsection{Ocena newsów z dużych źródeł}
 Dla zwykłych artykułów BBC lub podobnych źródeł system początkowo bywał zbyt nieśmiały.
 Problem polegał na tym, że brak wielu niezależnych potwierdzeń nie powinien automatycznie obniżać wiarygodnego artykułu do słabej oceny.
@@ -365,6 +374,7 @@ Decision layer & \path{src/factcheck/decision.py} & Decyzja \texttt{true}/\textt
 Retrieval & \path{src/factcheck/retrieval.py} & Pobieranie i dobór materiału źródłowego. \\
 Common knowledge & \path{src/factcheck/common_knowledge.py} & Proste fakty, reguły i lokalna wiedza. \\
 Knowledge sources & \path{src/factcheck/knowledge_sources.py} & Wikipedia summary, klasy taksonomiczne, relacje stolic i oficjalna wiedza źródłowa. \\
+Semantic NLI & \path{src/nli.py} & Opcjonalny model MNLI porównujący twierdzenie z dowodem jako para premise/hypothesis. \\
 News credibility & \path{src/factcheck/news_credibility.py} & Punktacja artykułów informacyjnych. \\
 Image/OCR & \path{src/factcheck/image_analysis.py} & OCR i ocena ryzyka obrazu AI. \\
 REST API & \path{src/api_factcheck.py} & Publiczne endpointy dla Web UI i Fluttera. \\
@@ -514,8 +524,10 @@ Z paczki chmurowej wykluczono:
   \item stare modele treningowe;
   \item foldery build/dist/outputs;
   \item lokalne środowisko \texttt{.venv};
-  \item ciężkie opcjonalne zależności Torch/Transformers.
+  \item ciężki model wizualny AI-image detection.
 \end{itemize}
+Do runtime'u API dodano natomiast zależności \texttt{torch} i \texttt{transformers}, ponieważ moduł \textit{Facts} używa lekkiego modelu NLI do semantycznego porównania twierdzenia z dowodem.
+Model jest ładowany leniwie: backend startuje normalnie, a model pobiera się dopiero przy pierwszym użyciu modułu faktów wymagającego NLI.
 
 \subsection{Dlaczego chmura była potrzebna}
 Telefon z aplikacją Flutter nie powinien wymagać komputera użytkownika.
@@ -532,7 +544,7 @@ Aktualny stan po ostatnich pełnych kontrolach:
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend unit/integration & \texttt{unittest} & 117/117 OK \\
+Backend unit/integration & \texttt{unittest} & 120/120 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
 Flutter tests & \path{flutter test} & 13/13 OK \\
@@ -620,6 +632,7 @@ Refaktoryzacja & Utworzenie kanonicznego pipeline'u i archiwizacja legacy. & Jed
 Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie wymusza fałszywej pewności. \\
 Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
 Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
+Facts NLI & Dodanie opcjonalnego modelu \texttt{typeform/mobilebert-uncased-mnli}. & System potrafi semantycznie porównać twierdzenie z dowodem i rzadziej blokuje oczywiste przypadki na poziomie \texttt{uncertain}. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
 Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku metadanych, nie o absolutnym dowodzie pochodzenia pikseli. \\
 Images metadata & Kalibracja etykiet i komunikatów dla obrazów. & Zamiast stałego \textit{Possible AI} aplikacja rozróżnia: \textit{AI metadata found}, \textit{Camera metadata found}, \textit{Metadata missing} i \textit{Weak file clues}. \\
@@ -672,6 +685,13 @@ W projekcie nie ma pełnej gwarancji rozpoznania obrazu wygenerowanego przez AI 
 Taka funkcja wymagałaby cięższego modelu, dobrego zbioru testowego, kalibracji progów oraz stabilnych zasobów obliczeniowych.
 W darmowej chmurze lepszym rozwiązaniem jest pokazać użytkownikowi konkretne ślady: metadane generatora, EXIF aparatu, brak EXIF, nietypowe wymiary i ostrzeżenia.
 Dlatego interfejs mówi \textit{Check metadata}, a nie \textit{Prove AI image}.
+
+\subsection{Użyć NLI w faktach, ale nie robić z niego jedynego sędziego}
+Moduł \textit{Facts} potrzebował większej inteligencji niż proste porównywanie słów.
+Z tego powodu dodano model NLI, ale jego wynik nie jest traktowany jako absolutny wyrok.
+Model może pomylić się przy dwuznacznych zdaniach, skrótach, ironii albo słabych źródłach.
+Dlatego decyzja końcowa nadal zależy od jakości źródła, dopasowania fragmentu do twierdzenia, wyniku NLI i braku silnego kontrdowodu.
+To kompromis między użytecznością a ostrożnością: aplikacja ma być odważniejsza w oczywistych przypadkach, ale nie ma zgadywać bez dowodów.
 
 \section{Aktualny sposób działania}
 \subsection{Na komputerze}
@@ -728,6 +748,8 @@ Commit & Znaczenie \\
   \item Brak EXIF nie oznacza automatycznie AI, ponieważ metadane mogą zostać usunięte przez edycję, eksport, komunikator, Galerię albo serwis internetowy.
   \item Obecność EXIF aparatu nie gwarantuje pełnej autentyczności, ponieważ metadane można skopiować lub zmodyfikować.
   \item Pełny model wizualny AI-image detection nie jest domyślnie włączony w chmurze, ponieważ byłby ciężki dla darmowego hostingu i wymagałby osobnej kalibracji jakości.
+  \item Model NLI poprawia rozumienie faktów, ale nie zastępuje źródeł i nie daje gwarancji poprawności dla każdego zdania.
+  \item Pierwsze użycie modułu faktów po uśpieniu lub wdrożeniu Render może być wolniejsze, ponieważ model NLI jest ładowany leniwie.
   \item OCR może się mylić przy zrzutach niskiej jakości, dlatego funkcja została wycofana z głównego UI.
   \item Obecny benchmark jest dobry jako regresja produktu, ale nie reprezentuje całego internetu.
   \item Aktualne fakty polityczne i urzędowe mogą się dezaktualizować, więc wymagają okresowej aktualizacji źródeł.
@@ -738,6 +760,7 @@ Commit & Znaczenie \\
   \item dodać ekran \textit{About / Version} w aplikacji mobilnej, aby od razu było widać commit, wersję APK i adres API;
   \item poprawić baner połączenia tak, aby przy Render Free pokazywał \textit{Waking up server} i automatycznie ponawiał próbę;
   \item rozszerzyć benchmark acceptance o większy zbiór żywych newsów i trudnych przypadków;
+  \item dodać osobny benchmark NLI dla krótkich twierdzeń i trudnych par dowód--twierdzenie;
   \item dodać opcjonalny płatny lub lokalny model wizualny do pełniejszej oceny obrazów AI;
   \item rozważyć obsługę Content Credentials / C2PA, jeżeli użytkownik będzie miał obrazy z podpisanym pochodzeniem;
   \item dodać tryb wykonania zdjęcia bezpośrednio w aplikacji, aby jeszcze mocniej kontrolować oryginalny plik i metadane;
