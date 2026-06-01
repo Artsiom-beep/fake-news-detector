@@ -557,11 +557,21 @@ def _query_relevance_score(query: str, title: str, snippet: str) -> float:
 
 
 def _claim_match_score(claim: ClaimCandidate, fetched: Dict[str, str], title: str, snippet: str) -> float:
+    if fetched.get("explicit_verdict") and fetched.get("claim_text"):
+        claim_score = _token_overlap(claim.normalized_text, fetched.get("claim_text", ""))
+        if claim_score >= 0.52:
+            return claim_score
+        secondary_scores = [
+            _token_overlap(claim.normalized_text, title),
+            _token_overlap(claim.normalized_text, snippet),
+            min(_token_overlap(claim.normalized_text, fetched.get("ruling_text", "")), 0.50),
+        ]
+        return min(0.50, max([claim_score, *secondary_scores]))
     candidates = [
         fetched.get("claim_text", ""),
-        fetched.get("ruling_text", ""),
         title,
         snippet,
+        fetched.get("ruling_text", ""),
     ]
     scores = [_token_overlap(claim.normalized_text, candidate) for candidate in candidates if candidate]
     return max(scores) if scores else 0.0

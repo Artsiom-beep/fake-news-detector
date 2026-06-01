@@ -358,6 +358,22 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_url="https://en.wikipedia.org/wiki/Water",
         source_title="Common knowledge: water",
     ),
+    "human": KnowledgeFact(
+        true_properties=frozenset(
+            {"animal", "mammal", "person", "drink water", "can drink water", "needs water", "need water"}
+        ),
+        false_properties=frozenset({"plant", "insect", "fish", "can breathe underwater", "breathe underwater"}),
+        source_url="https://en.wikipedia.org/wiki/Human",
+        source_title="Common knowledge: human",
+    ),
+    "people": KnowledgeFact(
+        true_properties=frozenset(
+            {"humans", "human", "drink water", "can drink water", "needs water", "need water"}
+        ),
+        false_properties=frozenset({"plants", "insects", "fish", "can breathe underwater", "breathe underwater"}),
+        source_url="https://en.wikipedia.org/wiki/Human",
+        source_title="Common knowledge: people",
+    ),
     "sky": KnowledgeFact(
         true_properties=frozenset({"blue"}),
         false_properties=frozenset({"green", "red", "purple"}),
@@ -1321,6 +1337,17 @@ def _split_statement(claim_text: str) -> tuple[str, list[tuple[str, bool]]] | No
     text = _normalize_phrase(claim_text)
     match = re.match(r"^(?P<subject>[a-z0-9 -]+?)\s+(?:is|are|was|were)\s+(?P<props>.+)$", text)
     if not match:
+        modal_match = re.match(
+            r"^(?P<subject>[a-z0-9 -]+?)\s+"
+            r"(?P<modal>can|cannot|can not|can't)\s+"
+            r"(?P<object>.+)$",
+            text,
+        )
+        if modal_match:
+            subject = _normalize_phrase(modal_match.group("subject"))
+            prop = _normalize_phrase(modal_match.group("object"))
+            negated = modal_match.group("modal") in {"cannot", "can not", "can't"}
+            return (subject, [(prop, negated)]) if subject and prop else None
         relation_match = re.match(
             r"^(?P<subject>[a-z0-9 -]+?)\s+"
             r"(?P<verb>causes?|cures?|includes?|orbits?|prevents?|treats?)\s+"

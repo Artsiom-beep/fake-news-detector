@@ -41,7 +41,7 @@ from factcheck.news_credibility import (
     analyze_news_credibility,
     clean_news_title,
 )
-from factcheck.retrieval import build_queries
+from factcheck.retrieval import _claim_match_score, build_queries
 from factcheck.schemas import ClaimCandidate, ClaimDecision, EvidenceItem, FactCheckTrace, RetrievedDocument
 from factcheck.service import run_factcheck
 from factcheck.source_registry import classify_source
@@ -2144,6 +2144,31 @@ Write-Output 'apk name policy ok'
         self.assertTrue(any("fact check" in query for query in queries))
         self.assertFalse(any(query.endswith("site:reuters.com") for query in queries))
 
+    def test_explicit_factcheck_claim_match_ignores_unrelated_ruling_words(self):
+        claim = ClaimCandidate(
+            raw_text="Humans can drink water",
+            normalized_text="Humans can drink water",
+            score=3.0,
+        )
+        score = _claim_match_score(
+            claim,
+            {
+                "title": "PolitiFact | Fluoride added to drinking water is safe and beneficial",
+                "claim_text": (
+                    "Two forms of fluoride in our drinking water are so toxic that the CDC "
+                    "labels these chemicals extremely toxic in both animals and humans."
+                ),
+                "ruling_text": (
+                    "While fluoride can be toxic in massive amounts, it would be impossible "
+                    "to drink enough water to reach a toxic dose. We rate this claim False."
+                ),
+                "explicit_verdict": "refute",
+            },
+            "PolitiFact | Fluoride added to drinking water is safe and beneficial",
+            "",
+        )
+        self.assertLess(score, 0.52)
+
     def test_best_accuracy_query_builder_includes_trusted_news_domains(self):
         claim = ClaimCandidate(
             raw_text="Amy Coney Barrett was confirmed as US Supreme Court Justice on October 26, 2020.",
@@ -2855,6 +2880,14 @@ Write-Output 'apk name policy ok'
         self.assertEqual(payload["verdict"], "true")
         self.assertEqual(payload["trace"]["mode"], "best_accuracy")
         self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
+
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_handles_humans_can_drink_water_locally(self, mock_retrieve_documents):
+        payload = run_factcheck(text="Humans can drink water").to_public_dict()
+        self.assertEqual(payload["verdict"], "true")
+        self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
+        self.assertIn("common_knowledge_supports=drink water", " ".join(payload["claims"][0]["reasons"]))
+        mock_retrieve_documents.assert_not_called()
 
     def test_best_pipeline_handles_simple_false_claim(self):
         payload = run_factcheck(text="Grass is purple and is dangerous").to_public_dict()
