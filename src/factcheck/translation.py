@@ -45,6 +45,14 @@ PHRASES_BY_LANGUAGE: dict[str, dict[str, str]] = {
         "содержит": "contains",
         "откладывают": "lay",
         "откладывает": "lays",
+        "делают из деревьев": "are made from trees",
+        "делают из дерева": "are made from wood",
+        "делают из бумаги": "are made of paper",
+        "сделаны из деревьев": "are made from trees",
+        "сделаны из дерева": "are made from wood",
+        "сделаны из бумаги": "are made of paper",
+        "сделана из дерева": "is made from wood",
+        "сделана из бумаги": "is made of paper",
         "люди": "humans",
         "человек": "human",
         "кошки": "cats",
@@ -255,7 +263,6 @@ PHRASES_BY_LANGUAGE: dict[str, dict[str, str]] = {
         "вирус": "virus",
         "бактерия": "bacteria",
         "бактерии": "bacteria",
-        "сделаны из бумаги": "are made of paper",
         "сделана из сыра": "is made of cheese",
         "вращается вокруг солнца": "orbits sun",
         "семь дней": "seven days",
@@ -871,6 +878,8 @@ def normalize_fact_text(text: str) -> TranslationResult:
     working = re.sub(article_pattern, " ", working, flags=re.IGNORECASE)
     translated = canonicalize_text(working)
     translated = re.sub(r"\s+", " ", translated).strip(" .")
+    translated = re.sub(r"\b(?:is|are)\s+are\s+made\b", "are made", translated, flags=re.IGNORECASE)
+    translated = re.sub(r"\b(?:is|are)\s+is\s+made\b", "is made", translated, flags=re.IGNORECASE)
     translated = _insert_missing_copula(translated)
     detected_language = max(language_hits, key=language_hits.get) if language_hits else "unknown"
     return TranslationResult(

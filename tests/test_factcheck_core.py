@@ -2941,6 +2941,41 @@ Write-Output 'apk name policy ok'
         self.assertEqual(paper_payload["evidence"][0]["source_type"], "common_knowledge")
         self.assertIn("common_knowledge_supports", " ".join(paper_payload["claims"][0]["reasons"]))
 
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_handles_russian_books_from_trees_without_unrelated_factcheck(self, mock_retrieve_documents):
+        examples = [
+            "Книги делают из деревьев",
+            "Книги делают из бумаги",
+            "books is делают из деревьев",
+        ]
+        for text in examples:
+            with self.subTest(text=text):
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], "true")
+                self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
+                self.assertEqual(payload["evidence"][0]["domain"], "local_common_knowledge")
+                self.assertIn("common_knowledge_supports", " ".join(payload["claims"][0]["reasons"]))
+        mock_retrieve_documents.assert_not_called()
+
+    def test_claim_match_keeps_mixed_language_factcheck_result_weak(self):
+        claim = ClaimCandidate(
+            raw_text="books is делают из деревьев",
+            normalized_text="books is делают из деревьев",
+            score=1.0,
+            source="text",
+        )
+        score = _claim_match_score(
+            claim,
+            {
+                "explicit_verdict": "refute",
+                "claim_text": "Video shows books removed from a Florida middle school were censored.",
+                "ruling_text": "The books were old, not censored.",
+            },
+            "PolitiFact | In video, books removed from a Florida middle school were old, not censored",
+            "",
+        )
+        self.assertLess(score, 0.52)
+
     def test_best_pipeline_handles_capital_and_orbit_claims(self):
         capital_true = run_factcheck(text="The capital of France is Paris.").to_public_dict()
         self.assertEqual(capital_true["verdict"], "true")

@@ -29,6 +29,10 @@ def _log_result(result: FactCheckResult) -> None:
     LOGGER.info(json.dumps(result.to_public_dict(), ensure_ascii=False))
 
 
+def _has_non_latin_letters(text: str) -> bool:
+    return any(char.isalpha() and not ("a" <= char.lower() <= "z") for char in text or "")
+
+
 def _looks_like_simple_knowledge_text(text: str) -> bool:
     clean = canonicalize_text(text)
     clean = re.sub(r"\b(?:[A-Za-z]\.){2,}", lambda match: match.group(0).replace(".", ""), clean)
@@ -242,6 +246,28 @@ def _uncertain_result(summary: str, trace: FactCheckTrace, config: PipelineConfi
     )
 
 
+def _uncertain_claim_decision(claim: ClaimCandidate, reason: str, trace: FactCheckTrace) -> ClaimDecision:
+    reasons = [
+        "strategy=common_knowledge",
+        reason,
+        "hard_verdict_policy=no_exact_answer",
+    ]
+    trace.decision_reasons.extend([f"{claim.normalized_text}: {item}" for item in reasons])
+    trace.fallbacks_used.append("knowledge_no_exact_answer")
+    return ClaimDecision(
+        claim=claim,
+        verdict="uncertain",
+        confidence=0.2,
+        support_score=0.0,
+        refute_score=0.0,
+        neutral_score=0.0,
+        independent_sources=0,
+        trusted_hits=0,
+        reasons=reasons,
+        evidence=[],
+    )
+
+
 def _run_claim_verdict_path(
     article_text: str,
     config: PipelineConfig,
@@ -333,6 +359,16 @@ def _run_claim_verdict_path(
                 decisions.append(knowledge_decision)
                 continue
             trace.fallbacks_used.append("common_knowledge_no_match")
+            if _has_non_latin_letters(article_text):
+                trace.fallbacks_used.append("partial_translation_no_web_factcheck")
+                decisions.append(
+                    _uncertain_claim_decision(
+                        claim,
+                        "partial_translation_no_web_factcheck",
+                        trace,
+                    )
+                )
+                continue
 
         factcheck_decision = score_and_decide(claim, factcheck_config, input_factcheck_document)
         if should_try_trusted_research(factcheck_decision):

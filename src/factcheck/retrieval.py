@@ -593,7 +593,8 @@ def _load_seed_rows() -> List[Dict[str, str]]:
 
 
 def _normalize_seed_text(text: str) -> str:
-    text = re.sub(r"[^a-z0-9 ]", " ", (text or "").lower())
+    text = re.sub(r"[^\w\s]", " ", (text or "").lower(), flags=re.UNICODE)
+    text = text.replace("_", " ")
     return re.sub(r"\s+", " ", text).strip()
 
 

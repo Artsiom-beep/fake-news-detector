@@ -500,7 +500,18 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
         source_title="Common knowledge: Moon",
     ),
     "book": KnowledgeFact(
-        true_properties=frozenset({"paper", "made of paper", "made out of paper", "printed", "readable"}),
+        true_properties=frozenset(
+            {
+                "paper",
+                "made of paper",
+                "made out of paper",
+                "made from paper",
+                "made from trees",
+                "made from wood",
+                "printed",
+                "readable",
+            }
+        ),
         false_properties=frozenset({"food", "liquid", "gas", "made of cheese", "made out of cheese"}),
         source_url="https://en.wikipedia.org/wiki/Book",
         source_title="Common knowledge: book",
