@@ -2899,9 +2899,14 @@ Write-Output 'apk name policy ok'
             ("Les chats sont des animaux", "true"),
             ("Menschen können Wasser trinken", "true"),
             ("Жабы умеют летать", "fake"),
+            ("Вода мокрая", "true"),
+            ("Рыбы живут в воде", "true"),
+            ("Собаки умеют летать", "fake"),
             ("El sol es un planeta", "fake"),
             ("La lune est faite de fromage", "fake"),
             ("Koty są roślinami", "fake"),
+            ("Paryż jest stolicą Francji", "true"),
+            ("Mars jest gwiazdą", "fake"),
         ]
         for text, expected_verdict in examples:
             with self.subTest(text=text):
@@ -3153,19 +3158,19 @@ Write-Output 'apk name policy ok'
         mock_summary.side_effect = lambda subject: summaries.get(subject.lower())
 
         cases = [
-            ("Mars is a star", "fake", "taxonomy_refutes"),
-            ("Spiders are animals", "true", "taxonomy_supports"),
-            ("Spiders are insects", "fake", "taxonomy_refutes"),
-            ("Whales are fish", "fake", "taxonomy_refutes"),
-            ("Paris is the capital of Germany", "fake", "capital_relation_refutes"),
-            ("Oxygen is a gas", "true", "wikipedia_summary_supports"),
-            ("Oxygen is a metal", "fake", "taxonomy_refutes"),
+            ("Mars is a star", "fake", "common_knowledge_refutes", "common_knowledge"),
+            ("Spiders are animals", "true", "taxonomy_supports", "knowledge_source"),
+            ("Spiders are insects", "fake", "taxonomy_refutes", "knowledge_source"),
+            ("Whales are fish", "fake", "taxonomy_refutes", "knowledge_source"),
+            ("Paris is the capital of Germany", "fake", "reversed_capital_refutes", "common_knowledge"),
+            ("Oxygen is a gas", "true", "wikipedia_summary_supports", "knowledge_source"),
+            ("Oxygen is a metal", "fake", "taxonomy_refutes", "knowledge_source"),
         ]
-        for text, expected_verdict, expected_reason in cases:
+        for text, expected_verdict, expected_reason, expected_source_type in cases:
             with self.subTest(text=text):
                 payload = run_factcheck(text=text).to_public_dict()
                 self.assertEqual(payload["verdict"], expected_verdict)
-                self.assertEqual(payload["evidence"][0]["source_type"], "knowledge_source")
+                self.assertEqual(payload["evidence"][0]["source_type"], expected_source_type)
                 self.assertIn(expected_reason, " ".join(payload["claims"][0]["reasons"]))
 
     def test_best_pipeline_handles_false_numeric_comparison(self):

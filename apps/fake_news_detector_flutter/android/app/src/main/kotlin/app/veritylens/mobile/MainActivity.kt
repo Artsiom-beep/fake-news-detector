@@ -3,7 +3,6 @@ package app.veritylens.mobile
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -161,10 +160,7 @@ class MainActivity : FlutterActivity() {
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             putExtra("android.content.extra.SHOW_ADVANCED", true)
             if (forceDocumentsUi) {
-                component = ComponentName(
-                    "com.google.android.documentsui",
-                    "com.android.documentsui.picker.PickActivity"
-                )
+                setPackage("com.google.android.documentsui")
             }
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             if (action == Intent.ACTION_OPEN_DOCUMENT) {

@@ -45,7 +45,7 @@ def _looks_like_simple_knowledge_text(text: str) -> bool:
     )
     if re.search(rf"\b(?:{number_word})\b", low) and re.search(rf"\b{numeric_words}\b", low):
         return True
-    if re.search(r"\b(causes?|cures?|includes?|orbits?|prevents?|treats?)\b", low):
+    if re.search(r"\b(causes?|cures?|includes?|lives?|orbits?|prevents?|treats?)\b", low):
         return True
     if re.match(r"^[a-z0-9][a-z0-9\s'-]{1,55}\s+(?:can|cannot|can not|can't)\s+.{2,60}$", low):
         return True

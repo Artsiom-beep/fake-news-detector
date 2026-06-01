@@ -430,7 +430,7 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
     ),
     "lemon": KnowledgeFact(
         true_properties=frozenset({"yellow", "sour", "edible", "eatable", "fruit", "food"}),
-        false_properties=frozenset({"blue", "purple", "salty", "poisonous", "dangerous"}),
+        false_properties=frozenset({"blue", "purple", "salty", "sweet", "poisonous", "dangerous"}),
         source_url="https://en.wikipedia.org/wiki/Lemon",
         source_title="Common knowledge: lemon",
     ),
@@ -466,15 +466,33 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
     ),
     "cat": KnowledgeFact(
         true_properties=frozenset({"animal", "mammal", "pet"}),
-        false_properties=frozenset({"plant", "vegetable", "mineral"}),
+        false_properties=frozenset({"plant", "vegetable", "mineral", "bird", "fish", "can fly", "fly"}),
         source_url="https://en.wikipedia.org/wiki/Cat",
         source_title="Common knowledge: cat",
     ),
     "dog": KnowledgeFact(
         true_properties=frozenset({"animal", "mammal", "pet"}),
-        false_properties=frozenset({"plant", "vegetable", "mineral"}),
+        false_properties=frozenset({"plant", "vegetable", "mineral", "bird", "fish", "can fly", "fly"}),
         source_url="https://en.wikipedia.org/wiki/Dog",
         source_title="Common knowledge: dog",
+    ),
+    "bird": KnowledgeFact(
+        true_properties=frozenset({"animal", "can fly", "fly", "has feathers", "feathers"}),
+        false_properties=frozenset({"fish", "plant", "mammal", "insect"}),
+        source_url="https://en.wikipedia.org/wiki/Bird",
+        source_title="Common knowledge: bird",
+    ),
+    "fish": KnowledgeFact(
+        true_properties=frozenset({"animal", "live in water", "lives in water", "aquatic", "can swim", "swim"}),
+        false_properties=frozenset({"bird", "plant", "mammal", "can fly", "fly"}),
+        source_url="https://en.wikipedia.org/wiki/Fish",
+        source_title="Common knowledge: fish",
+    ),
+    "mars": KnowledgeFact(
+        true_properties=frozenset({"planet", "red planet", "orbits sun", "orbits the sun"}),
+        false_properties=frozenset({"star", "moon", "capital"}),
+        source_url="https://en.wikipedia.org/wiki/Mars",
+        source_title="Common knowledge: Mars",
     ),
     "elephant": KnowledgeFact(
         true_properties=frozenset({"animal", "mammal", "large", "big"}),
@@ -583,11 +601,21 @@ def _load_common_facts(path: Path = COMMON_FACTS_PATH) -> dict[str, KnowledgeFac
         payload = json.loads(path.read_text(encoding="utf-8"))
         facts = payload.get("facts", {})
         for subject, item in facts.items():
-            merged[_normalize_phrase(subject)] = KnowledgeFact(
-                true_properties=frozenset(_normalize_phrase(value) for value in item.get("true_properties", [])),
-                false_properties=frozenset(_normalize_phrase(value) for value in item.get("false_properties", [])),
-                source_url=item.get("source_url", ""),
-                source_title=item.get("source_title", f"Common knowledge: {subject}"),
+            normalized_subject = _normalize_phrase(subject)
+            existing = merged.get(normalized_subject)
+            true_properties = frozenset(_normalize_phrase(value) for value in item.get("true_properties", []))
+            false_properties = frozenset(_normalize_phrase(value) for value in item.get("false_properties", []))
+            if existing is not None:
+                true_properties = existing.true_properties | true_properties
+                false_properties = existing.false_properties | false_properties
+            merged[normalized_subject] = KnowledgeFact(
+                true_properties=true_properties,
+                false_properties=false_properties,
+                source_url=item.get("source_url", existing.source_url if existing else ""),
+                source_title=item.get(
+                    "source_title",
+                    existing.source_title if existing else f"Common knowledge: {subject}",
+                ),
             )
         return merged
     except Exception:
@@ -698,6 +726,8 @@ RELATION_VERBS = {
     "cures",
     "include",
     "includes",
+    "live",
+    "lives",
     "orbit",
     "orbits",
     "prevent",
@@ -955,6 +985,86 @@ def _record_trace(
                 "passage": evidence.passage,
             }
         )
+
+
+def _decide_reversed_capital_statement(
+    claim: ClaimCandidate,
+    subject: str,
+    properties: list[tuple[str, bool]],
+    trace: FactCheckTrace,
+) -> ClaimDecision | None:
+    if not properties:
+        return None
+
+    normalized_subject = _normalize_phrase(subject)
+    supported: list[str] = []
+    refuted: list[str] = []
+    facts: list[tuple[str, KnowledgeFact]] = []
+    for prop, negated in properties:
+        fact_subject, fact = _lookup_common_fact(prop)
+        if fact is None or not fact_subject.startswith("capital of "):
+            return None
+        facts.append((fact_subject, fact))
+        if _property_in(normalized_subject, fact.true_properties):
+            (refuted if negated else supported).append(fact_subject)
+        elif _property_in(normalized_subject, fact.false_properties):
+            (supported if negated else refuted).append(fact_subject)
+        else:
+            return None
+
+    if refuted:
+        verdict = "fake"
+        stance = "refute"
+        confidence = 0.78
+        support_score = 0.0
+        refute_score = 0.86
+        checked = ", ".join(refuted)
+        reason = f"reversed_capital_refutes={checked}"
+        passage = f"Local common-knowledge rules refute {normalized_subject} as matching: {checked}."
+    else:
+        verdict = "true"
+        stance = "support"
+        confidence = 0.82
+        support_score = 0.88
+        refute_score = 0.0
+        checked = ", ".join(supported)
+        reason = f"reversed_capital_supports={checked}"
+        passage = f"Local common-knowledge rules support {normalized_subject} as matching: {checked}."
+
+    fact_subject, fact = facts[0]
+    evidence = EvidenceItem(
+        url=fact.source_url,
+        title=fact.source_title,
+        stance=stance,
+        score=max(support_score, refute_score),
+        snippet="The best-accuracy pipeline uses a small local rule base for stable capital-city facts.",
+        passage=passage,
+        source_type="common_knowledge",
+        source_trust=0.72,
+        relevance=0.95,
+        freshness=0.55,
+        domain="local_common_knowledge",
+        verdict_source="local_common_knowledge_v1",
+        claim_match_score=1.0,
+    )
+    reasons = [
+        "strategy=common_knowledge",
+        f"common_knowledge_subject={fact_subject}",
+        reason,
+    ]
+    _record_trace(claim, trace, reasons, evidence)
+    return ClaimDecision(
+        claim=claim,
+        verdict=verdict,
+        confidence=confidence,
+        support_score=support_score,
+        refute_score=refute_score,
+        neutral_score=0.0,
+        independent_sources=1,
+        trusted_hits=0,
+        reasons=reasons,
+        evidence=[evidence],
+    )
 
 
 def _lookup_health_terminology_fact(subject: str) -> tuple[str, HealthTerminologyFact | None]:
@@ -1362,7 +1472,7 @@ def _split_statement(claim_text: str) -> tuple[str, list[tuple[str, bool]]] | No
             return (subject, [(prop, negated)]) if subject and prop else None
         relation_match = re.match(
             r"^(?P<subject>[a-z0-9 -]+?)\s+"
-            r"(?P<verb>causes?|cures?|includes?|orbits?|prevents?|treats?)\s+"
+            r"(?P<verb>causes?|cures?|includes?|lives?|orbits?|prevents?|treats?)\s+"
             r"(?P<object>.+)$",
             text,
         )
@@ -1568,6 +1678,10 @@ def decide_common_knowledge(
     health_terminology_decision = _decide_health_terminology_statement(claim, subject, properties, trace)
     if health_terminology_decision is not None:
         return health_terminology_decision
+
+    reversed_capital_decision = _decide_reversed_capital_statement(claim, subject, properties, trace)
+    if reversed_capital_decision is not None:
+        return reversed_capital_decision
 
     subject, fact = _lookup_common_fact(subject)
     if fact is None:

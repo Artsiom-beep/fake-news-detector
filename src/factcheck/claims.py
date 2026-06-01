@@ -36,6 +36,8 @@ SHORT_FACT_VERBS = {
     "cures",
     "include",
     "includes",
+    "live",
+    "lives",
     "orbit",
     "orbits",
     "prevent",
