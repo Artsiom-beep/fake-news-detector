@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import os
+from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,6 +42,18 @@ class FactCheckRequest(BaseModel):
         extra = "ignore"
 
 
+def _parse_metadata_context(raw: str) -> dict[str, Any]:
+    if not raw or not raw.strip():
+        return {}
+    try:
+        decoded = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(decoded, dict):
+        return {}
+    return decoded
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "factcheck"}
@@ -67,6 +81,7 @@ async def factcheck_image(
     image_file: UploadFile = File(...),
     analysis_type: str = Form(default="screenshot"),
     question: str = Form(default=""),
+    metadata_context: str = Form(default=""),
 ):
     image_bytes = await image_file.read()
     if not image_bytes:
@@ -80,6 +95,7 @@ async def factcheck_image(
                 image_bytes,
                 filename=image_file.filename or "",
                 question=question,
+                image_context=_parse_metadata_context(metadata_context),
             ).to_public_dict()
         return run_screenshot_factcheck(
             image_bytes,

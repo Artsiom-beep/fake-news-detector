@@ -1913,6 +1913,48 @@ Write-Output 'apk name policy ok'
         self.assertIn("android_exported_jpeg_without_camera_metadata", exported_payload["image_analysis"]["reasons"])
         self.assertIn("limited_metadata_only_ai_check", exported_payload["image_analysis"]["warnings"])
 
+    def test_ai_image_detection_uses_android_camera_context_when_exif_missing(self):
+        payload = run_ai_image_check(
+            _jpeg_bytes(width=3024, height=4032),
+            filename="JPEG_20260531_220216_5644303770958571372.jpg",
+            image_context={
+                "source": "camera_original_list",
+                "usedOriginalUri": True,
+                "relativePath": "DCIM/Camera/",
+                "bucketName": "Camera",
+                "dateTaken": 1772290936000,
+                "sizeBytes": 2_600_000,
+                "width": 3024,
+                "height": 4032,
+                "uriAuthority": "media",
+            },
+        ).to_public_dict()
+
+        self.assertEqual(payload["image_analysis"]["ai_label"], "likely_not_ai")
+        self.assertLessEqual(payload["image_analysis"]["ai_generated_score"], 0.24)
+        self.assertIn("android_camera_library_context", payload["image_analysis"]["reasons"])
+        self.assertNotIn("android_exported_jpeg_without_camera_metadata", payload["image_analysis"]["reasons"])
+        self.assertIn("selection_context", payload["image_analysis"]["metadata"])
+
+    def test_ai_image_detection_keeps_non_camera_picker_context_uncertain(self):
+        payload = run_ai_image_check(
+            _jpeg_bytes(width=1024, height=1024),
+            filename="downloaded.jpg",
+            image_context={
+                "source": "selected_image",
+                "relativePath": "Pictures/",
+                "bucketName": "Pictures",
+                "sizeBytes": 420_000,
+                "width": 1024,
+                "height": 1024,
+                "uriAuthority": "com.android.providers.media.documents",
+            },
+        ).to_public_dict()
+
+        self.assertEqual(payload["image_analysis"]["ai_label"], "uncertain")
+        self.assertIn("metadata_context_not_camera_origin", payload["image_analysis"]["warnings"])
+        self.assertNotIn("android_camera_library_context", payload["image_analysis"]["reasons"])
+
     @patch("factcheck.image_analysis._optional_ai_model_signal")
     def test_ai_image_detection_does_not_accuse_on_model_only_ai_signal(self, mock_model):
         mock_model.return_value = ImageModelSignal(
@@ -2050,6 +2092,31 @@ Write-Output 'apk name policy ok'
         payload = response.json()
         self.assertEqual(payload["image_analysis"]["mode"], "ai_image_detection")
         self.assertEqual(payload["image_analysis"]["ai_label"], "likely_ai")
+
+    def test_api_factcheck_image_accepts_metadata_context(self):
+        client = TestClient(api_app)
+        response = client.post(
+            "/factcheck-image",
+            data={
+                "analysis_type": "ai_image",
+                "metadata_context": json.dumps(
+                    {
+                        "source": "latest_camera",
+                        "relativePath": "DCIM/Camera/",
+                        "dateTaken": 1772290936000,
+                        "sizeBytes": 1_200_000,
+                        "width": 3024,
+                        "height": 4032,
+                        "uriAuthority": "media",
+                    }
+                ),
+            },
+            files={"image_file": ("photo.jpg", _jpeg_bytes(width=3024, height=4032), "image/jpeg")},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        payload = response.json()
+        self.assertEqual(payload["image_analysis"]["ai_label"], "likely_not_ai")
+        self.assertIn("android_camera_library_context", payload["image_analysis"]["reasons"])
 
     def test_api_factcheck_image_rejects_unknown_analysis_type(self):
         client = TestClient(api_app)

@@ -304,7 +304,12 @@ class MainActivity : FlutterActivity() {
                     "bytes" to bytes,
                     "mimeType" to targetMimeType,
                     "usedOriginalUri" to (originalUri != uri),
-                    "source" to if (cameraTwin != null) "matched_camera_original" else "selected_image"
+                    "source" to if (cameraTwin != null) "matched_camera_original" else "selected_image",
+                    "context" to if (cameraTwin != null) {
+                        mediaContext(cameraTwin, "matched_camera_original", originalUri != uri)
+                    } else {
+                        selectedUriContext(uri, selectedName, targetMimeType, originalUri != uri)
+                    }
                 )
             )
         } catch (error: Exception) {
@@ -333,7 +338,8 @@ class MainActivity : FlutterActivity() {
                     "bytes" to bytes,
                     "mimeType" to media.mimeType,
                     "usedOriginalUri" to (originalUri != media.uri),
-                    "source" to "latest_camera"
+                    "source" to "latest_camera",
+                    "context" to mediaContext(media, "latest_camera", originalUri != media.uri)
                 )
             )
         } catch (error: Exception) {
@@ -347,9 +353,12 @@ class MainActivity : FlutterActivity() {
         val name: String,
         val mimeType: String,
         val dateTaken: Long,
+        val dateAdded: Long,
         val sizeBytes: Long,
         val width: Int,
-        val height: Int
+        val height: Int,
+        val relativePath: String,
+        val bucketName: String
     )
 
     private fun queryLatestImage(cameraOnly: Boolean): MediaItem? {
@@ -395,9 +404,12 @@ class MainActivity : FlutterActivity() {
                         "name" to media.name,
                         "mimeType" to media.mimeType,
                         "dateTaken" to media.dateTaken,
+                        "dateAdded" to media.dateAdded,
                         "sizeBytes" to media.sizeBytes,
                         "width" to media.width,
                         "height" to media.height,
+                        "relativePath" to media.relativePath,
+                        "bucketName" to media.bucketName,
                         "thumbnail" to thumbnailBytes(media.uri)
                     )
                 )
@@ -425,7 +437,8 @@ class MainActivity : FlutterActivity() {
                     "bytes" to bytes,
                     "mimeType" to media.mimeType,
                     "usedOriginalUri" to (originalUri != media.uri),
-                    "source" to "camera_original_list"
+                    "source" to "camera_original_list",
+                    "context" to mediaContext(media, "camera_original_list", originalUri != media.uri)
                 )
             )
         } catch (error: Exception) {
@@ -457,7 +470,8 @@ class MainActivity : FlutterActivity() {
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media.WIDTH,
-            MediaStore.Images.Media.HEIGHT
+            MediaStore.Images.Media.HEIGHT,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             projection.add(MediaStore.Images.Media.RELATIVE_PATH)
@@ -494,9 +508,12 @@ class MainActivity : FlutterActivity() {
             name = name,
             mimeType = mimeType,
             dateTaken = cursorLong(cursor, MediaStore.Images.Media.DATE_TAKEN),
+            dateAdded = cursorLong(cursor, MediaStore.Images.Media.DATE_ADDED),
             sizeBytes = cursorLong(cursor, MediaStore.Images.Media.SIZE),
             width = cursorInt(cursor, MediaStore.Images.Media.WIDTH),
-            height = cursorInt(cursor, MediaStore.Images.Media.HEIGHT)
+            height = cursorInt(cursor, MediaStore.Images.Media.HEIGHT),
+            relativePath = cursorString(cursor, MediaStore.Images.Media.RELATIVE_PATH),
+            bucketName = cursorString(cursor, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
         )
     }
 
@@ -523,6 +540,63 @@ class MainActivity : FlutterActivity() {
     private fun cursorInt(cursor: android.database.Cursor, column: String): Int {
         val index = cursor.getColumnIndex(column)
         return if (index >= 0 && !cursor.isNull(index)) cursor.getInt(index) else 0
+    }
+
+    private fun cursorString(cursor: android.database.Cursor, column: String): String {
+        val index = cursor.getColumnIndex(column)
+        return if (index >= 0 && !cursor.isNull(index)) cursor.getString(index) ?: "" else ""
+    }
+
+    private fun mediaContext(media: MediaItem, source: String, usedOriginalUri: Boolean): Map<String, Any?> {
+        return mapOf(
+            "source" to source,
+            "usedOriginalUri" to usedOriginalUri,
+            "filename" to media.name,
+            "mimeType" to media.mimeType,
+            "mediaStoreId" to media.id,
+            "dateTaken" to media.dateTaken,
+            "dateAdded" to media.dateAdded,
+            "sizeBytes" to media.sizeBytes,
+            "width" to media.width,
+            "height" to media.height,
+            "relativePath" to media.relativePath,
+            "bucketName" to media.bucketName,
+            "uriAuthority" to media.uri.authority
+        )
+    }
+
+    private fun selectedUriContext(
+        uri: Uri,
+        name: String,
+        mimeType: String,
+        usedOriginalUri: Boolean
+    ): Map<String, Any?> {
+        val context = mutableMapOf<String, Any?>(
+            "source" to "selected_image",
+            "usedOriginalUri" to usedOriginalUri,
+            "filename" to name,
+            "mimeType" to mimeType,
+            "uriAuthority" to uri.authority
+        )
+        contentResolver.query(
+            uri,
+            arrayOf(OpenableColumns.SIZE, OpenableColumns.DISPLAY_NAME),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                if (sizeIndex >= 0 && !cursor.isNull(sizeIndex)) {
+                    context["sizeBytes"] = cursor.getLong(sizeIndex)
+                }
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex >= 0 && !cursor.isNull(nameIndex)) {
+                    context["displayName"] = cursor.getString(nameIndex)
+                }
+            }
+        }
+        return context
     }
 
     private fun queryCameraTwinForExportedName(displayName: String): MediaItem? {

@@ -20,6 +20,7 @@ abstract class FactCheckGateway {
     required String filename,
     required ImageAnalysisType analysisType,
     String question = '',
+    Map<String, dynamic> metadataContext = const <String, dynamic>{},
   });
 }
 
@@ -126,6 +127,7 @@ class FactCheckApiClient implements FactCheckGateway {
     required String filename,
     required ImageAnalysisType analysisType,
     String question = '',
+    Map<String, dynamic> metadataContext = const <String, dynamic>{},
   }) async {
     final request = http.MultipartRequest('POST', _uri('/factcheck-image'))
       ..fields['analysis_type'] = analysisType.apiValue
@@ -138,6 +140,9 @@ class FactCheckApiClient implements FactCheckGateway {
           contentType: _mediaTypeForFilename(filename),
         ),
       );
+    if (metadataContext.isNotEmpty) {
+      request.fields['metadata_context'] = jsonEncode(metadataContext);
+    }
 
     try {
       final streamed = await _httpClient.send(request).timeout(imageTimeout);
@@ -293,25 +298,35 @@ class FactCheckResult {
           reasons.any((reason) => reason.startsWith('ai_metadata_marker='));
       final hasAiFilename =
           reasons.any((reason) => reason.startsWith('ai_filename_marker='));
-      final hasCameraMetadata =
-          reasons.any((reason) => reason.startsWith('camera_metadata_present='));
+      final hasCameraMetadata = reasons
+          .any((reason) => reason.startsWith('camera_metadata_present='));
+      final hasCameraContext =
+          reasons.contains('android_camera_library_context');
       final hasStrongModelSignal =
           reasons.any((reason) => reason.startsWith('model_strong_ai_signal'));
-      final metadataMissing = warnings.contains('camera_metadata_missing_not_proof');
+      final metadataMissing =
+          warnings.contains('camera_metadata_missing_not_proof');
       const scoreLabel = 'Metadata risk';
 
       if (hasAiMetadata) {
-        return StatusView('AI metadata found', StatusTone.bad, score, scoreLabel);
+        return StatusView(
+            'AI metadata found', StatusTone.bad, score, scoreLabel);
       }
       if (hasAiFilename) {
-        return StatusView('AI filename clue', StatusTone.warn, score, scoreLabel);
+        return StatusView(
+            'AI filename clue', StatusTone.warn, score, scoreLabel);
       }
       if (label == 'likely_ai') {
-        return StatusView('AI signals found', StatusTone.bad, score, scoreLabel);
+        return StatusView(
+            'AI signals found', StatusTone.bad, score, scoreLabel);
       }
       if (hasCameraMetadata) {
         return StatusView(
             'Camera metadata found', StatusTone.good, score, scoreLabel);
+      }
+      if (hasCameraContext) {
+        return StatusView(
+            'Camera source found', StatusTone.good, score, scoreLabel);
       }
       if (label == 'likely_not_ai') {
         return StatusView(

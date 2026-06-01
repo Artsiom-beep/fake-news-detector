@@ -389,6 +389,7 @@ class FakeGateway implements FactCheckGateway {
     required String filename,
     required ImageAnalysisType analysisType,
     String question = '',
+    Map<String, dynamic> metadataContext = const <String, dynamic>{},
   }) async {
     return imageResult ??
         FactCheckResult({

@@ -326,7 +326,17 @@ class _VerificationHomeState extends State<VerificationHome> {
     if (file == null || file.bytes == null) {
       return null;
     }
-    return PickedImage(name: file.name, bytes: file.bytes!);
+    return PickedImage(
+      name: file.name,
+      bytes: file.bytes!,
+      mimeType: _mimeTypeFromName(file.name),
+      source: 'flutter_file_picker',
+      mediaContext: {
+        'source': 'flutter_file_picker',
+        'sizeBytes': file.size,
+        if ((file.extension ?? '').isNotEmpty) 'extension': file.extension,
+      },
+    );
   }
 
   Future<void> _pickLatestCameraImage() async {
@@ -372,6 +382,7 @@ class _VerificationHomeState extends State<VerificationHome> {
         bytes: image.bytes,
         filename: image.name,
         analysisType: ImageAnalysisType.aiImage,
+        metadataContext: image.metadataContext,
       ),
     );
   }
@@ -1329,6 +1340,27 @@ String _friendlyImageSignal(String value) {
   if (value.startsWith('camera_metadata_present=')) {
     return 'Original camera metadata is present.';
   }
+  if (value == 'android_camera_library_context') {
+    return 'Android says this file came from the camera library.';
+  }
+  if (value.startsWith('android_camera_source=')) {
+    return 'Selected through the phone camera source.';
+  }
+  if (value == 'media_store_date_taken_present') {
+    return 'The phone library has a camera date for this image.';
+  }
+  if (value.startsWith('media_store_dimensions=')) {
+    return 'The phone library has image dimensions for this file.';
+  }
+  if (value == 'media_store_original_uri_used') {
+    return 'Android allowed reading the original media file.';
+  }
+  if (value == 'metadata_context_not_camera_origin') {
+    return 'The selected file was not confirmed as a camera original.';
+  }
+  if (value == 'camera_context_not_proof') {
+    return 'Phone library context supports camera origin, but it is not proof.';
+  }
   if (value.startsWith('common_square_ai_dimension=')) {
     return 'The image uses a common square generation size.';
   }
@@ -1442,9 +1474,12 @@ class CameraImageItem {
     required this.name,
     required this.mimeType,
     required this.dateTaken,
+    required this.dateAdded,
     required this.sizeBytes,
     required this.width,
     required this.height,
+    required this.relativePath,
+    required this.bucketName,
     required this.thumbnail,
   });
 
@@ -1452,12 +1487,16 @@ class CameraImageItem {
   final String name;
   final String mimeType;
   final int dateTaken;
+  final int dateAdded;
   final int sizeBytes;
   final int width;
   final int height;
+  final String relativePath;
+  final String bucketName;
   final Uint8List? thumbnail;
 
-  String get dateLabel => _formatPhotoDate(dateTaken);
+  String get dateLabel =>
+      _formatPhotoDate(dateTaken > 0 ? dateTaken : dateAdded * 1000);
   String get sizeLabel => _formatFileSize(sizeBytes);
   String get dimensionsLabel =>
       width > 0 && height > 0 ? '${width}x$height' : '';
@@ -1470,9 +1509,12 @@ class CameraImageItem {
           : 'camera_original.jpg',
       mimeType: (map['mimeType'] as String?) ?? 'image/jpeg',
       dateTaken: _asInt(map['dateTaken']),
+      dateAdded: _asInt(map['dateAdded']),
       sizeBytes: _asInt(map['sizeBytes']),
       width: _asInt(map['width']),
       height: _asInt(map['height']),
+      relativePath: (map['relativePath'] as String?) ?? '',
+      bucketName: (map['bucketName'] as String?) ?? '',
       thumbnail:
           map['thumbnail'] is Uint8List ? map['thumbnail'] as Uint8List : null,
     );
@@ -1480,10 +1522,34 @@ class CameraImageItem {
 }
 
 class PickedImage {
-  const PickedImage({required this.name, required this.bytes});
+  const PickedImage({
+    required this.name,
+    required this.bytes,
+    this.mimeType = 'image/jpeg',
+    this.source = '',
+    this.usedOriginalUri = false,
+    this.mediaContext = const <String, dynamic>{},
+  });
 
   final String name;
   final Uint8List bytes;
+  final String mimeType;
+  final String source;
+  final bool usedOriginalUri;
+  final Map<String, dynamic> mediaContext;
+
+  Map<String, dynamic> get metadataContext {
+    final context = <String, dynamic>{...mediaContext};
+    context['filename'] = name;
+    if (mimeType.trim().isNotEmpty) {
+      context['mimeType'] = mimeType;
+    }
+    if (source.trim().isNotEmpty) {
+      context['source'] = source;
+    }
+    context['usedOriginalUri'] = usedOriginalUri;
+    return context;
+  }
 }
 
 int _asInt(dynamic value) {
@@ -1497,6 +1563,57 @@ int _asInt(dynamic value) {
     return int.tryParse(value) ?? 0;
   }
   return 0;
+}
+
+bool _asBool(dynamic value) {
+  if (value is bool) {
+    return value;
+  }
+  if (value is num) {
+    return value != 0;
+  }
+  if (value is String) {
+    final normalized = value.trim().toLowerCase();
+    return normalized == 'true' || normalized == '1' || normalized == 'yes';
+  }
+  return false;
+}
+
+String _asString(dynamic value) {
+  return value is String ? value.trim() : '';
+}
+
+Map<String, dynamic> _stringDynamicMap(dynamic value) {
+  if (value is! Map) {
+    return <String, dynamic>{};
+  }
+  final mapped = <String, dynamic>{};
+  value.forEach((key, rawValue) {
+    if (key == null || rawValue == null) {
+      return;
+    }
+    if (rawValue is String || rawValue is num || rawValue is bool) {
+      mapped[key.toString()] = rawValue;
+    }
+  });
+  return mapped;
+}
+
+String _mimeTypeFromName(String filename) {
+  final lower = filename.toLowerCase();
+  if (lower.endsWith('.png')) {
+    return 'image/png';
+  }
+  if (lower.endsWith('.webp')) {
+    return 'image/webp';
+  }
+  if (lower.endsWith('.bmp')) {
+    return 'image/bmp';
+  }
+  if (lower.endsWith('.tif') || lower.endsWith('.tiff')) {
+    return 'image/tiff';
+  }
+  return 'image/jpeg';
 }
 
 String _formatPhotoDate(int millisecondsSinceEpoch) {
@@ -1575,7 +1692,25 @@ class AndroidOriginalImagePicker {
     if (bytes is! Uint8List || name is! String || name.trim().isEmpty) {
       return null;
     }
-    return PickedImage(name: name, bytes: bytes);
+    final context = _stringDynamicMap(result['context']);
+    final mimeType = _asString(result['mimeType']);
+    final source = _asString(result['source']);
+    final usedOriginalUri = _asBool(result['usedOriginalUri']);
+    if (mimeType.isNotEmpty) {
+      context['mimeType'] = mimeType;
+    }
+    if (source.isNotEmpty) {
+      context['source'] = source;
+    }
+    context['usedOriginalUri'] = usedOriginalUri;
+    return PickedImage(
+      name: name,
+      bytes: bytes,
+      mimeType: mimeType.isNotEmpty ? mimeType : _mimeTypeFromName(name),
+      source: source,
+      usedOriginalUri: usedOriginalUri,
+      mediaContext: context,
+    );
   }
 }
 

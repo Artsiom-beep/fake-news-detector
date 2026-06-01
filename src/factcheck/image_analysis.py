@@ -79,6 +79,118 @@ class ImageModelSignal:
     warnings: list[str]
 
 
+CONTEXT_STRING_KEYS = {
+    "source",
+    "filename",
+    "displayName",
+    "mimeType",
+    "relativePath",
+    "bucketName",
+    "uriAuthority",
+    "extension",
+}
+CONTEXT_INT_KEYS = {
+    "mediaStoreId",
+    "dateTaken",
+    "dateAdded",
+    "sizeBytes",
+    "width",
+    "height",
+}
+CONTEXT_BOOL_KEYS = {"usedOriginalUri"}
+ANDROID_CAMERA_SOURCES = {"latest_camera", "camera_original_list", "matched_camera_original"}
+
+
+def _safe_image_context(image_context: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(image_context, dict):
+        return {}
+    safe: dict[str, Any] = {}
+    for key in CONTEXT_STRING_KEYS:
+        value = image_context.get(key)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            safe[key] = text[:180]
+    for key in CONTEXT_INT_KEYS:
+        value = image_context.get(key)
+        try:
+            number = int(value)
+        except (TypeError, ValueError):
+            continue
+        if number >= 0:
+            safe[key] = number
+    for key in CONTEXT_BOOL_KEYS:
+        value = image_context.get(key)
+        if isinstance(value, bool):
+            safe[key] = value
+        elif isinstance(value, (int, float)):
+            safe[key] = bool(value)
+        elif isinstance(value, str):
+            safe[key] = value.strip().lower() in {"1", "true", "yes"}
+    return safe
+
+
+def _context_int(context: dict[str, Any], key: str) -> int:
+    value = context.get(key)
+    return value if isinstance(value, int) else 0
+
+
+def _camera_context_signal(context: dict[str, Any]) -> tuple[bool, list[str], list[str]]:
+    if not context:
+        return False, [], []
+    source = str(context.get("source", "")).strip().lower()
+    relative_path = str(context.get("relativePath", "")).replace("\\", "/").lower()
+    bucket_name = str(context.get("bucketName", "")).strip().lower()
+    uri_authority = str(context.get("uriAuthority", "")).strip().lower()
+    width = _context_int(context, "width")
+    height = _context_int(context, "height")
+    size_bytes = _context_int(context, "sizeBytes")
+    date_taken = _context_int(context, "dateTaken")
+    date_added = _context_int(context, "dateAdded")
+    used_original_uri = bool(context.get("usedOriginalUri"))
+
+    source_is_camera = source in ANDROID_CAMERA_SOURCES
+    path_is_camera = "dcim/camera" in relative_path or bucket_name in {"camera", "camera roll", "cameraroll"}
+    media_store_source = "media" in uri_authority or source_is_camera
+    has_date = date_taken > 0 or date_added > 0
+    has_dimensions = width > 0 and height > 0
+    has_file_size = size_bytes > 0
+
+    reasons: list[str] = []
+    warnings: list[str] = []
+    strength = 0
+    if source_is_camera:
+        strength += 2
+        reasons.append("android_camera_library_context")
+        reasons.append(f"android_camera_source={source}")
+    if path_is_camera:
+        strength += 2
+        if "android_camera_library_context" not in reasons:
+            reasons.append("android_camera_library_context")
+        reasons.append("android_camera_path=dcim_camera")
+    if used_original_uri:
+        strength += 1
+        reasons.append("media_store_original_uri_used")
+    if has_date:
+        strength += 1
+        reasons.append("media_store_date_taken_present")
+    if has_dimensions:
+        strength += 1
+        reasons.append(f"media_store_dimensions={width}x{height}")
+    if has_file_size:
+        strength += 1
+    if media_store_source:
+        strength += 1
+
+    strong = (source_is_camera or path_is_camera) and strength >= 4
+    if strong:
+        warnings.append("camera_context_not_proof")
+    elif context:
+        warnings.append("metadata_context_not_camera_origin")
+    return strong, reasons, warnings
+
+
 def _validate_image(image_bytes: bytes) -> Image.Image:
     if not image_bytes:
         raise ValueError("No image bytes were provided.")
@@ -337,12 +449,18 @@ def _optional_ai_model_signal(image: Image.Image) -> ImageModelSignal:
     )
 
 
-def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResult:
+def detect_ai_image(
+    image_bytes: bytes,
+    filename: str = "",
+    image_context: dict[str, Any] | None = None,
+) -> ImageAnalysisResult:
     image = _validate_image(image_bytes)
     raw_image = Image.open(BytesIO(image_bytes))
     raw_image.load()
     metadata = _metadata_dict(raw_image)
     metadata.update(_image_stat_features(image))
+    safe_context = _safe_image_context(image_context)
+    camera_context_strong, context_reasons, context_warnings = _camera_context_signal(safe_context)
     metadata_text = " ".join(str(value).lower() for value in metadata.values())
     filename_text = Path(filename or "").name.lower()
 
@@ -365,6 +483,13 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
     if camera_keys:
         score = max(0.0, score - 0.14)
         reasons.append(f"camera_metadata_present={','.join(sorted(camera_keys))}")
+        if context_reasons:
+            reasons.extend(context_reasons)
+        warnings.extend(context_warnings)
+    elif camera_context_strong:
+        score = max(0.0, score - 0.10)
+        reasons.extend(context_reasons)
+        warnings.extend(context_warnings)
     else:
         score += 0.08
         warnings.append("camera_metadata_missing_not_proof")
@@ -373,6 +498,7 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
             weak_ai_signals += 1
             reasons.append("android_exported_jpeg_without_camera_metadata")
             warnings.append("image_may_be_exported_or_shared_not_original_camera")
+        warnings.extend(context_warnings)
 
     width = int(metadata.get("width", 0) or 0)
     height = int(metadata.get("height", 0) or 0)
@@ -439,15 +565,19 @@ def detect_ai_image(image_bytes: bytes, filename: str = "") -> ImageAnalysisResu
 
     if matched_markers or filename_markers:
         score = max(score, 0.90)
+    elif camera_context_strong and not strong_ai_model and not suspicious_ai_model:
+        score = min(score, 0.24)
 
     score = max(0.0, min(1.0, score))
     if matched_markers or filename_markers or strong_ai_model:
         label = "likely_ai"
-    elif strong_real_model:
+    elif strong_real_model or (camera_context_strong and not suspicious_ai_model):
         label = "likely_not_ai"
     else:
         label = "uncertain"
         warnings.append("ai_image_detection_not_definitive")
+    if safe_context:
+        metadata["selection_context"] = safe_context
 
     return ImageAnalysisResult(
         mode="ai_image_detection",
@@ -530,8 +660,9 @@ def run_ai_image_check(
     image_bytes: bytes,
     filename: str = "",
     question: str = "",
+    image_context: dict[str, Any] | None = None,
 ) -> FactCheckResult:
-    analysis = detect_ai_image(image_bytes, filename=filename)
+    analysis = detect_ai_image(image_bytes, filename=filename, image_context=image_context)
     config = build_config()
     trace = FactCheckTrace(mode="best_accuracy")
     trace.decision_reasons.extend(analysis.reasons)
@@ -540,6 +671,7 @@ def run_ai_image_check(
     has_ai_metadata = any(reason.startswith("ai_metadata_marker=") for reason in analysis.reasons)
     has_ai_filename = any(reason.startswith("ai_filename_marker=") for reason in analysis.reasons)
     has_camera_metadata = any(reason.startswith("camera_metadata_present=") for reason in analysis.reasons)
+    has_camera_context = "android_camera_library_context" in analysis.reasons
     metadata_missing = "camera_metadata_missing_not_proof" in analysis.warnings
     if has_ai_metadata:
         summary = (
@@ -562,6 +694,12 @@ def run_ai_image_check(
             "but it does not prove the image was never edited."
         )
         confidence = 0.50
+    elif has_camera_context:
+        summary = (
+            "Android MediaStore context says this image came from the phone camera library. "
+            "That supports a camera-photo origin, but it is still metadata context rather than proof."
+        )
+        confidence = 0.56
     elif label == "likely_not_ai":
         summary = "The image has low metadata risk based on available signals, but this is not proof that it is authentic."
         confidence = 0.55
