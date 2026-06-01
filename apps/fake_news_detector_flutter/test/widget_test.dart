@@ -9,7 +9,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('metadata-only image signals use a weak-clues mobile status', () {
+  test('lightweight image signals use a weak-clues mobile status', () {
     const result = FactCheckResult({
       'verdict': 'uncertain',
       'confidence': 0.34,
@@ -20,7 +20,7 @@ void main() {
         'ai_label': 'uncertain',
         'ai_generated_score': 0.40,
         'reasons': ['android_exported_jpeg_without_camera_metadata'],
-        'warnings': ['limited_metadata_only_ai_check'],
+        'warnings': ['lightweight_visual_ai_check'],
       },
     });
 
@@ -70,7 +70,7 @@ void main() {
     });
 
     expect(aiMetadata.statusView.label, 'AI metadata found');
-    expect(aiMetadata.statusView.scoreLabel, 'Metadata risk');
+    expect(aiMetadata.statusView.scoreLabel, 'AI risk');
     expect(cameraMetadata.statusView.label, 'Camera metadata found');
     expect(cameraMetadata.statusView.tone, StatusTone.good);
     expect(missingMetadata.statusView.label, 'Metadata missing');
@@ -126,7 +126,7 @@ void main() {
 
     await tester.tap(find.text('Images'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Check metadata'));
+    await tester.tap(find.text('Check image'));
     await tester.pumpAndSettle();
 
     expect(find.text('Choose an image first.'), findsOneWidget);

@@ -376,9 +376,12 @@ class FactCheckResult {
           reasons.contains('android_camera_library_context');
       final hasStrongModelSignal =
           reasons.any((reason) => reason.startsWith('model_strong_ai_signal'));
+      final hasVisualSignal = reasons.contains('visual_forensic_ai_signal');
+      final hasWeakVisualSignal =
+          reasons.contains('visual_forensic_weak_ai_signal');
       final metadataMissing =
           warnings.contains('camera_metadata_missing_not_proof');
-      const scoreLabel = 'Metadata risk';
+      const scoreLabel = 'AI risk';
 
       if (hasAiMetadata) {
         return StatusView(
@@ -401,10 +404,12 @@ class FactCheckResult {
             'Camera source found', StatusTone.good, score, scoreLabel);
       }
       if (label == 'likely_not_ai') {
-        return StatusView(
-            'Low metadata risk', StatusTone.good, score, scoreLabel);
+        return StatusView('Low AI risk', StatusTone.good, score, scoreLabel);
       }
-      if (score >= 0.65 || hasStrongModelSignal) {
+      if (score >= 0.65 ||
+          hasStrongModelSignal ||
+          hasVisualSignal ||
+          hasWeakVisualSignal) {
         return StatusView(
             'Possible AI signals', StatusTone.warn, score, scoreLabel);
       }

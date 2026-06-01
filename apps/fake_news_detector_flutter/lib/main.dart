@@ -609,12 +609,12 @@ class _VerificationHomeState extends State<VerificationHome> {
         selectedIcon: Icons.image_search,
         color: const Color(0xff8d4d6f),
         child: ImagePanel(
-          title: 'Image metadata',
+          title: 'AI image check',
           selectedImage: _image,
           pickLabel: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
               ? 'Choose file'
               : 'Open image file',
-          actionLabel: 'Check metadata',
+          actionLabel: 'Check image',
           onPick: _pickImage,
           onPickCameraOriginals:
               !kIsWeb && defaultTargetPlatform == TargetPlatform.android
@@ -1468,10 +1468,10 @@ class ImageAnalysisSection extends StatelessWidget {
     final friendlyWarnings =
         mode == 'screenshot_ocr' ? warnings : _friendlyImageSignals(warnings);
     final reasonLabel =
-        mode == 'screenshot_ocr' ? 'Reasons' : 'Metadata signals';
+        mode == 'screenshot_ocr' ? 'Reasons' : 'Image risk signals';
     final warningLabel = mode == 'screenshot_ocr' ? 'Warnings' : 'Limits';
     final title =
-        mode == 'screenshot_ocr' ? 'Screenshot text' : 'Image metadata';
+        mode == 'screenshot_ocr' ? 'Screenshot text' : 'AI image check';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1561,7 +1561,7 @@ String _friendlyImageSignal(String value) {
     return 'The file looks exported or shared and has no original camera EXIF.';
   }
   if (value == 'optional_ai_image_model_disabled') {
-    return 'The free cloud backend is using lightweight metadata analysis.';
+    return 'The free cloud backend is using lightweight visual and metadata analysis.';
   }
   if (value == 'camera_metadata_missing_not_proof') {
     return 'No original camera metadata was found.';
@@ -1569,11 +1569,17 @@ String _friendlyImageSignal(String value) {
   if (value == 'image_may_be_exported_or_shared_not_original_camera') {
     return 'The file may be exported, shared, downloaded, or stripped.';
   }
-  if (value == 'limited_metadata_only_ai_check') {
-    return 'This cloud check reads metadata, not the full visual content.';
+  if (value == 'lightweight_visual_ai_check') {
+    return 'This cloud check uses lightweight visual signals, not a heavy AI model.';
+  }
+  if (value == 'visual_forensic_signal_not_definitive') {
+    return 'Visual signals are useful context, not proof.';
+  }
+  if (value.startsWith('visual_')) {
+    return 'Visual signal: ${value.replaceAll('_', ' ')}';
   }
   if (value == 'ai_image_detection_not_definitive') {
-    return 'Metadata is useful context, not proof.';
+    return 'Image signals are useful context, not proof.';
   }
   if (value.startsWith('model_')) {
     return 'Optional visual model signal: $value';

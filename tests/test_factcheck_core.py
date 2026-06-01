@@ -99,6 +99,38 @@ def _jpeg_bytes(width: int = 610, height: int = 385) -> bytes:
     return buffer.getvalue()
 
 
+def _ai_jpeg_with_prompt_metadata() -> bytes:
+    image = Image.new("RGB", (1024, 1024), (120, 150, 190))
+    exif = Image.Exif()
+    exif[271] = "sana"
+    exif[37510] = b'ASCII\x00\x00\x00{"prompt":"photorealistic cat","model":"sana","seed":1001}'
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=92, exif=exif)
+    return buffer.getvalue()
+
+
+def _synthetic_smooth_square_jpeg() -> bytes:
+    import numpy as np
+
+    rng = np.random.default_rng(7)
+    coords = np.linspace(0, 1, 1024, dtype=np.float32)
+    xx, yy = np.meshgrid(coords, coords)
+    base = np.stack(
+        [
+            0.55 + 0.25 * np.sin(2 * np.pi * (xx * 1.3 + yy * 0.2)),
+            0.45 + 0.25 * np.sin(2 * np.pi * (yy * 1.1 + 0.3)),
+            0.50 + 0.20 * np.cos(2 * np.pi * (xx * 0.7 - yy * 0.8)),
+        ],
+        axis=2,
+    )
+    vignette = 1 - 0.25 * ((xx - 0.5) ** 2 + (yy - 0.5) ** 2)
+    arr = np.clip(base * vignette[..., None] + rng.normal(0, 0.018, base.shape), 0, 1)
+    image = Image.fromarray((arr * 255).astype("uint8"), "RGB")
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=94)
+    return buffer.getvalue()
+
+
 class FactCheckCoreTests(unittest.TestCase):
     def test_extract_claims_prefers_factual_sentences(self):
         text = (
@@ -1816,8 +1848,8 @@ Write-Output 'apk name policy ok'
         self.assertIn('id="knowledgeSubjectInput"', html)
         self.assertIn("Check news", html)
         self.assertIn("Check fact", html)
-        self.assertIn("Check metadata", html)
-        self.assertIn("Image metadata", html)
+        self.assertIn("Check image", html)
+        self.assertIn("AI image check", html)
         self.assertNotIn("Screenshots", html)
         self.assertNotIn("Check screenshot", html)
 
@@ -1974,7 +2006,24 @@ Write-Output 'apk name policy ok'
         self.assertEqual(exported_payload["image_analysis"]["ai_label"], "uncertain")
         self.assertLess(exported_payload["image_analysis"]["ai_generated_score"], 0.45)
         self.assertIn("android_exported_jpeg_without_camera_metadata", exported_payload["image_analysis"]["reasons"])
-        self.assertIn("limited_metadata_only_ai_check", exported_payload["image_analysis"]["warnings"])
+
+        prompt_payload = run_ai_image_check(
+            _ai_jpeg_with_prompt_metadata(),
+            filename="pollinations_output.jpg",
+        ).to_public_dict()
+        self.assertEqual(prompt_payload["image_analysis"]["ai_label"], "likely_ai")
+        self.assertIn("ai_metadata_marker", " ".join(prompt_payload["image_analysis"]["reasons"]))
+
+    def test_ai_image_detection_uses_lightweight_visual_signals(self):
+        payload = run_ai_image_check(
+            _synthetic_smooth_square_jpeg(),
+            filename="photo_2026-06-01_20-23-01.jpg",
+        ).to_public_dict()
+
+        self.assertEqual(payload["image_analysis"]["ai_label"], "likely_ai")
+        self.assertGreaterEqual(payload["image_analysis"]["ai_generated_score"], 0.70)
+        self.assertIn("visual_forensic_ai_signal", payload["image_analysis"]["reasons"])
+        self.assertIn("lightweight_visual_ai_check", payload["image_analysis"]["warnings"])
 
     def test_ai_image_detection_uses_android_camera_context_when_exif_missing(self):
         payload = run_ai_image_check(
@@ -2113,8 +2162,8 @@ Write-Output 'apk name policy ok'
             ).to_public_dict()
         )
         self.assertIn("AI metadata found", html)
-        self.assertIn("Image metadata check", html)
-        self.assertIn("Metadata risk", html)
+        self.assertIn("AI image check", html)
+        self.assertIn("AI risk", html)
 
     def test_image_eval_manifest_is_versioned_and_readable(self):
         cases = _load_manifest(DEFAULT_MANIFEST)

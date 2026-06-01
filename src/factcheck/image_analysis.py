@@ -19,16 +19,34 @@ SUPPORTED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "BMP", "TIFF"}
 SUPPORTED_TEMP_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff"}
 URL_PATTERN = re.compile(r"\b(?:https?://|www\.)[^\s<>()\"']+", re.I)
 AI_METADATA_MARKERS = {
-    "stable diffusion",
-    "midjourney",
+    '"model"',
+    '"prompt"',
+    "actualmodel",
+    "ai-generated",
+    "ai generated",
+    "automatic1111",
+    "chatgpt",
+    "completionimagetokens",
+    "comfyui",
     "dall-e",
     "dalle",
-    "comfyui",
-    "automatic1111",
-    "novelai",
-    "leonardo ai",
     "firefly",
+    "generated image",
     "ideogram",
+    "image generator",
+    "imagefx",
+    "leonardo ai",
+    "stable diffusion",
+    "midjourney",
+    "negative_prompt",
+    "novelai",
+    "openai",
+    "originalprompt",
+    "pollinations",
+    "sana",
+    "seed",
+    "stable-diffusion",
+    "trackingdata",
 }
 AI_FILENAME_MARKERS = {
     "ai-generated",
@@ -331,6 +349,21 @@ def extract_ocr_text(image_bytes: bytes, filename: str = "") -> OCRResult:
     )
 
 
+def _metadata_value(value: Any) -> str | int | float | bool | None:
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, bytes):
+        for encoding in ("utf-8", "latin-1"):
+            try:
+                text = value.decode(encoding, errors="ignore")
+                text = text.replace("\x00", " ").strip()
+                if text:
+                    return text[:4000]
+            except Exception:
+                continue
+    return None
+
+
 def _metadata_dict(image: Image.Image) -> dict[str, Any]:
     metadata: dict[str, Any] = {
         "format": image.format or "",
@@ -339,15 +372,17 @@ def _metadata_dict(image: Image.Image) -> dict[str, Any]:
         "mode": image.mode,
     }
     for key, value in (image.info or {}).items():
-        if isinstance(value, (str, int, float, bool)):
-            metadata[str(key).lower()] = value
+        safe_value = _metadata_value(value)
+        if safe_value is not None:
+            metadata[str(key).lower()] = safe_value
 
     try:
         exif = image.getexif()
         for tag_id, value in exif.items():
             key = str(ExifTags.TAGS.get(tag_id, tag_id)).lower()
-            if isinstance(value, (str, int, float, bool)):
-                metadata[key] = value
+            safe_value = _metadata_value(value)
+            if safe_value is not None:
+                metadata[key] = safe_value
     except Exception:
         pass
     return metadata
@@ -356,7 +391,7 @@ def _metadata_dict(image: Image.Image) -> dict[str, Any]:
 def _image_stat_features(image: Image.Image) -> dict[str, float]:
     import numpy as np
 
-    small = image.convert("RGB").resize((128, 128))
+    small = image.convert("RGB").resize((256, 256))
     arr = np.asarray(small).astype("float32") / 255.0
     gray = arr.mean(axis=2)
     color_std = float(arr.std())
@@ -364,10 +399,68 @@ def _image_stat_features(image: Image.Image) -> dict[str, float]:
     hist, _ = np.histogram((gray * 255).astype("uint8"), bins=64, range=(0, 255), density=True)
     hist = hist[hist > 0]
     entropy = float(-(hist * np.log2(hist)).sum() / 6.0) if len(hist) else 0.0
+
+    laplacian = np.zeros_like(gray)
+    laplacian[1:-1, 1:-1] = (
+        -4.0 * gray[1:-1, 1:-1]
+        + gray[:-2, 1:-1]
+        + gray[2:, 1:-1]
+        + gray[1:-1, :-2]
+        + gray[1:-1, 2:]
+    )
+    laplacian_var = float(laplacian.var())
+
+    vertical_diffs = np.abs(np.diff(gray, axis=1))
+    horizontal_diffs = np.abs(np.diff(gray, axis=0))
+    vertical_boundary = vertical_diffs[:, 7::8].mean() if vertical_diffs[:, 7::8].size else 0.0
+    horizontal_boundary = horizontal_diffs[7::8, :].mean() if horizontal_diffs[7::8, :].size else 0.0
+    vertical_internal = (
+        np.delete(vertical_diffs, np.arange(7, vertical_diffs.shape[1], 8), axis=1).mean()
+        if vertical_diffs.shape[1] > 1
+        else 0.0
+    )
+    horizontal_internal = (
+        np.delete(horizontal_diffs, np.arange(7, horizontal_diffs.shape[0], 8), axis=0).mean()
+        if horizontal_diffs.shape[0] > 1
+        else 0.0
+    )
+    block_boundary_ratio = float(
+        ((vertical_boundary + horizontal_boundary) / 2.0)
+        / (((vertical_internal + horizontal_internal) / 2.0) + 1e-6)
+    )
+
+    channel_max = arr.max(axis=2)
+    channel_min = arr.min(axis=2)
+    saturation = (channel_max - channel_min) / (channel_max + 1e-6)
+    flat = arr.reshape(-1, 3)
+    try:
+        if float(flat.std(axis=0).min()) <= 1e-6:
+            channel_corr = 0.0
+        else:
+            corr = np.corrcoef(flat.T)
+            channel_corr = float((corr[0, 1] + corr[0, 2] + corr[1, 2]) / 3.0)
+            if not np.isfinite(channel_corr):
+                channel_corr = 0.0
+    except Exception:
+        channel_corr = 0.0
+
+    from PIL import ImageFilter
+
+    blurred = np.asarray(small.filter(ImageFilter.GaussianBlur(radius=1.2))).astype("float32") / 255.0
+    residual = arr - blurred
+    patch_luma = gray.reshape(32, 8, 32, 8).mean(axis=(1, 3))
     return {
         "color_std": round(color_std, 4),
         "edge_density": round(edge_density, 4),
         "entropy": round(max(0.0, min(1.0, entropy)), 4),
+        "laplacian_var": round(max(0.0, laplacian_var), 5),
+        "jpeg_block_boundary_ratio": round(max(0.0, block_boundary_ratio), 4),
+        "saturation_mean": round(float(saturation.mean()), 4),
+        "saturation_std": round(float(saturation.std()), 4),
+        "channel_correlation": round(max(-1.0, min(1.0, channel_corr)), 4),
+        "high_frequency_residual_std": round(float(residual.std()), 4),
+        "high_frequency_residual_mean": round(float(np.abs(residual).mean()), 4),
+        "patch_luma_std": round(float(patch_luma.std()), 4),
     }
 
 
@@ -525,6 +618,72 @@ def detect_ai_image(
         weak_ai_signals += 1
         reasons.append("smooth_high_entropy_pattern")
 
+    visual_ai_points = 0.0
+    visual_ai_reasons: list[str] = []
+    visual_real_points = 0.0
+    visual_real_reasons: list[str] = []
+    laplacian_var = float(metadata.get("laplacian_var", 0.0) or 0.0)
+    residual_std = float(metadata.get("high_frequency_residual_std", 0.0) or 0.0)
+    residual_mean = float(metadata.get("high_frequency_residual_mean", 0.0) or 0.0)
+    patch_luma_std = float(metadata.get("patch_luma_std", 0.0) or 0.0)
+    saturation_mean = float(metadata.get("saturation_mean", 0.0) or 0.0)
+    saturation_std = float(metadata.get("saturation_std", 0.0) or 0.0)
+    channel_correlation = float(metadata.get("channel_correlation", 0.0) or 0.0)
+    block_boundary_ratio = float(metadata.get("jpeg_block_boundary_ratio", 0.0) or 0.0)
+    progressive_jpeg = bool(metadata.get("progressive")) or bool(metadata.get("progression"))
+    complex_enough_for_visual_check = entropy >= 0.20 and patch_luma_std >= 0.045
+    camera_origin_signal = bool(camera_keys or camera_context_strong)
+
+    if not camera_origin_signal and complex_enough_for_visual_check:
+        if width >= 512 and height >= 512 and width % 64 == 0 and height % 64 == 0:
+            visual_ai_points += 0.16
+            visual_ai_reasons.append("visual_generator_canvas_size")
+            if edge_density <= 0.012 and laplacian_var <= 0.006 and residual_std <= 0.012:
+                visual_ai_points += 0.12
+                visual_ai_reasons.append("visual_over_smooth_generated_canvas")
+        if 0.010 <= residual_std <= 0.040 and edge_density <= 0.036 and laplacian_var <= 0.018:
+            visual_ai_points += 0.18
+            visual_ai_reasons.append("visual_low_sensor_noise_smooth_detail")
+        if 0.006 <= residual_mean <= 0.024 and 0.09 <= patch_luma_std <= 0.36:
+            visual_ai_points += 0.08
+            visual_ai_reasons.append("visual_even_high_frequency_residual")
+        if channel_correlation >= 0.92 and saturation_mean <= 0.38 and saturation_std <= 0.30:
+            visual_ai_points += 0.07
+            visual_ai_reasons.append("visual_tightly_correlated_color_channels")
+        if 0.94 <= block_boundary_ratio <= 1.08 and not progressive_jpeg:
+            visual_ai_points += 0.06
+            visual_ai_reasons.append("visual_single_pass_compression_pattern")
+
+    if not camera_origin_signal:
+        if residual_std >= 0.046 or laplacian_var >= 0.026:
+            visual_real_points += 0.12
+            visual_real_reasons.append("visual_camera_like_texture")
+        if progressive_jpeg:
+            visual_real_points += 0.05
+            visual_real_reasons.append("visual_web_photo_progressive_jpeg")
+        if patch_luma_std < 0.045 and entropy < 0.35:
+            visual_real_points += 0.08
+            visual_real_reasons.append("visual_too_plain_for_ai_verdict")
+
+    visual_score = max(0.0, visual_ai_points - visual_real_points)
+    if visual_ai_reasons:
+        reasons.extend(visual_ai_reasons)
+        metadata["visual_ai_points"] = round(visual_ai_points, 3)
+        metadata["visual_real_points"] = round(visual_real_points, 3)
+    if visual_real_reasons:
+        reasons.extend(visual_real_reasons)
+    strong_visual_ai = visual_score >= 0.34 and not camera_origin_signal
+    possible_visual_ai = visual_score >= 0.22 and not camera_origin_signal
+    if strong_visual_ai:
+        score = max(score, min(0.78, 0.50 + visual_score))
+        reasons.append("visual_forensic_ai_signal")
+    elif possible_visual_ai:
+        score = max(score, min(0.64, 0.38 + visual_score))
+        reasons.append("visual_forensic_weak_ai_signal")
+        warnings.append("visual_forensic_signal_not_definitive")
+    elif visual_real_points >= 0.12 and not camera_origin_signal:
+        score = min(score, 0.30)
+
     model_signal = _optional_ai_model_signal(image)
     reasons.extend(model_signal.reasons)
     warnings.extend(model_signal.warnings)
@@ -559,9 +718,9 @@ def detect_ai_image(
         elif model_ai > 0.0 and not matched_markers:
             score = min(score, 0.30)
 
-    if model_signal.predicted_label == "disabled" and weak_ai_signals >= 2 and not camera_keys:
+    if model_signal.predicted_label == "disabled" and (weak_ai_signals >= 2 or possible_visual_ai) and not camera_keys:
         score = max(score, 0.40)
-        warnings.append("limited_metadata_only_ai_check")
+        warnings.append("lightweight_visual_ai_check")
 
     if matched_markers or filename_markers:
         score = max(score, 0.90)
@@ -569,7 +728,7 @@ def detect_ai_image(
         score = min(score, 0.24)
 
     score = max(0.0, min(1.0, score))
-    if matched_markers or filename_markers or strong_ai_model:
+    if matched_markers or filename_markers or strong_ai_model or strong_visual_ai:
         label = "likely_ai"
     elif strong_real_model or (camera_context_strong and not suspicious_ai_model):
         label = "likely_not_ai"
@@ -672,6 +831,8 @@ def run_ai_image_check(
     has_ai_filename = any(reason.startswith("ai_filename_marker=") for reason in analysis.reasons)
     has_camera_metadata = any(reason.startswith("camera_metadata_present=") for reason in analysis.reasons)
     has_camera_context = "android_camera_library_context" in analysis.reasons
+    has_visual_ai = "visual_forensic_ai_signal" in analysis.reasons
+    has_weak_visual_ai = "visual_forensic_weak_ai_signal" in analysis.reasons
     metadata_missing = "camera_metadata_missing_not_proof" in analysis.warnings
     if has_ai_metadata:
         summary = (
@@ -686,7 +847,13 @@ def run_ai_image_check(
         )
         confidence = max(0.50, min(0.72, analysis.ai_generated_score))
     elif label == "likely_ai":
-        summary = "The image has strong AI-related signals. Treat this as a risk flag, not a final proof."
+        if has_visual_ai:
+            summary = (
+                "The image has strong AI-like visual and file signals. Treat this as a risk flag, "
+                "not a final proof."
+            )
+        else:
+            summary = "The image has strong AI-related signals. Treat this as a risk flag, not a final proof."
         confidence = max(0.55, min(0.82, analysis.ai_generated_score))
     elif has_camera_metadata:
         summary = (
@@ -704,10 +871,10 @@ def run_ai_image_check(
         summary = "The image has low metadata risk based on available signals, but this is not proof that it is authentic."
         confidence = 0.55
     else:
-        if analysis.ai_generated_score >= 0.65:
+        if has_weak_visual_ai or analysis.ai_generated_score >= 0.65:
             summary = (
-                "The file has some AI-like metadata or non-original-file signals, but not enough evidence "
-                "for a strong warning."
+                "The image has some AI-like visual or file signals, but not enough evidence "
+                "for a strong AI verdict."
             )
         elif analysis.ai_generated_score >= 0.35:
             summary = (

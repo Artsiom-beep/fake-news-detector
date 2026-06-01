@@ -47,6 +47,8 @@ def _image_metadata_display(
     has_ai_filename = any(item.startswith("ai_filename_marker=") for item in reasons)
     has_camera_metadata = any(item.startswith("camera_metadata_present=") for item in reasons)
     has_strong_model_signal = any(item.startswith("model_strong_ai_signal") for item in reasons)
+    has_visual_signal = "visual_forensic_ai_signal" in reasons
+    has_weak_visual_signal = "visual_forensic_weak_ai_signal" in reasons
     metadata_missing = "camera_metadata_missing_not_proof" in warnings
 
     if has_ai_metadata:
@@ -63,8 +65,8 @@ def _image_metadata_display(
             ai_score,
         )
     if ai_label == "likely_not_ai":
-        return "Low metadata risk", "high", "The available signals show low metadata risk.", ai_score
-    if ai_score >= 0.65 or has_strong_model_signal:
+        return "Low AI risk", "high", "The available signals show low AI-image risk.", ai_score
+    if ai_score >= 0.65 or has_strong_model_signal or has_visual_signal or has_weak_visual_signal:
         return "Possible AI signals", "medium", "Some AI-like signals were found, but not enough for a likely AI verdict.", ai_score
     if ai_score >= 0.35:
         return "Weak file clues", "unknown", "The file has weak non-original or generator-like clues, but no strong AI proof.", ai_score
@@ -76,7 +78,7 @@ def _primary_status(result: dict[str, Any]) -> tuple[str, str, float, str]:
     image_analysis = result.get("image_analysis") or {}
     if image_analysis.get("mode") == "ai_image_detection":
         display, tone, _explanation, metadata_score = _image_metadata_display(image_analysis)
-        return display, tone, metadata_score, "Metadata risk"
+        return display, tone, metadata_score, "AI risk"
 
     credibility = result.get("credibility") or {}
     verdict = (result.get("verdict") or "uncertain").lower()
@@ -189,12 +191,12 @@ def _render_image_analysis(image_analysis: dict[str, Any]) -> str:
     return f"""
     <section class="image-card">
       <div class="section-heading">
-        <h3>Image metadata check</h3>
+        <h3>AI image check</h3>
         {_badge(display_label, tone)}
       </div>
       <p>{escape(explanation)} This is a metadata check, not proof.</p>
       <div class="signal-grid">
-        <div><span>Metadata risk</span><b>{_fmt_score(image_analysis.get("ai_generated_score", 0.0))}</b></div>
+        <div><span>AI risk</span><b>{_fmt_score(image_analysis.get("ai_generated_score", 0.0))}</b></div>
         <div><span>Width</span><b>{escape(str((image_analysis.get("metadata") or {}).get("width", "")))}</b></div>
         <div><span>Height</span><b>{escape(str((image_analysis.get("metadata") or {}).get("height", "")))}</b></div>
         <div><span>Format</span><b>{escape(str((image_analysis.get("metadata") or {}).get("format", "")))}</b></div>
@@ -1131,17 +1133,17 @@ def render_page(
           <article class="{panel_class("image", "imagesTool")}" id="imagesTool" data-panel="imagesTool" aria-hidden="{aria_hidden("imagesTool")}">
             <div class="tool-head">
               <div class="tool-title">
-                <h2>Image metadata</h2>
+                <h2>AI image check</h2>
               </div>
               <div class="tool-actions">
                 <button class="info-btn" type="button" data-info-toggle aria-expanded="false" aria-controls="imagesGuide">Guide</button>
-                <span class="tool-kind">Metadata</span>
+                <span class="tool-kind">AI risk</span>
               </div>
             </div>
             <div class="info-panel" id="imagesGuide" hidden>
               <h3>What this mode does</h3>
-              <p>Checks file metadata, camera EXIF, filename clues, dimensions, and generator markers. It does not prove whether pixels were AI-generated.</p>
-              <p><strong>Example:</strong> upload a photo or generated image, then use Check metadata to see what the file itself reveals.</p>
+              <p>Checks metadata, camera EXIF, filename clues, dimensions, generator markers, and lightweight visual signals. It gives a risk flag, not mathematical proof.</p>
+              <p><strong>Example:</strong> upload a photo or generated image, then use Check image to see AI-image risk signals.</p>
             </div>
             <form class="tool-form" method="post" action="/check#imagesTool" enctype="multipart/form-data" data-media-picker>
               <input type="hidden" name="active_panel" value="imagesTool" />
@@ -1156,7 +1158,7 @@ def render_page(
               </div>
               <label class="file-chip" for="imageInput">Choose image</label>
               <div class="composer-actions">
-                <button class="primary-btn" type="submit" data-loading="Checking metadata...">Check metadata</button>
+                <button class="primary-btn" type="submit" data-loading="Checking image...">Check image</button>
               </div>
             </form>
           </article>

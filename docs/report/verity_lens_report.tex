@@ -186,7 +186,8 @@ Darmowy backend Render ma ograniczenia pamięci i czasu startu, więc uruchamian
 Próbowano przewidzieć opcjonalną ścieżkę modelową przez zmienną \path{FACTCHECK_AI_IMAGE_MODEL}.
 Po testach przyjęto jednak ostrożną zasadę: sam wynik modelu wizualnego nie powinien automatycznie oskarżać obrazu o bycie AI, jeśli nie ma dodatkowych mocnych śladów.
 W przeciwnym razie aplikacja mogłaby prawie każdy nietypowy obraz oznaczać jako \textit{Possible AI} albo zwracać myląco pewne wyniki.
-Dlatego w darmowej wersji chmurowej ustawiono tryb \texttt{metadata\_only}.
+Dlatego w darmowej wersji chmurowej nie uruchomiono dużego modelu Torch.
+Zamiast tego backend wykonuje szybką analizę hybrydową: metadane, markery generatorów, nazwę pliku oraz lekkie cechy wizualne obliczane z pikseli.
 
 Ostateczny moduł \textit{Images} nie jest więc pełnym sądowym detektorem AI.
 Jest narzędziem do analizy ryzyka na podstawie tego, co plik sam o sobie ujawnia:
@@ -196,13 +197,15 @@ Jest narzędziem do analizy ryzyka na podstawie tego, co plik sam o sobie ujawni
   \item czy obecne są oryginalne metadane aparatu, np. \texttt{Make}, \texttt{Model}, \texttt{DateTimeOriginal}, \texttt{LensModel};
   \item czy metadane zostały utracone, co może oznaczać eksport, pobranie, edycję albo przesłanie przez komunikator;
   \item czy wymiary obrazu przypominają popularne formaty generatorów, np. kwadrat 1024x1024;
-  \item czy słabe cechy statystyczne obrazu wskazują nietypowy wzorzec.
+  \item czy lekkie cechy wizualne obrazu wskazują nietypowy wzorzec: gładkość, brak naturalnego szumu, kompresję blokową, korelację kanałów i format typowy dla generatorów.
 \end{itemize}
 
 To podejście jest mniej efektowne niż pełny detektor AI, ale jest uczciwsze.
 Gdy system znajduje metadane generatora, traktuje to jako mocną wskazówkę.
 Gdy znajduje oryginalne metadane aparatu, pokazuje \textit{Camera metadata found}, ale nadal nie twierdzi, że obraz na pewno jest autentyczny.
-Gdy metadanych brakuje, pokazuje \textit{Metadata missing}, ponieważ brak EXIF nie jest dowodem na AI.
+Gdy metadanych brakuje, system nadal sprawdza lekkie sygnały wizualne.
+Jeżeli są mocne, pokazuje \textit{AI signals found}; jeżeli są słabe, pokazuje \textit{Possible AI signals} albo \textit{Weak file clues}.
+Brak EXIF sam w sobie nie jest jednak dowodem na AI.
 
 \subsection{Utrata metadanych na Androidzie}
 Podczas testów na fizycznym telefonie okazało się, że wybór obrazu przez standardową Galerię lub aplikację Zdjęcia często nie przekazuje oryginalnego pliku z aparatu.
@@ -370,13 +373,13 @@ Najważniejsze etapy są następujące:
   \item System szuka markerów w nazwie pliku, np. \texttt{ai-generated}, \texttt{imagefx}, \texttt{stable-diffusion}.
   \item Jeżeli są obecne oryginalne pola aparatu, np. \texttt{Make}, \texttt{Model}, \texttt{LensModel}, \texttt{DateTimeOriginal}, wynik ryzyka jest obniżany.
   \item Jeżeli nie ma metadanych aparatu, system dodaje ostrzeżenie, ale nie traktuje tego jako dowodu AI.
-  \item Analizowane są słabe sygnały pomocnicze, np. kwadratowe rozmiary popularne w generatorach i proste cechy statystyczne.
-  \item Opcjonalny model wizualny może być podłączony przez konfigurację, ale w domyślnej chmurze jest wyłączony jako \texttt{metadata\_only}.
+  \item Analizowane są lekkie sygnały wizualne, np. kwadratowe rozmiary popularne w generatorach, gładkość obrazu, brak naturalnego szumu, korelacja kanałów koloru i wzór kompresji.
+  \item Opcjonalny duży model wizualny może być podłączony przez konfigurację, ale w domyślnej chmurze jest wyłączony, aby aplikacja działała szybko i bez płatnych zasobów.
 \end{enumerate}
 
-Wynik \texttt{likely\_ai} pojawia się głównie wtedy, gdy znaleziono mocny marker generatora w metadanych lub nazwie pliku.
-Wynik \texttt{likely\_not\_ai} jest możliwy tylko przy bardzo mocnym sygnale realnego obrazu z opcjonalnego modelu.
-W większości niejednoznacznych przypadków system zwraca \texttt{uncertain}, a UI pokazuje etykiety typu \textit{Metadata missing}, \textit{Weak file clues}, \textit{Possible AI signals}, \textit{AI metadata found} albo \textit{Camera metadata found}.
+Wynik \texttt{likely\_ai} pojawia się wtedy, gdy znaleziono mocny marker generatora w metadanych lub nazwie pliku albo gdy lekki moduł wizualny widzi spójny zestaw sygnałów AI.
+Wynik \texttt{likely\_not\_ai} pojawia się przy mocnych sygnałach aparatu telefonu albo przy bardzo mocnym sygnale realnego obrazu z opcjonalnego modelu.
+W niejednoznacznych przypadkach system nadal zwraca \texttt{uncertain}, a UI pokazuje etykiety typu \textit{Metadata missing}, \textit{Weak file clues}, \textit{Possible AI signals}, \textit{AI metadata found}, \textit{AI signals found} albo \textit{Camera metadata found}.
 
 To ograniczenie jest celowe.
 Zdjęcie z aparatu może zostać edytowane, zrzut ekranu może wyglądać jak zdjęcie, a obraz AI może zostać zapisany z fałszywymi metadanymi.
@@ -475,10 +478,10 @@ Aktualna paczka desktopowa:
 
 Po ostatniej przebudowie paczki desktopowej:
 \begin{itemize}
-  \item EXE SHA256: \texttt{BD2B66A7B26DE86578164C4AC65EF3FC}\\
-  \texttt{5B1F2691F40B65AB0BB3BE8FF8457395};
-  \item ZIP SHA256: \texttt{FAE74F795292C89647AFCC2F634EC202}\\
-  \texttt{6D18E3742EE0DF11EAB8CB5311EB9ADA}.
+  \item EXE SHA256: \texttt{DAEA040D5910CFCDB38D756F6639469F}\\
+  \texttt{CDC54C3FAC74C713032571AE454201CF};
+  \item ZIP SHA256: \texttt{30BD3B9AAADD897BD0ABFF0AF4AE9274}\\
+  \texttt{2D8AAA56299CB463B932A19F8B7A188A}.
 \end{itemize}
 
 \subsection{Aplikacja mobilna Flutter}
@@ -495,8 +498,8 @@ Pakiet Android:
   \item główna aktywność: \texttt{app.veritylens.mobile.MainActivity};
   \item publiczny backend: \url{https://fake-news-detector-poi6.onrender.com};
   \item aktualny cloud APK po czystej przebudowie: \path{outputs/phone_download/VerityLens-cloud.apk};
-  \item APK SHA256: \texttt{24CDBD82A0D9D6C148AA4D912BF9876E}\\
-  \texttt{FE12C8264C5F50119683E39A7654889E}.
+  \item APK SHA256: \texttt{BE6B0BD8C9BFBF420B44EB3041D4417E}\\
+  \texttt{A6859F0CC4723BC5E4BEB5A580BDE112}.
 \end{itemize}
 
 Telefon działa bez komputera, ale wymaga internetu i działającego backendu Render.
@@ -528,7 +531,7 @@ Dzięki temu typowy scenariusz testowy działa tak:
   \item w aplikacji wybiera \textit{Images};
   \item naciska \textit{Camera originals};
   \item wybiera zdjęcie z listy oryginałów;
-  \item naciska \textit{Check metadata};
+  \item naciska \textit{Check image};
   \item backend widzi oryginalne EXIF i może pokazać \textit{Camera metadata found}.
 \end{enumerate}
 
@@ -660,7 +663,7 @@ Facts knowledge base & Dodanie endpointu \texttt{/knowledge/facts}, pliku \path{
 Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
 Facts NLI & Dodanie opcjonalnego modelu \texttt{Xenova/mobilebert-uncased-mnli} w trybie ONNX. & System potrafi semantycznie porównać twierdzenie z dowodem i rzadziej blokuje oczywiste przypadki na poziomie \texttt{uncertain}. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
-Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku metadanych, nie o absolutnym dowodzie pochodzenia pikseli. \\
+Images & Dodanie risk assessment dla AI obrazów. & Wynik mówi o ryzyku z metadanych i lekkich sygnałów wizualnych, nie o absolutnym dowodzie pochodzenia pikseli. \\
 Images metadata & Kalibracja etykiet i komunikatów dla obrazów. & Zamiast stałego \textit{Possible AI} aplikacja rozróżnia: \textit{AI metadata found}, \textit{Camera metadata found}, \textit{Metadata missing} i \textit{Weak file clues}. \\
 Android originals & Natywny wybór oryginalnych zdjęć z aparatu. & Aplikacja omija zewnętrzną Galerię i pobiera zdjęcia z \path{DCIM/Camera} przez \texttt{MediaStore}. \\
 Web UI & Zbudowanie oddzielnych paneli produktu. & Użytkownik może pracować przez przeglądarkę. \\
@@ -705,12 +708,12 @@ Funkcja screenshot OCR działa technicznie, ale jako oddzielna zakładka była m
 Została więc ukryta w API i testach regresyjnych, a interfejs końcowy ma tylko trzy czytelne moduły.
 
 \subsection{Nie udawać pełnego detektora AI obrazów}
-Moduł obrazów został nazwany i zaprojektowany jako analiza metadanych.
+Moduł obrazów został nazwany i zaprojektowany jako szybka analiza ryzyka AI.
 To świadoma decyzja.
-W projekcie nie ma pełnej gwarancji rozpoznania obrazu wygenerowanego przez AI na podstawie samych pikseli.
+W projekcie nie ma pełnej gwarancji rozpoznania każdego obrazu wygenerowanego przez AI na podstawie samych pikseli.
 Taka funkcja wymagałaby cięższego modelu, dobrego zbioru testowego, kalibracji progów oraz stabilnych zasobów obliczeniowych.
-W darmowej chmurze lepszym rozwiązaniem jest pokazać użytkownikowi konkretne ślady: metadane generatora, EXIF aparatu, brak EXIF, nietypowe wymiary i ostrzeżenia.
-Dlatego interfejs mówi \textit{Check metadata}, a nie \textit{Prove AI image}.
+W darmowej chmurze lepszym rozwiązaniem jest pokazać użytkownikowi konkretne ślady: metadane generatora, EXIF aparatu, brak EXIF, nietypowe wymiary, lekkie sygnały wizualne i ostrzeżenia.
+Dlatego interfejs mówi \textit{Check image}, a nie \textit{Prove AI image}.
 
 \subsection{Nazwać Facts bazą wiedzy}
 Po testach z wieloma krótkimi zdaniami przyjęto, że najuczciwszym opisem modułu \textit{Facts} jest baza wiedzy z dodatkowymi mechanizmami źródłowymi.
@@ -777,7 +780,7 @@ Commit & Znaczenie \\
 \begin{itemize}
   \item Backend w Render Free może zasypiać, więc pierwszy request może być wolny.
   \item Telefon nie działa offline, bo silnik działa w Pythonie po stronie backendu.
-  \item Ocena AI obrazu jest oceną ryzyka metadanych, nie dowodem sądowym ani pełnym rozpoznaniem pikseli.
+  \item Ocena AI obrazu jest oceną ryzyka na podstawie metadanych i lekkich sygnałów wizualnych, nie dowodem sądowym ani pełnym rozpoznaniem każdego generatora.
   \item Brak EXIF nie oznacza automatycznie AI, ponieważ metadane mogą zostać usunięte przez edycję, eksport, komunikator, Galerię albo serwis internetowy.
   \item Obecność EXIF aparatu nie gwarantuje pełnej autentyczności, ponieważ metadane można skopiować lub zmodyfikować.
   \item Pełny model wizualny AI-image detection nie jest domyślnie włączony w chmurze, ponieważ byłby ciężki dla darmowego hostingu i wymagałby osobnej kalibracji jakości.

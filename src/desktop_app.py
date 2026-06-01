@@ -54,7 +54,7 @@ def configure_runtime_environment() -> Path:
 
 
 def enable_default_ai_image_model() -> None:
-    """Keep the packaged desktop app on the lightweight metadata-only image path by default."""
+    """Keep the packaged desktop app on the lightweight image-risk path by default."""
     if "FACTCHECK_AI_IMAGE_MODEL" not in os.environ:
         os.environ["FACTCHECK_AI_IMAGE_MODEL"] = DEFAULT_AI_IMAGE_MODEL
 
