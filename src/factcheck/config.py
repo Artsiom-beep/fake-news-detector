@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from .schemas import ConfigSnapshot
 
-PIPELINE_VERSION = "best_accuracy_v2"
+PIPELINE_VERSION = "best_accuracy_v3"
 
 MODEL_VERSIONS: Dict[str, str] = {
     "stance_model": "optional_nli_model_v1",
@@ -15,6 +15,7 @@ MODEL_VERSIONS: Dict[str, str] = {
     "summary_policy": "template_v1",
     "claim_prior": "disabled_in_best_accuracy",
     "common_knowledge": "local_rules_v2+wikipedia_summary_v2+categories+safe_abstention_v1",
+    "translation": "deterministic_multilingual_glossary_v1",
     "news_credibility": "source_quality_corroboration_v2",
     "screenshot_ocr": "rapidocr_onnxruntime_v1",
     "ai_image_detection": "metadata_forensics_v1_optional_model",

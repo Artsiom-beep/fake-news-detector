@@ -33,6 +33,20 @@ def select_safe_prior_prediction(*args, **kwargs):
     return _select_safe_prior_prediction(*args, **kwargs)
 
 
+def _friendly_source_label(item: EvidenceItem) -> str | None:
+    if item.source_type == "common_knowledge":
+        return "Common knowledge check"
+    if item.source_type == "local_arithmetic":
+        return "Calculation check"
+    if item.source_type == "official_health":
+        return "Official health source"
+    if item.source_type == "official_government":
+        return "Official source"
+    if item.source_type == "knowledge_source":
+        return "Knowledge source"
+    return None
+
+
 def _summarize(verdict: str, claim_text: str, evidence: List[EvidenceItem]) -> str:
     if verdict == "true":
         relevant_evidence = [item for item in evidence if item.stance == "support"]
@@ -47,6 +61,12 @@ def _summarize(verdict: str, claim_text: str, evidence: List[EvidenceItem]) -> s
             f"No strong source evidence was found for this claim; the fallback claim-prior model predicts it is likely "
             f"{verdict}: {claim_text}"
         )
+    if relevant_evidence:
+        source_label = _friendly_source_label(relevant_evidence[0])
+        if source_label and verdict == "true":
+            return f"{source_label} supports the claim: {claim_text}"
+        if source_label and verdict == "fake":
+            return f"{source_label} refutes the claim: {claim_text}"
     if verdict == "true":
         return f"Evidence from {domains_text} supports the claim: {claim_text}"
     if verdict == "fake":

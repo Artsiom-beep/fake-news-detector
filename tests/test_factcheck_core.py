@@ -45,6 +45,7 @@ from factcheck.retrieval import _claim_match_score, build_queries
 from factcheck.schemas import ClaimCandidate, ClaimDecision, EvidenceItem, FactCheckTrace, RetrievedDocument
 from factcheck.service import run_factcheck
 from factcheck.source_registry import classify_source
+from factcheck.translation import normalize_fact_text
 import nli as nli_module
 from nli import classify_claim_vs_evidence, set_fast_mode
 from src.api_factcheck import app as api_app
@@ -2887,6 +2888,30 @@ Write-Output 'apk name policy ok'
         self.assertEqual(payload["verdict"], "true")
         self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
         self.assertIn("common_knowledge_supports=drink water", " ".join(payload["claims"][0]["reasons"]))
+        mock_retrieve_documents.assert_not_called()
+
+    @patch("factcheck.service.retrieve_documents")
+    def test_best_pipeline_translates_multilingual_simple_facts_locally(self, mock_retrieve_documents):
+        examples = [
+            ("Люди могут пить воду", "true"),
+            ("Ludzie mogą pić wodę", "true"),
+            ("Los humanos pueden beber agua", "true"),
+            ("Les chats sont des animaux", "true"),
+            ("Menschen können Wasser trinken", "true"),
+            ("El sol es un planeta", "fake"),
+            ("La lune est faite de fromage", "fake"),
+            ("Koty są roślinami", "fake"),
+        ]
+        for text, expected_verdict in examples:
+            with self.subTest(text=text):
+                translated = normalize_fact_text(text)
+                self.assertTrue(translated.changed)
+                payload = run_factcheck(text=text).to_public_dict()
+                self.assertEqual(payload["verdict"], expected_verdict)
+                self.assertIn(payload["evidence"][0]["source_type"], {"common_knowledge", "official_health"})
+                self.assertTrue(
+                    any(item.startswith("translated_input:") for item in payload["trace"]["fallbacks_used"])
+                )
         mock_retrieve_documents.assert_not_called()
 
     def test_best_pipeline_handles_simple_false_claim(self):

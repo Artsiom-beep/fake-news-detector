@@ -18,6 +18,7 @@ from .news_credibility import analyze_news_credibility, is_news_source_url
 from .retrieval import retrieve_documents
 from .schemas import ClaimCandidate, ClaimDecision, FactCheckResult, FactCheckTrace, RetrievedDocument
 from .source_registry import classify_source
+from .translation import normalize_fact_text
 
 LOGGER = logging.getLogger("factcheck")
 
@@ -323,6 +324,15 @@ def run_factcheck(
 
     try:
         raw_url = (url or "").strip()
+        if not raw_url and article_text and len(article_text) <= 220:
+            translation = normalize_fact_text(article_text)
+            if translation.changed:
+                trace.fallbacks_used.append(f"translated_input:{translation.detected_language}")
+                trace.decision_reasons.append(
+                    f"translated_input={translation.detected_language}:{translation.original_text}"
+                    f" -> {translation.translated_text}"
+                )
+                article_text = translation.translated_text
         if raw_url:
             start_ingest = time.perf_counter()
             if not is_likely_article_url(raw_url):

@@ -1,0 +1,1917 @@
+{
+  "summary": {
+    "total": 100,
+    "passed": 100,
+    "failed": 0,
+    "accuracy": 1.0,
+    "languages": [
+      "de",
+      "es",
+      "fr",
+      "pl",
+      "ru"
+    ]
+  },
+  "cases": [
+    {
+      "index": 1,
+      "language": "ru",
+      "input": "Люди могут пить воду",
+      "translated": "humans can drink water",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: humans can drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 10.02
+    },
+    {
+      "index": 2,
+      "language": "ru",
+      "input": "Люди не могут пить воду",
+      "translated": "humans cannot drink water",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: humans cannot drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.92
+    },
+    {
+      "index": 3,
+      "language": "ru",
+      "input": "Кошки являются животными",
+      "translated": "cats are animals",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cats are animals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 1.95
+    },
+    {
+      "index": 4,
+      "language": "ru",
+      "input": "Кошки являются растениями",
+      "translated": "cats are plants",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: cats are plants",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.96
+    },
+    {
+      "index": 5,
+      "language": "ru",
+      "input": "Собаки являются млекопитающими",
+      "translated": "dogs are mammals",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: dogs are mammals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.9
+    },
+    {
+      "index": 6,
+      "language": "ru",
+      "input": "Слоны являются насекомыми",
+      "translated": "elephants are insects",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: elephants are insects",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 7,
+      "language": "ru",
+      "input": "Трава является зеленой",
+      "translated": "grass is green",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: grass is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.8
+    },
+    {
+      "index": 8,
+      "language": "ru",
+      "input": "Трава является фиолетовой",
+      "translated": "grass is purple",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: grass is purple",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 9,
+      "language": "ru",
+      "input": "Яблоки являются фруктами",
+      "translated": "apples are fruit",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: apples are fruit",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 1.0
+    },
+    {
+      "index": 10,
+      "language": "ru",
+      "input": "Яблоки являются синими",
+      "translated": "apples are blue",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: apples are blue",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.88
+    },
+    {
+      "index": 11,
+      "language": "ru",
+      "input": "Бананы являются желтыми",
+      "translated": "bananas are yellow",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: bananas are yellow",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.88
+    },
+    {
+      "index": 12,
+      "language": "ru",
+      "input": "Сахар является сладким",
+      "translated": "sugar is sweet",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: sugar is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.96
+    },
+    {
+      "index": 13,
+      "language": "ru",
+      "input": "Соль является сладкой",
+      "translated": "salt is sweet",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: salt is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 14,
+      "language": "ru",
+      "input": "Молоко является жидким",
+      "translated": "milk is liquid",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: milk is liquid",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.79
+    },
+    {
+      "index": 15,
+      "language": "ru",
+      "input": "Лед является горячим",
+      "translated": "ice is hot",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: ice is hot",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.74
+    },
+    {
+      "index": 16,
+      "language": "ru",
+      "input": "Книги сделаны из бумаги",
+      "translated": "books are made of paper",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: books are made of paper",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.92
+    },
+    {
+      "index": 17,
+      "language": "ru",
+      "input": "Земля вращается вокруг солнца",
+      "translated": "earth orbits sun",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: earth orbits sun",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 18,
+      "language": "ru",
+      "input": "Солнце является планетой",
+      "translated": "sun is planet",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: sun is planet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 19,
+      "language": "ru",
+      "input": "Луна сделана из сыра",
+      "translated": "moon is made of cheese",
+      "detected_language": "ru",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: moon is made of cheese",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 20,
+      "language": "ru",
+      "input": "Огурец является зеленым",
+      "translated": "cucumber is green",
+      "detected_language": "ru",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cucumber is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:ru"
+      ],
+      "elapsed_ms": 0.81
+    },
+    {
+      "index": 21,
+      "language": "pl",
+      "input": "Ludzie mogą pić wodę",
+      "translated": "humans can drink water",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: humans can drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 22,
+      "language": "pl",
+      "input": "Ludzie nie mogą pić wody",
+      "translated": "humans cannot drink water",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: humans cannot drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 23,
+      "language": "pl",
+      "input": "Koty są zwierzętami",
+      "translated": "cats are animals",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cats are animals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 24,
+      "language": "pl",
+      "input": "Koty są roślinami",
+      "translated": "cats are plants",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: cats are plants",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 25,
+      "language": "pl",
+      "input": "Psy są ssakami",
+      "translated": "dogs are mammals",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: dogs are mammals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.8
+    },
+    {
+      "index": 26,
+      "language": "pl",
+      "input": "Słonie są owadami",
+      "translated": "elephants are insects",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: elephants are insects",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 27,
+      "language": "pl",
+      "input": "Trawa jest zielona",
+      "translated": "grass is green",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: grass is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.18
+    },
+    {
+      "index": 28,
+      "language": "pl",
+      "input": "Trawa jest fioletowa",
+      "translated": "grass is purple",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: grass is purple",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.21
+    },
+    {
+      "index": 29,
+      "language": "pl",
+      "input": "Jabłka są owocami",
+      "translated": "apples are fruit",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: apples are fruit",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.33
+    },
+    {
+      "index": 30,
+      "language": "pl",
+      "input": "Jabłka są niebieskie",
+      "translated": "apples are blue",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: apples are blue",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.33
+    },
+    {
+      "index": 31,
+      "language": "pl",
+      "input": "Banany są żółte",
+      "translated": "bananas are yellow",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: bananas are yellow",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.33
+    },
+    {
+      "index": 32,
+      "language": "pl",
+      "input": "Cukier jest słodki",
+      "translated": "sugar is sweet",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: sugar is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 1.09
+    },
+    {
+      "index": 33,
+      "language": "pl",
+      "input": "Sól jest słodka",
+      "translated": "salt is sweet",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: salt is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.8
+    },
+    {
+      "index": 34,
+      "language": "pl",
+      "input": "Mleko jest płynne",
+      "translated": "milk is liquid",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: milk is liquid",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.8
+    },
+    {
+      "index": 35,
+      "language": "pl",
+      "input": "Lód jest gorący",
+      "translated": "ice is hot",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: ice is hot",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.74
+    },
+    {
+      "index": 36,
+      "language": "pl",
+      "input": "Książki są z papieru",
+      "translated": "books are made of paper",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: books are made of paper",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.95
+    },
+    {
+      "index": 37,
+      "language": "pl",
+      "input": "Ziemia okrąża słońce",
+      "translated": "earth orbits sun",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: earth orbits sun",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.76
+    },
+    {
+      "index": 38,
+      "language": "pl",
+      "input": "Słońce jest planetą",
+      "translated": "sun is planet",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: sun is planet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.83
+    },
+    {
+      "index": 39,
+      "language": "pl",
+      "input": "Księżyc jest z sera",
+      "translated": "moon is made of cheese",
+      "detected_language": "pl",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: moon is made of cheese",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.83
+    },
+    {
+      "index": 40,
+      "language": "pl",
+      "input": "Ogórek jest zielony",
+      "translated": "cucumber is green",
+      "detected_language": "pl",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cucumber is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:pl"
+      ],
+      "elapsed_ms": 0.8
+    },
+    {
+      "index": 41,
+      "language": "es",
+      "input": "Los humanos pueden beber agua",
+      "translated": "humans can drink water",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: humans can drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 42,
+      "language": "es",
+      "input": "Los humanos no pueden beber agua",
+      "translated": "humans cannot drink water",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: humans cannot drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.98
+    },
+    {
+      "index": 43,
+      "language": "es",
+      "input": "Los gatos son animales",
+      "translated": "cats are animals",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cats are animals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.88
+    },
+    {
+      "index": 44,
+      "language": "es",
+      "input": "Los gatos son plantas",
+      "translated": "cats are plants",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: cats are plants",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 45,
+      "language": "es",
+      "input": "Los perros son mamíferos",
+      "translated": "dogs are mammals",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: dogs are mammals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.87
+    },
+    {
+      "index": 46,
+      "language": "es",
+      "input": "Los elefantes son insectos",
+      "translated": "elephants are insects",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: elephants are insects",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 47,
+      "language": "es",
+      "input": "La hierba es verde",
+      "translated": "grass is green",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: grass is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.76
+    },
+    {
+      "index": 48,
+      "language": "es",
+      "input": "La hierba es morada",
+      "translated": "grass is purple",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: grass is purple",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 49,
+      "language": "es",
+      "input": "Las manzanas son frutas",
+      "translated": "apples are fruit",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: apples are fruit",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.89
+    },
+    {
+      "index": 50,
+      "language": "es",
+      "input": "Las manzanas son azules",
+      "translated": "apples are blue",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: apples are blue",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.92
+    },
+    {
+      "index": 51,
+      "language": "es",
+      "input": "Los plátanos son amarillos",
+      "translated": "bananas are yellow",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: bananas are yellow",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.96
+    },
+    {
+      "index": 52,
+      "language": "es",
+      "input": "El azúcar es dulce",
+      "translated": "sugar is sweet",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: sugar is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.76
+    },
+    {
+      "index": 53,
+      "language": "es",
+      "input": "La sal es dulce",
+      "translated": "salt is sweet",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: salt is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.76
+    },
+    {
+      "index": 54,
+      "language": "es",
+      "input": "La leche es líquida",
+      "translated": "milk is liquid",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: milk is liquid",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.78
+    },
+    {
+      "index": 55,
+      "language": "es",
+      "input": "El hielo es caliente",
+      "translated": "ice is hot",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: ice is hot",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.73
+    },
+    {
+      "index": 56,
+      "language": "es",
+      "input": "Los libros son hechos de papel",
+      "translated": "books are made of paper",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: books are made of paper",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.95
+    },
+    {
+      "index": 57,
+      "language": "es",
+      "input": "La tierra orbita el sol",
+      "translated": "earth orbits sun",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: earth orbits sun",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.76
+    },
+    {
+      "index": 58,
+      "language": "es",
+      "input": "El sol es un planeta",
+      "translated": "sun is planet",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: sun is planet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 59,
+      "language": "es",
+      "input": "La luna es hecha de queso",
+      "translated": "moon is made of cheese",
+      "detected_language": "es",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: moon is made of cheese",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.87
+    },
+    {
+      "index": 60,
+      "language": "es",
+      "input": "El pepino es verde",
+      "translated": "cucumber is green",
+      "detected_language": "es",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cucumber is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:es"
+      ],
+      "elapsed_ms": 0.89
+    },
+    {
+      "index": 61,
+      "language": "fr",
+      "input": "Les humains peuvent boire de l'eau",
+      "translated": "humans can drink water",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: humans can drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.93
+    },
+    {
+      "index": 62,
+      "language": "fr",
+      "input": "Les humains ne peuvent pas boire de l'eau",
+      "translated": "humans cannot drink water",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: humans cannot drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 63,
+      "language": "fr",
+      "input": "Les chats sont des animaux",
+      "translated": "cats are animals",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cats are animals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.91
+    },
+    {
+      "index": 64,
+      "language": "fr",
+      "input": "Les chats sont des plantes",
+      "translated": "cats are plants",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: cats are plants",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.9
+    },
+    {
+      "index": 65,
+      "language": "fr",
+      "input": "Les chiens sont des mammifères",
+      "translated": "dogs are mammals",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: dogs are mammals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.95
+    },
+    {
+      "index": 66,
+      "language": "fr",
+      "input": "Les éléphants sont des insectes",
+      "translated": "elephants are insects",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: elephants are insects",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.96
+    },
+    {
+      "index": 67,
+      "language": "fr",
+      "input": "L'herbe est verte",
+      "translated": "grass is green",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: grass is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.79
+    },
+    {
+      "index": 68,
+      "language": "fr",
+      "input": "L'herbe est violette",
+      "translated": "grass is purple",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: grass is purple",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 1.03
+    },
+    {
+      "index": 69,
+      "language": "fr",
+      "input": "Les pommes sont des fruits",
+      "translated": "apples are fruit",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: apples are fruit",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.95
+    },
+    {
+      "index": 70,
+      "language": "fr",
+      "input": "Les pommes sont bleues",
+      "translated": "apples are blue",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: apples are blue",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.93
+    },
+    {
+      "index": 71,
+      "language": "fr",
+      "input": "Les bananes sont jaunes",
+      "translated": "bananas are yellow",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: bananas are yellow",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.88
+    },
+    {
+      "index": 72,
+      "language": "fr",
+      "input": "Le sucre est sucré",
+      "translated": "sugar is sweet",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: sugar is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.77
+    },
+    {
+      "index": 73,
+      "language": "fr",
+      "input": "Le sel est sucré",
+      "translated": "salt is sweet",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: salt is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.77
+    },
+    {
+      "index": 74,
+      "language": "fr",
+      "input": "Le lait est liquide",
+      "translated": "milk is liquid",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: milk is liquid",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.78
+    },
+    {
+      "index": 75,
+      "language": "fr",
+      "input": "La glace est chaude",
+      "translated": "ice is hot",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: ice is hot",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.75
+    },
+    {
+      "index": 76,
+      "language": "fr",
+      "input": "Les livres sont faits de papier",
+      "translated": "books are made of paper",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: books are made of paper",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 1.07
+    },
+    {
+      "index": 77,
+      "language": "fr",
+      "input": "La terre orbite autour du soleil",
+      "translated": "earth orbits sun",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: earth orbits sun",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 1.01
+    },
+    {
+      "index": 78,
+      "language": "fr",
+      "input": "Le soleil est une planète",
+      "translated": "sun is planet",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: sun is planet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.89
+    },
+    {
+      "index": 79,
+      "language": "fr",
+      "input": "La lune est faite de fromage",
+      "translated": "moon is made of cheese",
+      "detected_language": "fr",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: moon is made of cheese",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.89
+    },
+    {
+      "index": 80,
+      "language": "fr",
+      "input": "Le concombre est vert",
+      "translated": "cucumber is green",
+      "detected_language": "fr",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cucumber is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:fr"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 81,
+      "language": "de",
+      "input": "Menschen können Wasser trinken",
+      "translated": "humans can drink water",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: humans can drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.84
+    },
+    {
+      "index": 82,
+      "language": "de",
+      "input": "Menschen können nicht Wasser trinken",
+      "translated": "humans cannot drink water",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: humans cannot drink water",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 83,
+      "language": "de",
+      "input": "Katzen sind Tiere",
+      "translated": "cats are animals",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cats are animals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 84,
+      "language": "de",
+      "input": "Katzen sind Pflanzen",
+      "translated": "cats are plants",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: cats are plants",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.85
+    },
+    {
+      "index": 85,
+      "language": "de",
+      "input": "Hunde sind Säugetiere",
+      "translated": "dogs are mammals",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: dogs are mammals",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.84
+    },
+    {
+      "index": 86,
+      "language": "de",
+      "input": "Elefanten sind Insekten",
+      "translated": "elephants are insects",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: elephants are insects",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 1.04
+    },
+    {
+      "index": 87,
+      "language": "de",
+      "input": "Gras ist grün",
+      "translated": "grass is green",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: grass is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 1.02
+    },
+    {
+      "index": 88,
+      "language": "de",
+      "input": "Gras ist lila",
+      "translated": "grass is purple",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: grass is purple",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.79
+    },
+    {
+      "index": 89,
+      "language": "de",
+      "input": "Äpfel sind Früchte",
+      "translated": "apples are fruit",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: apples are fruit",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.96
+    },
+    {
+      "index": 90,
+      "language": "de",
+      "input": "Äpfel sind blau",
+      "translated": "apples are blue",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: apples are blue",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.79
+    },
+    {
+      "index": 91,
+      "language": "de",
+      "input": "Bananen sind gelb",
+      "translated": "bananas are yellow",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: bananas are yellow",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.82
+    },
+    {
+      "index": 92,
+      "language": "de",
+      "input": "Zucker ist süß",
+      "translated": "sugar is sweet",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: sugar is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.72
+    },
+    {
+      "index": 93,
+      "language": "de",
+      "input": "Salz ist süß",
+      "translated": "salt is sweet",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: salt is sweet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.79
+    },
+    {
+      "index": 94,
+      "language": "de",
+      "input": "Milch ist flüssig",
+      "translated": "milk is liquid",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: milk is liquid",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.77
+    },
+    {
+      "index": 95,
+      "language": "de",
+      "input": "Eis ist heiß",
+      "translated": "ice is hot",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: ice is hot",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.75
+    },
+    {
+      "index": 96,
+      "language": "de",
+      "input": "Bücher sind aus Papier",
+      "translated": "books are made of paper",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: books are made of paper",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.93
+    },
+    {
+      "index": 97,
+      "language": "de",
+      "input": "Die Erde umkreist die Sonne",
+      "translated": "earth orbits sun",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: earth orbits sun",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.87
+    },
+    {
+      "index": 98,
+      "language": "de",
+      "input": "Die Sonne ist ein Planet",
+      "translated": "sun is planet",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: sun is planet",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 99,
+      "language": "de",
+      "input": "Der Mond ist aus Käse",
+      "translated": "moon is made of cheese",
+      "detected_language": "de",
+      "expected": "fake",
+      "actual": "fake",
+      "passed": true,
+      "confidence": 0.78,
+      "summary": "Common knowledge check refutes the claim: moon is made of cheese",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.86
+    },
+    {
+      "index": 100,
+      "language": "de",
+      "input": "Die Gurke ist grün",
+      "translated": "cucumber is green",
+      "detected_language": "de",
+      "expected": "true",
+      "actual": "true",
+      "passed": true,
+      "confidence": 0.82,
+      "summary": "Common knowledge check supports the claim: cucumber is green",
+      "evidence_source_types": [
+        "common_knowledge"
+      ],
+      "fallbacks_used": [
+        "translated_input:de"
+      ],
+      "elapsed_ms": 0.77
+    }
+  ]
+}
