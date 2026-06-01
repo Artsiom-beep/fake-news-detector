@@ -58,12 +58,6 @@ class MainActivity : FlutterActivity() {
         if (!startPending(result)) {
             return
         }
-        val permissions = missingPermissions(needsImageReadPermission = true)
-        if (permissions.isNotEmpty()) {
-            pendingAction = PendingAction.PICK_IMAGE
-            requestPermissions(permissions, permissionRequest)
-            return
-        }
         launchOriginalImagePicker()
     }
 
@@ -130,12 +124,6 @@ class MainActivity : FlutterActivity() {
                 permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            checkSelfPermission(Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissions.add(Manifest.permission.ACCESS_MEDIA_LOCATION)
-        }
         return permissions.toTypedArray()
     }
 
@@ -157,7 +145,7 @@ class MainActivity : FlutterActivity() {
     private fun openFileIntent(action: String, forceDocumentsUi: Boolean = false): Intent {
         return Intent(action).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
+            type = "image/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             putExtra("android.content.extra.SHOW_ADVANCED", true)
             putExtra(

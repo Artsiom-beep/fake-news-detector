@@ -275,17 +275,30 @@ class _VerificationHomeState extends State<VerificationHome> {
   }
 
   Future<void> _pickImage() async {
-    final image = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-        ? await AndroidOriginalImagePicker.pickImage()
-        : await _pickImageWithFilePicker();
-    if (image == null) {
-      return;
-    }
+    try {
+      final image = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+          ? await AndroidOriginalImagePicker.pickImage()
+          : await _pickImageWithFilePicker();
+      if (!mounted || image == null) {
+        return;
+      }
 
-    setState(() {
-      _error = null;
-      _image = image;
-    });
+      setState(() {
+        _error = null;
+        _image = image;
+      });
+    } on PlatformException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(
+          () => _error = error.message ?? 'Could not open the image file.');
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error = 'Could not open the image file.');
+    }
   }
 
   Future<PickedImage?> _pickImageWithFilePicker() async {
@@ -326,6 +339,48 @@ class _VerificationHomeState extends State<VerificationHome> {
       }
       setState(() =>
           _error = error.message ?? 'Could not load the latest camera photo.');
+    }
+  }
+
+  Future<void> _pickCameraOriginalImage() async {
+    try {
+      final items = await AndroidOriginalImagePicker.listCameraImages();
+      if (!mounted) {
+        return;
+      }
+      if (items.isEmpty) {
+        setState(() => _error = 'No camera photos were found on this phone.');
+        return;
+      }
+      final selected = await showModalBottomSheet<CameraImageItem>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (context) => CameraOriginalPickerSheet(items: items),
+      );
+      if (!mounted || selected == null) {
+        return;
+      }
+      final image =
+          await AndroidOriginalImagePicker.loadCameraImage(selected.id);
+      if (!mounted || image == null) {
+        return;
+      }
+      setState(() {
+        _error = null;
+        _image = image;
+      });
+    } on PlatformException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(
+          () => _error = error.message ?? 'Could not open camera originals.');
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error = 'Could not open camera originals.');
     }
   }
 
@@ -561,6 +616,10 @@ class _VerificationHomeState extends State<VerificationHome> {
               : 'Open image file',
           actionLabel: 'Check metadata',
           onPick: _pickImage,
+          onPickCameraOriginals:
+              !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+                  ? _pickCameraOriginalImage
+                  : null,
           onPickLatestCamera:
               !kIsWeb && defaultTargetPlatform == TargetPlatform.android
                   ? _pickLatestCameraImage
@@ -962,6 +1021,7 @@ class ImagePanel extends StatelessWidget {
     required this.pickLabel,
     required this.actionLabel,
     required this.onPick,
+    this.onPickCameraOriginals,
     this.onPickLatestCamera,
     required this.onSubmit,
     required this.isLoading,
@@ -972,6 +1032,7 @@ class ImagePanel extends StatelessWidget {
   final String pickLabel;
   final String actionLabel;
   final VoidCallback onPick;
+  final VoidCallback? onPickCameraOriginals;
   final VoidCallback? onPickLatestCamera;
   final VoidCallback onSubmit;
   final bool isLoading;
@@ -988,6 +1049,12 @@ class ImagePanel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
+        if (onPickCameraOriginals != null)
+          OutlinedButton.icon(
+            onPressed: isLoading ? null : onPickCameraOriginals,
+            icon: const Icon(Icons.photo_library_outlined),
+            label: const Text('Camera originals'),
+          ),
         if (onPickLatestCamera != null)
           OutlinedButton.icon(
             onPressed: isLoading ? null : onPickLatestCamera,
