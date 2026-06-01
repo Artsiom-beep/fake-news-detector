@@ -154,57 +154,39 @@ class MainActivity : FlutterActivity() {
         launchFileImagePicker()
     }
 
-    private fun launchFileImagePicker() {
-        val fileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+    private fun openFileIntent(action: String, forceDocumentsUi: Boolean = false): Intent {
+        return Intent(action).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            component = ComponentName(
-                "com.google.android.documentsui",
-                "com.android.documentsui.picker.PickActivity"
-            )
-            type = "image/*"
-            putExtra(
-                Intent.EXTRA_MIME_TYPES,
-                arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
-            )
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-        }
-
-        try {
-            startActivityForResult(fileIntent, pickOriginalImageRequest)
-        } catch (_: ActivityNotFoundException) {
-            val documentIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "image/*"
-                putExtra(
-                    Intent.EXTRA_MIME_TYPES,
-                    arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
+            type = "*/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+            putExtra("android.content.extra.SHOW_ADVANCED", true)
+            if (forceDocumentsUi) {
+                component = ComponentName(
+                    "com.google.android.documentsui",
+                    "com.android.documentsui.picker.PickActivity"
                 )
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            if (action == Intent.ACTION_OPEN_DOCUMENT) {
                 addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             }
+        }
+    }
+
+    private fun launchFileImagePicker() {
+        try {
+            startActivityForResult(
+                openFileIntent(Intent.ACTION_OPEN_DOCUMENT, forceDocumentsUi = true),
+                pickOriginalImageRequest
+            )
+        } catch (_: ActivityNotFoundException) {
             try {
-                startActivityForResult(documentIntent, pickOriginalImageRequest)
+                startActivityForResult(openFileIntent(Intent.ACTION_OPEN_DOCUMENT), pickOriginalImageRequest)
             } catch (_: ActivityNotFoundException) {
-                val contentIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "image/*"
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                startActivityForResult(contentIntent, pickOriginalImageRequest)
+                startActivityForResult(openFileIntent(Intent.ACTION_GET_CONTENT), pickOriginalImageRequest)
             }
         } catch (_: SecurityException) {
-            val documentIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "image/*"
-                putExtra(
-                    Intent.EXTRA_MIME_TYPES,
-                    arrayOf("image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff")
-                )
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-            }
-            startActivityForResult(documentIntent, pickOriginalImageRequest)
+            startActivityForResult(openFileIntent(Intent.ACTION_OPEN_DOCUMENT), pickOriginalImageRequest)
         }
     }
 
@@ -286,6 +268,10 @@ class MainActivity : FlutterActivity() {
             val targetUri = cameraTwin?.uri ?: uri
             var targetName = cameraTwin?.name ?: selectedName
             var targetMimeType = cameraTwin?.mimeType ?: (contentResolver.getType(uri) ?: "")
+            if (!isSupportedImageFile(targetName, targetMimeType)) {
+                completePickError("unsupported_file", "Choose an image file: JPEG, PNG, WebP, BMP, or TIFF.")
+                return
+            }
             val originalUri = originalMediaUri(targetUri)
             var bytes = readUriBytes(originalUri) ?: readUriBytes(targetUri)
             if (bytes == null && cameraTwin != null) {
@@ -597,6 +583,21 @@ class MainActivity : FlutterActivity() {
             }
         }
         return context
+    }
+
+    private fun isSupportedImageFile(name: String, mimeType: String): Boolean {
+        val normalizedMime = mimeType.trim().lowercase()
+        if (normalizedMime.startsWith("image/")) {
+            return true
+        }
+        val normalizedName = name.trim().lowercase()
+        return normalizedName.endsWith(".jpg") ||
+            normalizedName.endsWith(".jpeg") ||
+            normalizedName.endsWith(".png") ||
+            normalizedName.endsWith(".webp") ||
+            normalizedName.endsWith(".bmp") ||
+            normalizedName.endsWith(".tif") ||
+            normalizedName.endsWith(".tiff")
     }
 
     private fun queryCameraTwinForExportedName(displayName: String): MediaItem? {
