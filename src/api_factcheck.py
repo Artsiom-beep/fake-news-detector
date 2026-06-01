@@ -9,9 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 try:
+    from .factcheck.common_knowledge import add_user_common_fact, list_user_common_facts
     from .factcheck.image_analysis import run_ai_image_check, run_screenshot_factcheck
     from .factcheck.service import run_factcheck
 except ImportError:
+    from factcheck.common_knowledge import add_user_common_fact, list_user_common_facts
     from factcheck.image_analysis import run_ai_image_check, run_screenshot_factcheck
     from factcheck.service import run_factcheck
 
@@ -37,6 +39,18 @@ app.add_middleware(
 class FactCheckRequest(BaseModel):
     text: str | None = ""
     url: str | None = ""
+
+    class Config:
+        extra = "ignore"
+
+
+class KnowledgeFactRequest(BaseModel):
+    subject: str | None = ""
+    property: str | None = None
+    property_text: str | None = None
+    truth: bool = True
+    source_title: str | None = ""
+    source_url: str | None = ""
 
     class Config:
         extra = "ignore"
@@ -74,6 +88,30 @@ def factcheck(request: FactCheckRequest):
     if not payload.get("claim") and request.url and payload["summary"].startswith("The provided URL"):
         raise HTTPException(status_code=400, detail={"error": payload["summary"], "trace": payload.get("trace", {})})
     return payload
+
+
+@app.get("/knowledge/facts")
+def knowledge_facts():
+    return {"facts": list_user_common_facts()}
+
+
+@app.post("/knowledge/facts")
+def add_knowledge_fact(request: KnowledgeFactRequest):
+    subject = (request.subject or "").strip()
+    property_text = (request.property_text or request.property or "").strip()
+    if not subject or not property_text:
+        raise HTTPException(status_code=400, detail={"error": "Provide a subject and a property"})
+    try:
+        fact = add_user_common_fact(
+            subject=subject,
+            property_text=property_text,
+            truth=request.truth,
+            source_title=request.source_title or "",
+            source_url=request.source_url or "",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail={"error": str(exc)}) from exc
+    return {"status": "added", "fact": fact}
 
 
 @app.post("/factcheck-image")

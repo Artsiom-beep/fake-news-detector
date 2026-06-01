@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from datetime import date
@@ -58,7 +59,14 @@ class HealthTerminologyFact:
     refute_passage: str
 
 
-COMMON_FACTS_PATH = Path(__file__).resolve().parents[2] / "data" / "factcheck" / "common_knowledge_v1.json"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+COMMON_FACTS_PATH = PROJECT_ROOT / "data" / "factcheck" / "common_knowledge_v1.json"
+USER_COMMON_FACTS_PATH = Path(
+    os.getenv(
+        "FACTCHECK_USER_KNOWLEDGE_PATH",
+        str(PROJECT_ROOT / "outputs" / "factcheck_runs" / "user_knowledge_base_v1.json"),
+    )
+)
 
 CURRENT_US_PRESIDENT = CurrentOfficeFact(
     holder="donald trump",
@@ -927,8 +935,11 @@ DEFAULT_COMMON_FACTS: dict[str, KnowledgeFact] = {
 }
 
 
-def _load_common_facts(path: Path = COMMON_FACTS_PATH) -> dict[str, KnowledgeFact]:
-    merged = dict(DEFAULT_COMMON_FACTS)
+def _load_common_facts(
+    path: Path = COMMON_FACTS_PATH,
+    base: dict[str, KnowledgeFact] | None = None,
+) -> dict[str, KnowledgeFact]:
+    merged = dict(DEFAULT_COMMON_FACTS if base is None else base)
     if not path.exists():
         return merged
     try:
@@ -1093,7 +1104,137 @@ def _normalize_phrase(text: str) -> str:
     return PROPERTY_ALIASES.get(text, text)
 
 
-COMMON_FACTS: dict[str, KnowledgeFact] = _load_common_facts()
+def _build_common_facts() -> dict[str, KnowledgeFact]:
+    merged = _load_common_facts(COMMON_FACTS_PATH)
+    return _load_common_facts(USER_COMMON_FACTS_PATH, base=merged)
+
+
+COMMON_FACTS: dict[str, KnowledgeFact] = _build_common_facts()
+
+
+def reload_common_facts() -> dict[str, KnowledgeFact]:
+    COMMON_FACTS.clear()
+    COMMON_FACTS.update(_build_common_facts())
+    return COMMON_FACTS
+
+
+def _read_user_common_facts(path: Path | None = None) -> dict[str, object]:
+    resolved_path = path or USER_COMMON_FACTS_PATH
+    if not resolved_path.exists():
+        return {"version": "user_knowledge_base_v1", "facts": {}}
+    try:
+        payload = json.loads(resolved_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"version": "user_knowledge_base_v1", "facts": {}}
+    if not isinstance(payload, dict):
+        return {"version": "user_knowledge_base_v1", "facts": {}}
+    facts = payload.get("facts")
+    if not isinstance(facts, dict):
+        payload["facts"] = {}
+    payload.setdefault("version", "user_knowledge_base_v1")
+    return payload
+
+
+def _write_user_common_facts(payload: dict[str, object], path: Path | None = None) -> None:
+    resolved_path = path or USER_COMMON_FACTS_PATH
+    resolved_path.parent.mkdir(parents=True, exist_ok=True)
+    resolved_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def list_user_common_facts(path: Path | None = None) -> list[dict[str, object]]:
+    payload = _read_user_common_facts(path)
+    facts = payload.get("facts", {})
+    if not isinstance(facts, dict):
+        return []
+    items: list[dict[str, object]] = []
+    for subject, fact in sorted(facts.items()):
+        if not isinstance(fact, dict):
+            continue
+        items.append(
+            {
+                "subject": subject,
+                "true_properties": list(fact.get("true_properties", [])),
+                "false_properties": list(fact.get("false_properties", [])),
+                "source_title": fact.get("source_title", f"User knowledge base: {subject}"),
+                "source_url": fact.get("source_url", "user://knowledge-base"),
+            }
+        )
+    return items
+
+
+def add_user_common_fact(
+    subject: str,
+    property_text: str,
+    truth: bool,
+    *,
+    source_title: str = "",
+    source_url: str = "",
+    path: Path | None = None,
+) -> dict[str, object]:
+    normalized_subject = _normalize_phrase(subject)
+    normalized_property = _normalize_phrase(property_text)
+    if not normalized_subject or not normalized_property:
+        raise ValueError("Provide a subject and a property.")
+
+    payload = _read_user_common_facts(path)
+    facts = payload.setdefault("facts", {})
+    if not isinstance(facts, dict):
+        facts = {}
+        payload["facts"] = facts
+    item = facts.setdefault(
+        normalized_subject,
+        {
+            "true_properties": [],
+            "false_properties": [],
+            "source_url": "user://knowledge-base",
+            "source_title": f"User knowledge base: {normalized_subject}",
+        },
+    )
+    if not isinstance(item, dict):
+        item = {
+            "true_properties": [],
+            "false_properties": [],
+            "source_url": "user://knowledge-base",
+            "source_title": f"User knowledge base: {normalized_subject}",
+        }
+        facts[normalized_subject] = item
+
+    true_properties = {
+        _normalize_phrase(str(value))
+        for value in item.get("true_properties", [])
+        if _normalize_phrase(str(value))
+    }
+    false_properties = {
+        _normalize_phrase(str(value))
+        for value in item.get("false_properties", [])
+        if _normalize_phrase(str(value))
+    }
+    if truth:
+        true_properties.add(normalized_property)
+        false_properties.discard(normalized_property)
+    else:
+        false_properties.add(normalized_property)
+        true_properties.discard(normalized_property)
+
+    item["true_properties"] = sorted(true_properties)
+    item["false_properties"] = sorted(false_properties)
+    item["source_url"] = (source_url or "").strip() or str(item.get("source_url") or "user://knowledge-base")
+    item["source_title"] = (source_title or "").strip() or str(
+        item.get("source_title") or f"User knowledge base: {normalized_subject}"
+    )
+
+    _write_user_common_facts(payload, path)
+    reload_common_facts()
+    return {
+        "subject": normalized_subject,
+        "property": normalized_property,
+        "truth": bool(truth),
+        "source_title": item["source_title"],
+        "source_url": item["source_url"],
+    }
 
 
 def _subject_variants(subject: str) -> list[str]:

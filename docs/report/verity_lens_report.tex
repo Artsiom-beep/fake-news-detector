@@ -63,7 +63,8 @@ System zwraca twardy werdykt \texttt{true} lub \texttt{fake} tylko wtedy, gdy po
 Dla zwykłych artykułów informacyjnych zwracana jest ocena wiarygodności, a dla obrazów ocena ryzyka na podstawie metadanych i śladów generatorów AI, nie absolutny dowód pochodzenia obrazu.
 W końcowej wersji moduł obrazów został świadomie ograniczony do analizy pliku: EXIF, nazw plików, markerów generatorów, wymiarów i słabych cech statystycznych.
 Pełnego rozpoznawania AI na podstawie samych pikseli nie udało się zrealizować w pełnym zakresie w darmowym środowisku chmurowym bez ryzyka fałszywych oskarżeń.
-W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przez lokalne reguły, oficjalną terminologię zdrowotną WHO, ogólne rozumowanie źródłowo-taksonomiczne oparte na streszczeniach Wikipedii oraz opcjonalną warstwę NLI, która semantycznie porównuje twierdzenie z fragmentem dowodu.
+W finalnej wersji wzmocniono także moduł \textit{Facts}: krótkie twierdzenia są interpretowane przede wszystkim jako praca z bazą wiedzy.
+Baza zawiera stabilne fakty lokalne, może być rozszerzana przez użytkownika, a dopiero poza nią system korzysta z oficjalnej terminologii zdrowotnej WHO, streszczeń Wikipedii, reguł taksonomicznych oraz opcjonalnej warstwy NLI porównującej twierdzenie z fragmentem dowodu.
 
 Raport opisuje cały przebieg projektu: stan początkowy, problemy ze starym modelem ML, porządkowanie architektury, zmianę podejścia na jeden kanoniczny silnik, budowę API, Web UI, aplikacji desktopowej Windows, aplikacji Flutter, wdrożenie Render, testy na telefonie, końcowe uproszczenie interfejsu przez usunięcie osobnej zakładki \textit{Screenshots} oraz poprawę wyboru oryginalnych zdjęć z aparatu na Androidzie.
 Układ raportu oparto na typowej strukturze sprawozdania projektowego: cel, zakres, metoda, implementacja, wyniki, problemy, ograniczenia i wnioski.
@@ -90,7 +91,7 @@ Produkt miał być możliwy do pokazania w praktyce: lokalnie na PC, jako paczka
 W aktualnej wersji użytkownik widzi trzy główne moduły:
 \begin{itemize}
   \item \textbf{News} -- ocena wiarygodności artykułu lub adresu URL;
-  \item \textbf{Facts} -- sprawdzanie krótkiego twierdzenia;
+  \item \textbf{Facts} -- sprawdzanie krótkiego twierdzenia w bazie wiedzy oraz możliwość dodawania nowych faktów;
   \item \textbf{Images} -- analiza metadanych obrazu i ocena ryzyka, że plik zawiera ślady generatora AI albo nie pochodzi bezpośrednio z aparatu.
 \end{itemize}
 
@@ -227,6 +228,25 @@ Jednym z praktycznych przykładów był fakt typu:
 System początkowo odpowiadał zbyt ostrożnie, mimo że dla takiego stabilnego, codziennego faktu można zastosować lokalną wiedzę i prostsze reguły.
 Dodano obsługę typowych faktów materiałowych, dzięki czemu proste twierdzenia nie muszą przechodzić przez pełny ciężki pipeline źródłowy.
 
+\subsection{Zmiana modułu Facts w kierunku bazy wiedzy}
+Po wielu testach praktycznych okazało się, że próba zbudowania ``uniwersalnego rozumu'' dla każdego krótkiego zdania jest zbyt ryzykowna.
+System mógł znaleźć przypadkowy artykuł fact-checkingowy z podobnym słowem i na tej podstawie wydać błędny werdykt.
+Przykładem były zdania o książkach lub wodzie, które przez podobieństwo słów mogły zostać powiązane z niepasującymi materiałami z serwisów politycznego fact-checkingu.
+
+Dlatego finalnie moduł \textit{Facts} został opisany uczciwiej jako baza wiedzy z dodatkowymi źródłami.
+Wbudowana baza przechowuje stabilne fakty codzienne, np. o zwierzętach, materiałach, kolorach, prostych relacjach, stolicach i arytmetyce.
+Dodano także funkcję dopisywania faktów przez użytkownika.
+W aplikacji mobilnej i w wersji PC w sekcji \textit{Facts} znajduje się zwijany blok \textit{Knowledge base}, w którym można podać:
+\begin{itemize}
+  \item podmiot, np. \textit{tomato};
+  \item właściwość, np. \textit{fruit};
+  \item czy fakt ma być zapisany jako prawdziwy czy fałszywy.
+\end{itemize}
+
+Backend zapisuje takie wpisy w pliku \path{outputs/factcheck_runs/user_knowledge_base_v1.json} i ładuje je razem z bazą wbudowaną.
+Dzięki temu podczas demonstracji można dodać nowy fakt, a następnie od razu sprawdzić zdanie o tym fakcie.
+To nie udaje pełnej inteligencji ogólnej, ale daje kontrolowany, wyjaśnialny i rozszerzalny mechanizm.
+
 \subsection{Zbyt literalne rozumienie krótkich faktów}
 Po wdrożeniu mobilnym wyszedł kolejny praktyczny problem: backend potrafił znaleźć właściwe streszczenie źródłowe, ale nie zawsze umiał wyciągnąć z niego konsekwencję logiczną.
 Przykładowo dla zdania \textit{covid is virus} system widział opis COVID-19, ale zwracał \texttt{uncertain}, ponieważ literalnie szukał słowa \textit{virus} jako dokładnej właściwości choroby.
@@ -301,9 +321,10 @@ Dlatego \textit{Verity Lens} ma trzy poziomy odpowiedzi:
   \item \texttt{uncertain} -- brak wystarczającego dowodu.
 \end{itemize}
 
-\subsection{Rozumowanie źródłowo-taksonomiczne}
-Finalny moduł \textit{Facts} nie jest już tylko listą ręcznie wpisanych przykładów.
-Jeżeli lokalna wiedza nie obejmuje danego tematu, backend pobiera streszczenie źródłowe i próbuje ocenić właściwość twierdzenia.
+\subsection{Baza wiedzy i rozumowanie źródłowo-taksonomiczne}
+Finalny moduł \textit{Facts} jest traktowany jako baza wiedzy, a nie jako nieograniczony generator odpowiedzi.
+Najpierw sprawdzana jest wiedza wbudowana oraz fakty dodane przez użytkownika.
+Jeżeli baza nie obejmuje danego tematu, backend może pobrać streszczenie źródłowe i spróbować ocenić właściwość twierdzenia.
 Mechanizm rozpoznaje bezpośrednie wsparcie, bezpośrednie zaprzeczenia, relację stolicy oraz konflikt klas.
 Dzięki temu przykłady testowane po ostatniej poprawce działają następująco:
 \begin{center}
@@ -372,7 +393,7 @@ Warstwa & Najważniejsze pliki & Rola \\
 Core engine & \path{src/factcheck/service.py} & Orkiestracja głównego pipeline'u i wybór strategii. \\
 Decision layer & \path{src/factcheck/decision.py} & Decyzja \texttt{true}/\texttt{fake}/\texttt{uncertain}. \\
 Retrieval & \path{src/factcheck/retrieval.py} & Pobieranie i dobór materiału źródłowego. \\
-Common knowledge & \path{src/factcheck/common_knowledge.py} & Proste fakty, reguły i lokalna wiedza. \\
+Common knowledge & \path{src/factcheck/common_knowledge.py} & Wbudowana i użytkowa baza wiedzy, proste fakty, reguły i lokalna wiedza. \\
 Knowledge sources & \path{src/factcheck/knowledge_sources.py} & Wikipedia summary, klasy taksonomiczne, relacje stolic i oficjalna wiedza źródłowa. \\
 Semantic NLI & \path{src/nli.py} & Opcjonalny model MNLI porównujący twierdzenie z dowodem jako para premise/hypothesis. \\
 News credibility & \path{src/factcheck/news_credibility.py} & Punktacja artykułów informacyjnych. \\
@@ -403,6 +424,8 @@ GET  /health
 GET  /ready
 POST /factcheck
 POST /factcheck-image
+GET  /knowledge/facts
+POST /knowledge/facts
 \end{verbatim}
 
 Przykładowe pola wyniku:
@@ -431,6 +454,7 @@ W aktualnej wersji widoczne są trzy sekcje:
 Sekcja \textit{Screenshots} została usunięta z UI.
 Backendowa funkcja OCR nadal istnieje, ale nie jest osobnym modułem użytkownika.
 Po tej zmianie interfejs jest prostszy i lepiej odpowiada rzeczywistym zastosowaniom.
+W sekcji \textit{Facts} dodano zwijany blok \textit{Knowledge base}, dzięki któremu użytkownik może dopisać prosty fakt do bazy wiedzy bez edycji plików projektu.
 
 \subsection{Aplikacja desktopowa Windows}
 Wersja desktopowa nie jest osobnym produktem logicznym.
@@ -451,10 +475,10 @@ Aktualna paczka desktopowa:
 
 Po ostatniej przebudowie paczki desktopowej:
 \begin{itemize}
-  \item EXE SHA256: \texttt{273110CFC51015EC5924575B840A1A90}\\
-  \texttt{7B8963F05280195C9C8A9F0884F13FD0};
-  \item ZIP SHA256: \texttt{6B86B6FDA42937C7AE252700C6DA653A}\\
-  \texttt{9E7ADA6A6E8D8C94DA25BA995C4313C0}.
+  \item EXE SHA256: \texttt{BD2B66A7B26DE86578164C4AC65EF3FC}\\
+  \texttt{5B1F2691F40B65AB0BB3BE8FF8457395};
+  \item ZIP SHA256: \texttt{FAE74F795292C89647AFCC2F634EC202}\\
+  \texttt{6D18E3742EE0DF11EAB8CB5311EB9ADA}.
 \end{itemize}
 
 \subsection{Aplikacja mobilna Flutter}
@@ -471,8 +495,8 @@ Pakiet Android:
   \item główna aktywność: \texttt{app.veritylens.mobile.MainActivity};
   \item publiczny backend: \url{https://fake-news-detector-poi6.onrender.com};
   \item aktualny cloud APK po czystej przebudowie: \path{outputs/phone_download/VerityLens-cloud.apk};
-  \item APK SHA256: \texttt{ED8D4747DA6F26A52278B0A7262CF9AA}\\
-  \texttt{8C3A652F0463E3EED823DC5C1A4DBB14}.
+  \item APK SHA256: \texttt{23D54F4B65F2437BE17FDCB051FCF475}\\
+  \texttt{57511BB570E91D87EA92E995084B626F}.
 \end{itemize}
 
 Telefon działa bez komputera, ale wymaga internetu i działającego backendu Render.
@@ -545,10 +569,10 @@ Aktualny stan po ostatnich pełnych kontrolach:
 \toprule
 Zakres & Narzędzie / komenda & Wynik \\
 \midrule
-Backend unit/integration & \texttt{unittest} & 122/122 OK \\
+Backend unit/integration & \texttt{unittest} & 136/136 OK \\
 Product acceptance & \texttt{run\_product\_acceptance.py} & 93/93 OK \\
 Flutter analyze & \path{flutter analyze} & No issues found \\
-Flutter tests & \path{flutter test} & 13/13 OK \\
+Flutter tests & \path{flutter test} & 14/14 OK \\
 Release gate & release gate & OK, 25 kroków w ostatnim trybie cloud/phone \\
 Final cloud/phone & finalizer cloud-phone & OK \\
 Desktop package & verifier desktopowy & OK \\
@@ -632,6 +656,7 @@ Analiza projektu & Przegląd istniejących plików, modeli i wejść API. & Wykr
 Refaktoryzacja & Utworzenie kanonicznego pipeline'u i archiwizacja legacy. & Jeden silnik dla API, UI, desktopu i telefonu. \\
 Ostrożność decyzyjna & Wprowadzenie zasady \texttt{uncertain}. & System nie wymusza fałszywej pewności. \\
 Facts & Dodanie reguł prostych faktów, arytmetyki i wiedzy lokalnej. & Lepsze odpowiedzi na stabilne codzienne twierdzenia. \\
+Facts knowledge base & Dodanie endpointu \texttt{/knowledge/facts}, pliku \path{user_knowledge_base_v1.json} oraz formularzy w mobile i PC. & Użytkownik może rozszerzyć bazę wiedzy podczas demonstracji. \\
 Facts source reasoning & Rozszerzenie interpretacji streszczeń Wikipedii i oficjalnych źródeł. & System odróżnia niezgodne klasy, np. planetę od gwiazdy i ssaka od ryby. \\
 Facts NLI & Dodanie opcjonalnego modelu \texttt{Xenova/mobilebert-uncased-mnli} w trybie ONNX. & System potrafi semantycznie porównać twierdzenie z dowodem i rzadziej blokuje oczywiste przypadki na poziomie \texttt{uncertain}. \\
 News & Oddzielenie credibility od hard verdict. & Artykuły newsowe są oceniane jako wiarygodne/średnie/słabe, nie jako automatycznie prawdziwe albo fałszywe. \\
@@ -686,6 +711,12 @@ W projekcie nie ma pełnej gwarancji rozpoznania obrazu wygenerowanego przez AI 
 Taka funkcja wymagałaby cięższego modelu, dobrego zbioru testowego, kalibracji progów oraz stabilnych zasobów obliczeniowych.
 W darmowej chmurze lepszym rozwiązaniem jest pokazać użytkownikowi konkretne ślady: metadane generatora, EXIF aparatu, brak EXIF, nietypowe wymiary i ostrzeżenia.
 Dlatego interfejs mówi \textit{Check metadata}, a nie \textit{Prove AI image}.
+
+\subsection{Nazwać Facts bazą wiedzy}
+Po testach z wieloma krótkimi zdaniami przyjęto, że najuczciwszym opisem modułu \textit{Facts} jest baza wiedzy z dodatkowymi mechanizmami źródłowymi.
+System może być rozszerzany przez użytkownika, ale nie powinien udawać, że zna każdy fakt świata.
+Jeżeli fakt jest w bazie, wynik jest szybki i wyjaśnialny.
+Jeżeli faktu nie ma, backend próbuje użyć źródeł, ale w razie słabych dowodów nadal zwraca \texttt{uncertain}.
 
 \subsection{Użyć NLI w faktach, ale nie robić z niego jedynego sędziego}
 Moduł \textit{Facts} potrzebował większej inteligencji niż proste porównywanie słów.
@@ -750,6 +781,7 @@ Commit & Znaczenie \\
   \item Obecność EXIF aparatu nie gwarantuje pełnej autentyczności, ponieważ metadane można skopiować lub zmodyfikować.
   \item Pełny model wizualny AI-image detection nie jest domyślnie włączony w chmurze, ponieważ byłby ciężki dla darmowego hostingu i wymagałby osobnej kalibracji jakości.
   \item Model NLI poprawia rozumienie faktów, ale nie zastępuje źródeł i nie daje gwarancji poprawności dla każdego zdania.
+  \item Fakty dopisane przez użytkownika są bazą demonstracyjną i powinny być traktowane jako wiedza lokalna, nie jako zewnętrznie zweryfikowany autorytet.
   \item Pierwsze użycie modułu faktów po uśpieniu lub wdrożeniu Render może być wolniejsze, ponieważ model NLI jest ładowany leniwie; liczba wywołań modelu jest ograniczona budżetem, aby nie przeciążyć darmowego backendu.
   \item OCR może się mylić przy zrzutach niskiej jakości, dlatego funkcja została wycofana z głównego UI.
   \item Obecny benchmark jest dobry jako regresja produktu, ale nie reprezentuje całego internetu.
@@ -761,6 +793,7 @@ Commit & Znaczenie \\
   \item dodać ekran \textit{About / Version} w aplikacji mobilnej, aby od razu było widać commit, wersję APK i adres API;
   \item poprawić baner połączenia tak, aby przy Render Free pokazywał \textit{Waking up server} i automatycznie ponawiał próbę;
   \item rozszerzyć benchmark acceptance o większy zbiór żywych newsów i trudnych przypadków;
+  \item dodać import/eksport oraz panel przeglądania faktów dopisanych do bazy wiedzy;
   \item dodać osobny benchmark NLI dla krótkich twierdzeń i trudnych par dowód--twierdzenie;
   \item dodać opcjonalny płatny lub lokalny model wizualny do pełniejszej oceny obrazów AI;
   \item rozważyć obsługę Content Credentials / C2PA, jeżeli użytkownik będzie miał obrazy z podpisanym pochodzeniem;
@@ -775,6 +808,7 @@ Projekt zakończył się działającym produktem, a nie tylko prototypem.
 Najważniejszym sukcesem jest zmiana podejścia: od starego klasyfikatora \textit{fake/real} do ostrożnego systemu weryfikacji informacji.
 Produkt ma jeden silnik, stabilne API, Web UI, desktop Windows, aplikację Flutter i backend w chmurze.
 Został przetestowany automatycznie i praktycznie, w tym na fizycznym telefonie.
+Moduł \textit{Facts} został ostatecznie ustawiony jako rozszerzalna baza wiedzy, co jest prostsze do wyjaśnienia, testowania i obrony niż obietnica pełnej inteligencji ogólnej.
 
 Najważniejsza lekcja projektowa brzmi: w systemach fact-checkingowych brak pewności nie jest porażką.
 Porażką byłoby udawanie pewności.

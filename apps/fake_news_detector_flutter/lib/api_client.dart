@@ -15,6 +15,12 @@ abstract class FactCheckGateway {
 
   Future<FactCheckResult> checkText({String text = '', String url = ''});
 
+  Future<KnowledgeFactResponse> addKnowledgeFact({
+    required String subject,
+    required String propertyText,
+    required bool truth,
+  });
+
   Future<FactCheckResult> checkImage({
     required Uint8List bytes,
     required String filename,
@@ -102,6 +108,49 @@ class FactCheckApiClient implements FactCheckGateway {
           .timeout(textTimeout);
 
       return _decodeResponse(response);
+    } on FactCheckApiException {
+      rethrow;
+    } on TimeoutException {
+      throw const FactCheckApiException(
+        'The API request timed out. Check the API URL or try again.',
+      );
+    } on FormatException {
+      throw const FactCheckApiException(
+        'The API returned invalid JSON.',
+      );
+    } on http.ClientException catch (error) {
+      throw FactCheckApiException('Could not reach the API: ${error.message}');
+    } catch (_) {
+      throw const FactCheckApiException(
+        'The API is not reachable from this device. Verify the API URL and internet connection.',
+      );
+    }
+  }
+
+  @override
+  Future<KnowledgeFactResponse> addKnowledgeFact({
+    required String subject,
+    required String propertyText,
+    required bool truth,
+  }) async {
+    try {
+      final response = await _httpClient
+          .post(
+            _uri('/knowledge/facts'),
+            headers: const {'content-type': 'application/json'},
+            body: jsonEncode({
+              'subject': subject.trim(),
+              'property': propertyText.trim(),
+              'truth': truth,
+            }),
+          )
+          .timeout(textTimeout);
+      final decoded = _decodeJsonMap(response.body);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw FactCheckApiException(
+            _extractError(decoded, response.statusCode));
+      }
+      return KnowledgeFactResponse(decoded);
     } on FactCheckApiException {
       rethrow;
     } on TimeoutException {
@@ -247,6 +296,29 @@ class ApiHealthStatus {
   final String message;
   final String service;
   final int? statusCode;
+}
+
+class KnowledgeFactResponse {
+  const KnowledgeFactResponse(this.raw);
+
+  final Map<String, dynamic> raw;
+
+  Map<String, dynamic> get fact {
+    final item = raw['fact'];
+    if (item is Map<String, dynamic>) {
+      return item;
+    }
+    if (item is Map) {
+      return item.cast<String, dynamic>();
+    }
+    return const {};
+  }
+
+  String get subject => (fact['subject'] as String?) ?? '';
+
+  String get propertyText => (fact['property'] as String?) ?? '';
+
+  bool get truth => fact['truth'] == true;
 }
 
 class FactCheckApiException implements Exception {

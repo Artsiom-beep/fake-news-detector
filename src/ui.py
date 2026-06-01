@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import HTMLResponse, Response
 
+from src.factcheck.common_knowledge import add_user_common_fact
 from src.factcheck.image_analysis import run_ai_image_check
 from src.factcheck.service import run_factcheck
 
@@ -273,6 +274,23 @@ def _render_result(result: dict[str, Any]) -> str:
     </section>
 
     {_render_advanced(result)}
+    """
+
+
+def _render_knowledge_added(fact: dict[str, object]) -> str:
+    subject = escape(str(fact.get("subject", "")))
+    prop = escape(str(fact.get("property", "")))
+    truth = "true" if fact.get("truth") is True else "false"
+    return f"""
+    <section class="result-card">
+      <div class="result-main">
+        <div>
+          {_badge("Knowledge base updated", "high")}
+          <h2>{subject}</h2>
+          <p>Saved as {truth}: {prop}</p>
+        </div>
+      </div>
+    </section>
     """
 
 
@@ -1081,7 +1099,7 @@ def render_page(
             </div>
             <div class="info-panel" id="factsGuide" hidden>
               <h3>What this mode does</h3>
-              <p>Checks a single claim against stable built-in facts, trusted evidence, and fact-check sources. If the evidence is weak, it returns not enough certainty.</p>
+              <p>Checks a single claim against the built-in knowledge base, user-added facts, trusted evidence, and fact-check sources. If the evidence is weak, it returns not enough certainty.</p>
               <p><strong>Example:</strong> type “Elephant is a mammal” to get a likely reliable result, or “Coffee cures cancer” to see the system abstain.</p>
             </div>
             <form class="tool-form" method="post" action="/check#factsTool" enctype="multipart/form-data">
@@ -1090,6 +1108,22 @@ def render_page(
               <textarea id="factTextInput" name="text" placeholder="Example: Elephant is a mammal">{escape(fact_text_value)}</textarea>
               <div class="composer-actions">
                 <button class="primary-btn" type="submit" data-loading="Checking fact...">Check fact</button>
+              </div>
+            </form>
+            <form class="tool-form" method="post" action="/knowledge/add#factsTool">
+              <input type="hidden" name="active_panel" value="factsTool" />
+              <h3>Knowledge base</h3>
+              <label for="knowledgeSubjectInput">Subject</label>
+              <input class="url-input" id="knowledgeSubjectInput" type="text" name="subject" placeholder="Example: tomato" />
+              <label for="knowledgePropertyInput">Property</label>
+              <input class="url-input" id="knowledgePropertyInput" type="text" name="property_text" placeholder="Example: fruit" />
+              <label for="knowledgeTruthInput">Verdict in the base</label>
+              <select class="url-input" id="knowledgeTruthInput" name="truth">
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+              <div class="composer-actions">
+                <button class="secondary-btn" type="submit" data-loading="Saving...">Add fact</button>
               </div>
             </form>
           </article>
@@ -1325,6 +1359,39 @@ def home() -> str:
 @app.get("/check", response_class=HTMLResponse)
 def check_page() -> str:
     return render_page()
+
+
+@app.post("/knowledge/add", response_class=HTMLResponse)
+async def add_knowledge_fact_page(
+    subject: str = Form(default=""),
+    property_text: str = Form(default=""),
+    truth: str = Form(default="true"),
+    active_panel: str = Form(default="factsTool"),
+) -> str:
+    active_panel = _normalize_active_panel(active_panel)
+    clean_subject = (subject or "").strip()
+    clean_property = (property_text or "").strip()
+    if not clean_subject or not clean_property:
+        return render_page(
+            error_html="<div class='error'>Please enter a subject and a property.</div>",
+            active_panel=active_panel,
+        )
+    try:
+        fact = add_user_common_fact(
+            subject=clean_subject,
+            property_text=clean_property,
+            truth=(truth or "").lower() == "true",
+        )
+    except Exception as exc:
+        return render_page(
+            error_html=f"<div class='error'>Could not save fact: {escape(str(exc))}</div>",
+            active_panel=active_panel,
+        )
+    return render_page(
+        result_html=_render_knowledge_added(fact),
+        text_value=f"{fact['subject']} is {'' if fact['truth'] else 'not '}{fact['property']}",
+        active_panel=active_panel,
+    )
 
 
 @app.post("/check", response_class=HTMLResponse)

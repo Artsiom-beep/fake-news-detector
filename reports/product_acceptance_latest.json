@@ -1,6 +1,6 @@
 {
   "summary": {
-    "created_at": "2026-06-01T14:13:08+00:00",
+    "created_at": "2026-06-01T18:11:15+00:00",
     "target_pass_rate": 0.95,
     "min_cases_per_section": 5,
     "min_cases_by_section": {
@@ -57,7 +57,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: 2 plus 2 equals 4"
+      "summary": "Calculation check supports the claim: 2 plus 2 equals 4"
     },
     {
       "id": "fact_arithmetic_false",
@@ -67,7 +67,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+      "summary": "Calculation check refutes the claim: 2 plus 2 equals 5"
     },
     {
       "id": "fact_word_arithmetic_true",
@@ -77,7 +77,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: Two plus two equals four"
+      "summary": "Calculation check supports the claim: Two plus two equals four"
     },
     {
       "id": "fact_word_arithmetic_false",
@@ -87,7 +87,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: Ten divided by two equals three"
+      "summary": "Calculation check refutes the claim: Ten divided by two equals three"
     },
     {
       "id": "fact_arithmetic_multiplication_true",
@@ -97,7 +97,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: 3 times 7 equals 21"
+      "summary": "Calculation check supports the claim: 3 times 7 equals 21"
     },
     {
       "id": "fact_arithmetic_division_false",
@@ -107,7 +107,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: 10 divided by 2 equals 3"
+      "summary": "Calculation check refutes the claim: 10 divided by 2 equals 3"
     },
     {
       "id": "fact_arithmetic_addition_false",
@@ -117,7 +117,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: 5 + 5 = 11"
+      "summary": "Calculation check refutes the claim: 5 + 5 = 11"
     },
     {
       "id": "fact_numeric_true",
@@ -127,7 +127,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: 100 is lower than 200"
+      "summary": "Calculation check supports the claim: 100 is lower than 200"
     },
     {
       "id": "fact_numeric_false",
@@ -137,7 +137,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: 100 > 200"
+      "summary": "Calculation check refutes the claim: 100 > 200"
     },
     {
       "id": "fact_numeric_less_true",
@@ -147,7 +147,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: 15 is less than 20"
+      "summary": "Calculation check supports the claim: 15 is less than 20"
     },
     {
       "id": "fact_symbolic_comparison_true",
@@ -157,7 +157,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: 20 >= 15"
+      "summary": "Calculation check supports the claim: 20 >= 15"
     },
     {
       "id": "fact_word_numeric_true",
@@ -167,7 +167,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic supports the claim: Five is greater than three"
+      "summary": "Calculation check supports the claim: Five is greater than three"
     },
     {
       "id": "fact_elephant_mammal",
@@ -177,7 +177,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+      "summary": "Common knowledge check supports the claim: Elephants are mammals"
     },
     {
       "id": "fact_elephant_insect",
@@ -187,7 +187,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+      "summary": "Common knowledge check refutes the claim: Elephants are insects"
     },
     {
       "id": "fact_dog_mammal",
@@ -197,7 +197,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Dogs are mammals"
+      "summary": "Common knowledge check supports the claim: Dogs are mammals"
     },
     {
       "id": "fact_cat_plant",
@@ -207,7 +207,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Cats are plants"
+      "summary": "Common knowledge check refutes the claim: Cats are plants"
     },
     {
       "id": "fact_apple_food",
@@ -217,7 +217,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: An apple is food"
+      "summary": "Common knowledge check supports the claim: An apple is food"
     },
     {
       "id": "fact_apple_blue",
@@ -227,7 +227,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: An apple is blue"
+      "summary": "Common knowledge check refutes the claim: An apple is blue"
     },
     {
       "id": "fact_banana_yellow",
@@ -237,7 +237,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Bananas are yellow"
+      "summary": "Common knowledge check supports the claim: bananas are yellow"
     },
     {
       "id": "fact_banana_blue",
@@ -247,7 +247,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Bananas are blue"
+      "summary": "Common knowledge check refutes the claim: bananas are blue"
     },
     {
       "id": "fact_cucumber_green",
@@ -257,7 +257,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Cucumbers are green"
+      "summary": "Common knowledge check supports the claim: Cucumbers are green"
     },
     {
       "id": "fact_grass_red",
@@ -267,7 +267,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Grass is red"
+      "summary": "Common knowledge check refutes the claim: Grass is red"
     },
     {
       "id": "fact_water_liquid",
@@ -277,7 +277,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Water is liquid"
+      "summary": "Common knowledge check supports the claim: Water is liquid"
     },
     {
       "id": "fact_ice_hot",
@@ -287,7 +287,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Ice is hot"
+      "summary": "Common knowledge check refutes the claim: Ice is hot"
     },
     {
       "id": "fact_fire_hot",
@@ -297,7 +297,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Fire is hot"
+      "summary": "Common knowledge check supports the claim: Fire is hot"
     },
     {
       "id": "fact_snow_cold",
@@ -307,7 +307,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Snow is cold"
+      "summary": "Common knowledge check supports the claim: Snow is cold"
     },
     {
       "id": "fact_snow_black",
@@ -317,7 +317,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Snow is black"
+      "summary": "Common knowledge check refutes the claim: Snow is black"
     },
     {
       "id": "fact_rock_edible",
@@ -327,7 +327,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: A rock is edible"
+      "summary": "Common knowledge check refutes the claim: A rock is edible"
     },
     {
       "id": "fact_capital_true",
@@ -337,7 +337,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The capital of France is Paris"
+      "summary": "Common knowledge check supports the claim: The capital of France is Paris"
     },
     {
       "id": "fact_capital_false",
@@ -347,7 +347,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The capital of France is Berlin"
+      "summary": "Common knowledge check refutes the claim: the capital of france is berlin"
     },
     {
       "id": "fact_capital_germany_true",
@@ -357,7 +357,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The capital of Germany is Berlin"
+      "summary": "Common knowledge check supports the claim: the capital of germany is berlin"
     },
     {
       "id": "fact_capital_us_false",
@@ -367,7 +367,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The capital of the United States is New York"
+      "summary": "Common knowledge check refutes the claim: The capital of the United States is New York"
     },
     {
       "id": "fact_capital_usa_true",
@@ -377,7 +377,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The capital of USA is Washington DC"
+      "summary": "Common knowledge check supports the claim: The capital of USA is Washington DC"
     },
     {
       "id": "fact_capital_poland_true",
@@ -387,7 +387,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The capital of Poland is Warsaw"
+      "summary": "Common knowledge check supports the claim: The capital of Poland is Warsaw"
     },
     {
       "id": "fact_orbit_true",
@@ -397,7 +397,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Earth orbits the Sun"
+      "summary": "Common knowledge check supports the claim: Earth orbits the Sun"
     },
     {
       "id": "fact_orbit_false",
@@ -407,7 +407,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The Sun orbits the Earth"
+      "summary": "Common knowledge check refutes the claim: The Sun orbits the Earth"
     },
     {
       "id": "fact_moon_satellite",
@@ -417,7 +417,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The Moon is a natural satellite"
+      "summary": "Common knowledge check supports the claim: The Moon is a natural satellite"
     },
     {
       "id": "fact_moon_cheese",
@@ -427,7 +427,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The Moon is made of cheese"
+      "summary": "Common knowledge check refutes the claim: The Moon is made of cheese"
     },
     {
       "id": "fact_sky_blue",
@@ -437,7 +437,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: The sky is blue"
+      "summary": "Common knowledge check supports the claim: The sky is blue"
     },
     {
       "id": "fact_sky_green",
@@ -447,7 +447,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The sky is green"
+      "summary": "Common knowledge check refutes the claim: The sky is green"
     },
     {
       "id": "fact_taste_false",
@@ -457,7 +457,7 @@
       "detail": "expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Salt is sweet"
+      "summary": "Common knowledge check refutes the claim: Salt is sweet"
     },
     {
       "id": "fact_taste_true",
@@ -467,7 +467,7 @@
       "detail": "expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Sugar is sweet"
+      "summary": "Common knowledge check supports the claim: Sugar is sweet"
     },
     {
       "id": "fact_medical_abstain",
@@ -678,7 +678,7 @@
       "verdict": "fake",
       "confidence": 0.78,
       "ocr_confidence": 0.9925,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+      "summary": "Common knowledge check refutes the claim: Elephants are insects"
     },
     {
       "id": "screenshot_ocr_true_claim",
@@ -689,7 +689,7 @@
       "verdict": "true",
       "confidence": 0.82,
       "ocr_confidence": 0.9937,
-      "summary": "Evidence from local_common_knowledge supports the claim: The capital of France is Paris"
+      "summary": "Common knowledge check supports the claim: The capital of France is Paris"
     },
     {
       "id": "screenshot_ocr_arithmetic_false",
@@ -700,7 +700,7 @@
       "verdict": "fake",
       "confidence": 0.97,
       "ocr_confidence": 0.9943,
-      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+      "summary": "Calculation check refutes the claim: 2 plus 2 equals 5"
     },
     {
       "id": "screenshot_ocr_sky_false",
@@ -711,7 +711,7 @@
       "verdict": "fake",
       "confidence": 0.78,
       "ocr_confidence": 0.9993,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The sky is green"
+      "summary": "Common knowledge check refutes the claim: The sky is green"
     },
     {
       "id": "screenshot_ocr_moon_false",
@@ -722,7 +722,7 @@
       "verdict": "fake",
       "confidence": 0.78,
       "ocr_confidence": 0.9928,
-      "summary": "Evidence from local_common_knowledge refutes the claim: The Moon is made of cheese"
+      "summary": "Common knowledge check refutes the claim: The Moon is made of cheese"
     },
     {
       "id": "screenshot_ocr_banana_true",
@@ -733,7 +733,7 @@
       "verdict": "true",
       "confidence": 0.82,
       "ocr_confidence": 0.9935,
-      "summary": "Evidence from local_common_knowledge supports the claim: Bananas are yellow"
+      "summary": "Common knowledge check supports the claim: bananas are yellow"
     },
     {
       "id": "screenshot_question_overrides_ocr",
@@ -744,7 +744,7 @@
       "verdict": "true",
       "confidence": 0.82,
       "ocr_confidence": 0.9969,
-      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+      "summary": "Common knowledge check supports the claim: Elephants are mammals"
     },
     {
       "id": "screenshot_question_override_fake",
@@ -755,7 +755,7 @@
       "verdict": "fake",
       "confidence": 0.78,
       "ocr_confidence": 0.9995,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+      "summary": "Common knowledge check refutes the claim: Elephants are insects"
     },
     {
       "id": "screenshot_blank_abstains",
@@ -777,7 +777,7 @@
       "verdict": "true",
       "confidence": 0.82,
       "ocr_confidence": 0.9994,
-      "summary": "Evidence from local_common_knowledge supports the claim: Dogs are mammals"
+      "summary": "Common knowledge check supports the claim: Dogs are mammals"
     },
     {
       "id": "screenshot_ocr_cat_plant_false",
@@ -788,7 +788,7 @@
       "verdict": "fake",
       "confidence": 0.78,
       "ocr_confidence": 0.9997,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Cats are plants"
+      "summary": "Common knowledge check refutes the claim: Cats are plants"
     },
     {
       "id": "screenshot_ocr_numeric_true",
@@ -799,7 +799,7 @@
       "verdict": "true",
       "confidence": 0.97,
       "ocr_confidence": 0.9846,
-      "summary": "Evidence from local_arithmetic supports the claim: 100 is lower than 200"
+      "summary": "Calculation check supports the claim: 100 is lower than 200"
     },
     {
       "id": "image_ai_metadata_marker",
@@ -969,7 +969,7 @@
       "detail": "status_code=200; expected verdict=true, got true",
       "verdict": "true",
       "confidence": 0.82,
-      "summary": "Evidence from local_common_knowledge supports the claim: Elephants are mammals"
+      "summary": "Common knowledge check supports the claim: Elephants are mammals"
     },
     {
       "id": "api_factcheck_fake",
@@ -979,7 +979,7 @@
       "detail": "status_code=200; expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.78,
-      "summary": "Evidence from local_common_knowledge refutes the claim: Elephants are insects"
+      "summary": "Common knowledge check refutes the claim: Elephants are insects"
     },
     {
       "id": "api_screenshot_fake",
@@ -989,7 +989,7 @@
       "detail": "status_code=200; expected verdict=fake, got fake",
       "verdict": "fake",
       "confidence": 0.97,
-      "summary": "Evidence from local_arithmetic refutes the claim: 2 plus 2 equals 5"
+      "summary": "Calculation check refutes the claim: 2 plus 2 equals 5"
     },
     {
       "id": "api_ai_image_metadata",

@@ -94,6 +94,30 @@ void main() {
     expect(find.text('The claim is supported.'), findsOneWidget);
   });
 
+  testWidgets('Facts mode can add a fact to the knowledge base',
+      (tester) async {
+    final gateway = FakeGateway();
+    await tester.pumpWidget(FakeNewsDetectorApp(gateway: gateway));
+
+    await tester.tap(find.text('Facts'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Knowledge base'), findsOneWidget);
+    await tester.tap(find.text('Knowledge base'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), 'Tomato');
+    await tester.enterText(find.byType(TextField).at(2), 'fruit');
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add fact'));
+    await tester.pumpAndSettle();
+
+    expect(gateway.lastKnowledgeSubject, 'Tomato');
+    expect(gateway.lastKnowledgeProperty, 'fruit');
+    expect(gateway.lastKnowledgeTruth, isTrue);
+    expect(find.text('Saved: tomato is fruit'), findsOneWidget);
+  });
+
   testWidgets('Image modes show a friendly missing-file error', (tester) async {
     await tester.pumpWidget(FakeNewsDetectorApp(gateway: FakeGateway()));
 
@@ -347,6 +371,9 @@ class FakeGateway implements FactCheckGateway {
   final List<ApiHealthStatus> healthStatuses;
   String? lastText;
   String? lastUrl;
+  String? lastKnowledgeSubject;
+  String? lastKnowledgeProperty;
+  bool? lastKnowledgeTruth;
   int healthCheckCount = 0;
 
   @override
@@ -381,6 +408,25 @@ class FakeGateway implements FactCheckGateway {
             'stage_timings_ms': <String, dynamic>{},
           },
         });
+  }
+
+  @override
+  Future<KnowledgeFactResponse> addKnowledgeFact({
+    required String subject,
+    required String propertyText,
+    required bool truth,
+  }) async {
+    lastKnowledgeSubject = subject;
+    lastKnowledgeProperty = propertyText;
+    lastKnowledgeTruth = truth;
+    return KnowledgeFactResponse({
+      'status': 'added',
+      'fact': {
+        'subject': subject.toLowerCase(),
+        'property': propertyText.toLowerCase(),
+        'truth': truth,
+      },
+    });
   }
 
   @override

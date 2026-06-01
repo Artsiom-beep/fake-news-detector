@@ -184,10 +184,14 @@ class _VerificationHomeState extends State<VerificationHome> {
   final _newsUrlController = TextEditingController();
   final _newsTextController = TextEditingController();
   final _factController = TextEditingController();
+  final _knowledgeSubjectController = TextEditingController();
+  final _knowledgePropertyController = TextEditingController();
 
   int _selectedIndex = 0;
   bool _isLoading = false;
+  bool _knowledgeTruth = true;
   String? _error;
+  String? _knowledgeMessage;
   FactCheckResult? _result;
   PickedImage? _image;
   BackendReachability _backendReachability = BackendReachability.unchecked;
@@ -216,6 +220,8 @@ class _VerificationHomeState extends State<VerificationHome> {
     _newsUrlController.dispose();
     _newsTextController.dispose();
     _factController.dispose();
+    _knowledgeSubjectController.dispose();
+    _knowledgePropertyController.dispose();
     super.dispose();
   }
 
@@ -334,6 +340,54 @@ class _VerificationHomeState extends State<VerificationHome> {
 
   Future<void> _checkFact() {
     return _run(() => widget.gateway.checkText(text: _factController.text));
+  }
+
+  Future<void> _addKnowledgeFact() async {
+    final subject = _knowledgeSubjectController.text.trim();
+    final propertyText = _knowledgePropertyController.text.trim();
+    if (subject.isEmpty || propertyText.isEmpty) {
+      setState(() => _error = 'Enter a subject and a property first.');
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _error = null;
+      _knowledgeMessage = null;
+    });
+    try {
+      final added = await widget.gateway.addKnowledgeFact(
+        subject: subject,
+        propertyText: propertyText,
+        truth: _knowledgeTruth,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _knowledgeMessage =
+            'Saved: ${added.subject} is ${added.truth ? '' : 'not '}${added.propertyText}';
+        _factController.text =
+            '${added.subject} is ${added.truth ? '' : 'not '}${added.propertyText}';
+        _knowledgeSubjectController.clear();
+        _knowledgePropertyController.clear();
+        _result = null;
+      });
+    } on FactCheckApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _error =
+          'The fact could not be saved. Verify the API URL and internet connection.');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _checkAiImage() {
@@ -483,7 +537,14 @@ class _VerificationHomeState extends State<VerificationHome> {
         color: const Color(0xff8b6a16),
         child: FactsPanel(
           controller: _factController,
+          knowledgeSubjectController: _knowledgeSubjectController,
+          knowledgePropertyController: _knowledgePropertyController,
+          knowledgeTruth: _knowledgeTruth,
+          onKnowledgeTruthChanged: (value) =>
+              setState(() => _knowledgeTruth = value),
+          knowledgeMessage: _knowledgeMessage,
           onSubmit: _checkFact,
+          onAddKnowledgeFact: () => unawaited(_addKnowledgeFact()),
           isLoading: _isLoading,
         ),
       ),
@@ -793,28 +854,100 @@ class FactsPanel extends StatelessWidget {
   const FactsPanel({
     super.key,
     required this.controller,
+    required this.knowledgeSubjectController,
+    required this.knowledgePropertyController,
+    required this.knowledgeTruth,
+    required this.onKnowledgeTruthChanged,
+    required this.knowledgeMessage,
     required this.onSubmit,
+    required this.onAddKnowledgeFact,
     required this.isLoading,
   });
 
   final TextEditingController controller;
+  final TextEditingController knowledgeSubjectController;
+  final TextEditingController knowledgePropertyController;
+  final bool knowledgeTruth;
+  final ValueChanged<bool> onKnowledgeTruthChanged;
+  final String? knowledgeMessage;
   final VoidCallback onSubmit;
+  final VoidCallback onAddKnowledgeFact;
   final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return FormSurface(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppTextField(
-          controller: controller,
-          label: 'Claim',
-          minLines: 5,
-          maxLines: 8,
+        FormSurface(
+          children: [
+            AppTextField(
+              controller: controller,
+              label: 'Claim',
+              minLines: 5,
+              maxLines: 8,
+            ),
+            PrimaryActionButton(
+              label: 'Check fact',
+              icon: Icons.fact_check,
+              onPressed: isLoading ? null : onSubmit,
+            ),
+          ],
         ),
-        PrimaryActionButton(
-          label: 'Check fact',
-          icon: Icons.fact_check,
-          onPressed: isLoading ? null : onSubmit,
+        const SizedBox(height: 12),
+        Card(
+          child: ExpansionTile(
+            leading: const Icon(Icons.library_books_outlined),
+            title: Text(
+              'Knowledge base',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+            children: [
+              AppTextField(
+                controller: knowledgeSubjectController,
+                label: 'Subject',
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 12),
+              AppTextField(
+                controller: knowledgePropertyController,
+                label: 'Property',
+                textInputAction: TextInputAction.done,
+              ),
+              const SizedBox(height: 12),
+              SegmentedButton<bool>(
+                segments: const [
+                  ButtonSegment(
+                    value: true,
+                    label: Text('True'),
+                    icon: Icon(Icons.check_circle_outline),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    label: Text('False'),
+                    icon: Icon(Icons.cancel_outlined),
+                  ),
+                ],
+                selected: {knowledgeTruth},
+                onSelectionChanged: isLoading
+                    ? null
+                    : (values) => onKnowledgeTruthChanged(values.first),
+              ),
+              if (knowledgeMessage != null) ...[
+                const SizedBox(height: 12),
+                KnowledgeMessage(knowledgeMessage!),
+              ],
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: isLoading ? null : onAddKnowledgeFact,
+                icon: const Icon(Icons.library_add_check_outlined),
+                label: const Text('Add fact'),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -1105,6 +1238,31 @@ class ErrorBanner extends StatelessWidget {
         message,
         style: const TextStyle(
             color: Color(0xff7a2323), fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class KnowledgeMessage extends StatelessWidget {
+  const KnowledgeMessage(this.message, {super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xffdff4e7),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xffa7d7b9)),
+      ),
+      child: Text(
+        message,
+        style: const TextStyle(
+          color: Color(0xff146c48),
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

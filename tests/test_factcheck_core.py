@@ -3,6 +3,7 @@ import sys
 import json
 import importlib.util
 import subprocess
+import tempfile
 import unittest
 import zipfile
 from datetime import date
@@ -498,6 +499,35 @@ class FactCheckCoreTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["access-control-allow-origin"], "*")
         self.assertIn("POST", response.headers["access-control-allow-methods"])
+
+    def test_api_can_add_and_use_knowledge_base_fact(self):
+        from src.factcheck import common_knowledge as api_common_knowledge
+
+        original_path = api_common_knowledge.USER_COMMON_FACTS_PATH
+        original_facts = dict(api_common_knowledge.COMMON_FACTS)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            try:
+                api_common_knowledge.USER_COMMON_FACTS_PATH = Path(temp_dir) / "user_knowledge.json"
+                api_common_knowledge.reload_common_facts()
+                client = TestClient(api_app)
+
+                add_response = client.post(
+                    "/knowledge/facts",
+                    json={"subject": "Zarglephone", "property": "blue", "truth": True},
+                )
+                self.assertEqual(add_response.status_code, 200)
+                self.assertEqual(add_response.json()["fact"]["subject"], "zarglephone")
+
+                check_response = client.post("/factcheck", json={"text": "Zarglephone is blue"})
+                self.assertEqual(check_response.status_code, 200)
+                payload = check_response.json()
+                self.assertEqual(payload["verdict"], "true")
+                self.assertEqual(payload["evidence"][0]["source_type"], "common_knowledge")
+                self.assertIn("User knowledge base", payload["evidence"][0]["title"])
+            finally:
+                api_common_knowledge.USER_COMMON_FACTS_PATH = original_path
+                api_common_knowledge.COMMON_FACTS.clear()
+                api_common_knowledge.COMMON_FACTS.update(original_facts)
 
     def test_legacy_api_predict_delegates_to_canonical_engine(self):
         from src.api import app as legacy_api_app
@@ -1694,18 +1724,19 @@ Write-Output 'apk name policy ok'
             "\\section{Możliwe dalsze prace}",
             "\\section{Wnioski}",
             "93/93 OK",
-            "122/122 OK",
+            "136/136 OK",
             "Facts & 44 & 44 & 100\\%",
             "News & 15 & 15 & 100\\%",
             "Screenshot OCR API & 12 & 12 & 100\\%",
             "Images & 11 & 11 & 100\\%",
             "API/mobile contract & 11 & 11 & 100\\%",
-            "Flutter tests & \\path{flutter test} & 13/13 OK",
+            "Flutter tests & \\path{flutter test} & 14/14 OK",
             "Release gate & release gate & OK, 25 kroków",
             "Final cloud/phone & finalizer cloud-phone & OK",
             "API/mobile contract",
             "VerityLens-cloud.apk",
-            "Rozumowanie źródłowo-taksonomiczne",
+            "Baza wiedzy i rozumowanie źródłowo-taksonomiczne",
+            "Facts knowledge base",
             "Facts source reasoning",
             "\\texttt{e92ab8e}",
             "final_cloud_phone_submission_latest.json",
@@ -1780,6 +1811,9 @@ Write-Output 'apk name policy ok'
         self.assertIn('id="factsGuide"', html)
         self.assertIn("What this mode does", html)
         self.assertIn("Example:", html)
+        self.assertIn("Knowledge base", html)
+        self.assertIn('action="/knowledge/add#factsTool"', html)
+        self.assertIn('id="knowledgeSubjectInput"', html)
         self.assertIn("Check news", html)
         self.assertIn("Check fact", html)
         self.assertIn("Check metadata", html)
@@ -1824,6 +1858,34 @@ Write-Output 'apk name policy ok'
         self.assertIn('class="tool-card facts active" id="factsTool" data-panel="factsTool" aria-hidden="false"', html)
         self.assertIn('class="tool-card news" id="newsTool" data-panel="newsTool" aria-hidden="true"', html)
         mock_run_factcheck.assert_called_once_with(text="Elephant is a mammal", url="")
+
+    def test_ui_can_add_knowledge_fact(self):
+        from src.factcheck import common_knowledge as ui_common_knowledge
+
+        original_path = ui_common_knowledge.USER_COMMON_FACTS_PATH
+        original_facts = dict(ui_common_knowledge.COMMON_FACTS)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            try:
+                ui_common_knowledge.USER_COMMON_FACTS_PATH = Path(temp_dir) / "user_knowledge.json"
+                ui_common_knowledge.reload_common_facts()
+                client = TestClient(ui_app)
+                response = client.post(
+                    "/knowledge/add",
+                    data={
+                        "subject": "Demo berry",
+                        "property_text": "sweet",
+                        "truth": "true",
+                        "active_panel": "factsTool",
+                    },
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("Knowledge base updated", response.text)
+                self.assertIn("demo berry", response.text)
+                self.assertIn('data-target="factsTool" aria-selected="true"', response.text)
+            finally:
+                ui_common_knowledge.USER_COMMON_FACTS_PATH = original_path
+                ui_common_knowledge.COMMON_FACTS.clear()
+                ui_common_knowledge.COMMON_FACTS.update(original_facts)
 
     @patch("factcheck.image_analysis.extract_ocr_text")
     def test_screenshot_factcheck_runs_ocr_text_through_engine(self, mock_ocr):
